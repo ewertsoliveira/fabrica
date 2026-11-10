@@ -1,0 +1,31 @@
+/* Faixa, do modelo de Reels de mesmo nome: moldura fina, texto fino com o destaque em itálico pesado (amarelo sobre o
+   azul), faixas diagonais nos cantos e a palavra da lâmina repetida em contorno atrás do mockup. */
+.lamina.est-faixa{gap:28px;--fr:var(--cor-acento);--dg:var(--cor-acento);--ol:color-mix(in srgb,var(--cor-acento) 70%,transparent);--dt:var(--cor-acento)}
+.est-faixa.fundo-acento,.est-faixa.fundo-escuro{--fr:var(--cor-claro);--dg:color-mix(in srgb,var(--cor-claro) 18%,transparent);--ol:color-mix(in srgb,var(--cor-claro) 60%,transparent);--dt:var(--cor-neutro)}
+.lamina.est-faixa::after{content:"";position:absolute;inset:22px;border:3px solid var(--fr);z-index:8;pointer-events:none}
+.est-faixa .titulo{font-weight:300;letter-spacing:-.03em;line-height:1.04;font-size:max(var(--piso-titulo),94px)}
+.est-faixa .titulo .dst{font-style:italic;font-weight:900;letter-spacing:-.03em;color:var(--dt)}
+.est-faixa .kicker{font:italic 900 var(--piso-micro)/1.2 var(--fonte-principal);letter-spacing:.06em;color:var(--dt)}
+.est-faixa .nota{font:italic 900 44px/1 var(--fonte-principal);color:var(--dt);transform:rotate(-3deg)}
+.est-faixa .nota::after{content:""}
+.est-faixa .vis-mockup{overflow:visible}
+.est-faixa .vis-mockup.inclinado > *{transform:none}
+.est-faixa .vis-mockup .mk.mk-sombra{box-shadow:0 26px 50px rgba(10,20,60,.28)}
+.est-faixa .diag{position:absolute !important;z-index:1 !important;transform:skewX(-24deg);pointer-events:none}
+.est-faixa .d1{left:-40px;top:-30px;width:300px;height:140px;background:linear-gradient(var(--dg),var(--dg)) left 0 top 0/150px 100% no-repeat,linear-gradient(var(--dg),var(--dg)) left 190px top 0/44px 100% no-repeat}
+.est-faixa .d2{right:-40px;bottom:-30px;width:300px;height:96px;background:linear-gradient(var(--dg),var(--dg)) right 0 top 0/150px 100% no-repeat,linear-gradient(var(--dg),var(--dg)) right 190px top 0/44px 100% no-repeat}
+.est-faixa .contorno{position:relative !important;z-index:1 !important;align-self:center;font:italic 900 170px/.84 var(--fonte-principal);text-transform:uppercase;letter-spacing:-.01em;white-space:nowrap;color:transparent;-webkit-text-stroke:3px var(--ol)}
+.est-faixa .contorno{margin-bottom:-86px}
+.est-faixa .contorno + .vis-mockup{align-items:flex-start;padding-top:0}
+.est-faixa .nav-contador{background:none;font:italic 900 var(--piso-micro) var(--fonte-principal);color:var(--dt)}
+.est-faixa .nav-arraste{opacity:1;font:italic 900 var(--piso-micro) var(--fonte-principal)}
+.est-faixa .nav-barra i{background:var(--dt)}
+.est-faixa.papel-capa{justify-content:flex-end}
+.est-faixa.papel-capa .cv{position:absolute !important;inset:0;z-index:0 !important}
+.est-faixa.papel-capa .cv img{width:100%;height:100%;object-fit:cover}
+.est-faixa.papel-capa .cv .veu{position:absolute;inset:0;background:linear-gradient(transparent 48%,color-mix(in srgb,var(--cor-escuro) 86%,transparent) 58%,color-mix(in srgb,var(--cor-escuro) 95%,transparent) 72%)}
+.est-faixa.papel-capa .d1{--dg:var(--cor-acento);top:-30px;height:1500px;left:-120px}
+.est-faixa.papel-capa .titulo{font-size:max(var(--piso-titulo),112px)}
+.est-faixa.papel-capa .logo-marca{left:200px}
+.est-faixa.papel-capa .nav-contador{background:color-mix(in srgb,var(--cor-escuro) 72%,transparent);padding:6px 18px}
+.est-faixa.l-fecho-visual .titulo{font-size:max(var(--piso-titulo),80px)}

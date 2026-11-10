@@ -1,0 +1,32 @@
+/* Bloco, do modelo de Reels de mesmo nome: condensada em caixa alta com o destaque na serifada itálica, a palavra
+   gigante atrás da pessoa (capa) e atrás de cada mockup (campo palavra da lâmina) e os blocos em degrau no canto. */
+.lamina.est-bloco{gap:28px;--deg:color-mix(in srgb,var(--t) 6%,var(--f));--pal:color-mix(in srgb,var(--t) 38%,var(--f))}
+.est-bloco .titulo{font-family:var(--fonte-acento);font-weight:700;text-transform:uppercase;letter-spacing:-.005em;line-height:1.04;font-size:max(var(--piso-titulo),98px)}
+.est-bloco .titulo .dst{font-family:var(--fonte-principal);font-style:italic;font-weight:400;text-transform:none;letter-spacing:0;color:inherit}
+.est-bloco .kicker{font:italic 400 42px/1.2 var(--fonte-mono);letter-spacing:0;text-transform:none;color:color-mix(in srgb,var(--t) 72%,var(--f))}
+.est-bloco .corpo{font-size:max(var(--piso-corpo),48px);line-height:1.3}
+.est-bloco .nota{font:italic 400 58px/1 var(--fonte-principal);color:var(--t)}
+.est-bloco .nota::after{content:""}
+.est-bloco .vis-mockup{overflow:visible}
+.est-bloco .vis-mockup.inclinado > *{transform:none}
+.est-bloco .vis-mockup .mk.mk-sombra{box-shadow:0 30px 60px rgba(0,0,0,.28)}
+.est-bloco .degraus{position:absolute !important;left:0;right:0;bottom:0;height:180px;z-index:0 !important;background:linear-gradient(var(--deg),var(--deg)) 0 100%/180px 180px no-repeat,linear-gradient(var(--deg),var(--deg)) 180px 100%/180px 135px no-repeat,linear-gradient(var(--deg),var(--deg)) 360px 100%/180px 90px no-repeat,linear-gradient(var(--deg),var(--deg)) 540px 100%/180px 45px no-repeat}
+.est-bloco.l-miolo-bloco-acima .degraus{transform:scaleX(-1)}
+.est-bloco .pal{position:relative !important;z-index:1 !important;align-self:center;font:700 220px/.82 var(--fonte-acento);text-transform:uppercase;letter-spacing:-.01em;white-space:nowrap;color:var(--pal)}
+.est-bloco .pal{margin-bottom:-100px}
+.est-bloco .pal + .vis-mockup{align-items:flex-start;padding-top:0}
+.est-bloco .nav-contador,.est-bloco .nav-arraste{font:400 38px var(--fonte-principal);background:none;opacity:1}
+.est-bloco .nav-barra i{background:var(--t)}
+.est-bloco.papel-capa .cv{position:absolute !important;inset:0;z-index:0 !important}
+.est-bloco.papel-capa .cv img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.est-bloco.papel-capa{justify-content:flex-end}
+.est-bloco.papel-capa .titulo{font-size:max(var(--piso-titulo),100px)}
+.est-bloco .palavra{position:absolute;left:0;right:0;top:100px;text-align:center;font:700 380px/1 var(--fonte-acento);text-transform:uppercase;letter-spacing:-.01em;white-space:nowrap;color:var(--cor-claro)}
+.est-bloco.papel-capa .cv .veu{position:absolute;inset:0;background:linear-gradient(transparent 52%,color-mix(in srgb,var(--cor-escuro) 86%,transparent) 62%,color-mix(in srgb,var(--cor-escuro) 95%,transparent) 73%)}
+.est-bloco.papel-capa .nav-contador{background:color-mix(in srgb,var(--cor-escuro) 72%,transparent);padding:6px 18px;color:var(--cor-claro)}
+.est-bloco.l-fecho-visual .titulo{font-size:max(var(--piso-titulo),80px)}
+.est-bloco.l-fecho-visual{gap:22px}
+.est-bloco.l-fecho-visual .corpo{font-size:var(--piso-corpo)}
+.est-bloco.l-fecho-visual .vis-mockup{padding:6px 0 0}
+.est-bloco.papel-capa .cv img{top:260px;height:100%;-webkit-mask-image:linear-gradient(transparent,#000 180px);mask-image:linear-gradient(transparent,#000 180px)}
+.est-bloco.papel-capa .kicker{align-self:flex-start;background:color-mix(in srgb,var(--cor-escuro) 78%,transparent);color:var(--cor-claro);padding:2px 18px 6px}

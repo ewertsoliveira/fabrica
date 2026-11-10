@@ -1,0 +1,36 @@
+# Estilo de catálogo: o miolo sempre numa folha de caderno colada, com um adesivo no topo que muda a cada lâmina,
+# etiquetas para palavras-chave e foto em polaroide quando a lâmina pede. Para trocar os adesivos (frutas, ícones do
+# setor), acrescente SVGs em objetos/adesivo/ e use o nome do arquivo.
+# Cores e fontes abaixo são só a sugestão de demonstração; na produção, valem as do marca.yaml.
+id: colagem
+nome: Colagem
+linha: Folha de caderno colada no fundo de cor, adesivo no topo, etiquetas e polaroide; serifa gorda com itálico.
+origem: catalogo
+combina-com: [nutricao, gastronomia, educacao, bem-estar]
+tom: [divertido, acolhedor]
+precisa: [foto-de-pessoa, fotos-do-assunto]
+sugestao:
+  cores: { escuro: "#234F34", claro: "#FBF5E6", acento: "#FF9433", neutro: "#8C9B3A" }
+  tipografia: { principal: "DM Serif Display", mono: "Poppins", acento: "" }
+  google: "family=DM+Serif+Display:ital@0;1&family=Poppins:wght@400;500;600;700"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-foto]
+    miolo: [miolo-caderno]
+    fecho: [miolo-caderno]
+    molde_do_miolo: fixo
+    alinhamento: centro
+    navegacao: { barra: false, arraste: false, contador: false }
+    fundos: [escuro, acento]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-foto, metodo: capa-foto, contratar: capa-foto, fundos: [escuro] }
+  reels: { modelo: colagem, capa: capa-foto }
+tratamentos: { destaque: italico, foto: polaroide, textura: quadriculado, grafismo: adesivo }
+objetos: [adesivo]
+adesivos: [estrela, sol, flor, raio, coracao, check]
+kit:
+  regras:
+    - "Folha de caderno colada e adesivo no topo."
+    - "Etiquetas em pílula e polaroide."
+    - "Capa com foto e véu; o texto embaixo, centralizado."

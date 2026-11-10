@@ -1,0 +1,119 @@
+# Catálogo de guias de boas práticas
+# O Arquiteto lê este arquivo para descobrir quais guias existem. Leia o arquivo completo de um guia só quando ele for
+# relevante para a linha que está sendo criada.
+#
+# Os guias são REFERÊNCIA: ficam abaixo do Núcleo na hierarquia do CORE.md. Em conflito com uma regra do Núcleo, da
+# restrição do setor ou da decisão da empresa, vale a regra. Leia o LEIA-ME.md desta pasta.
+
+catalogo:
+  # === Guias de disciplina ===
+  - id: copywriting
+    nome: "Copywriting e escrita persuasiva"
+    quandoUsar: "Estações que escrevem texto persuasivo, ganchos, CTAs, legendas de redes sociais, conteúdo de venda ou ângulos virais."
+    arquivo: copywriting.md
+
+  - id: researching
+    nome: "Pesquisa e coleta de dados"
+    quandoUsar: "Estações que pesquisam temas, coletam dados na web, checam fatos ou produzem resumos de pesquisa estruturados."
+    arquivo: researching.md
+
+  - id: review
+    nome: "Revisão e controle de qualidade de conteúdo"
+    quandoUsar: "Estações que avaliam a qualidade do conteúdo, pontuam contra critérios ou dão um veredito estruturado de aprovar ou reprovar."
+    arquivo: review.md
+
+  - id: image-design
+    nome: "Design visual e criação de imagem"
+    quandoUsar: "Estações que desenham gráficos, slides de carrossel, peças visuais para redes ou modelos HTML/CSS para renderização."
+    arquivo: image-design.md
+
+  - id: social-networks-publishing
+    nome: "Publicação em redes sociais"
+    quandoUsar: "Estações que publicam conteúdo no Instagram, LinkedIn, X/Twitter, YouTube ou outras plataformas."
+    arquivo: social-networks-publishing.md
+
+  - id: strategist
+    nome: "Estratégia e planejamento editorial"
+    quandoUsar: "Estações que planejam estratégia de conteúdo, calendário editorial, posicionamento competitivo ou segmentação de público."
+    arquivo: strategist.md
+
+  - id: technical-writing
+    nome: "Escrita técnica e de formato longo"
+    quandoUsar: "Estações que escrevem artigos, posts de blog, documentação, tutoriais, white papers ou conteúdo educativo."
+    arquivo: technical-writing.md
+
+  - id: data-analysis
+    nome: "Análise e interpretação de dados"
+    quandoUsar: "Estações que interpretam métricas, extraem insights, comparam desempenho ou produzem relatórios analíticos."
+    arquivo: data-analysis.md
+
+  # === Guias de plataforma e formato ===
+  - id: instagram-feed
+    nome: "Instagram: feed e carrosséis"
+    quandoUsar: "Estações que produzem posts de feed, carrosséis ou imagem estática para o Instagram."
+    arquivo: instagram-feed.md
+
+  - id: instagram-reels
+    nome: "Instagram: Reels"
+    quandoUsar: "Estações que produzem Reels ou vídeo vertical curto para o Instagram."
+    arquivo: instagram-reels.md
+
+  - id: instagram-stories
+    nome: "Instagram: Stories"
+    quandoUsar: "Estações que produzem Stories ou conteúdo efêmero de 24 horas."
+    arquivo: instagram-stories.md
+
+  - id: linkedin-post
+    nome: "LinkedIn: post"
+    quandoUsar: "Estações que produzem posts de texto, atualizações ou carrosséis de documento para o LinkedIn."
+    arquivo: linkedin-post.md
+
+  - id: linkedin-article
+    nome: "LinkedIn: artigo"
+    quandoUsar: "Estações que produzem artigos ou conteúdo profissional de formato longo para o LinkedIn."
+    arquivo: linkedin-article.md
+
+  - id: twitter-post
+    nome: "X/Twitter: post"
+    quandoUsar: "Estações que produzem tweets, citações ou posts únicos para o X/Twitter."
+    arquivo: twitter-post.md
+
+  - id: twitter-thread
+    nome: "X/Twitter: thread"
+    quandoUsar: "Estações que produzem threads ou narrativas de vários tweets."
+    arquivo: twitter-thread.md
+
+  - id: youtube-script
+    nome: "YouTube: roteiro de vídeo"
+    quandoUsar: "Estações que produzem roteiros de vídeo ou conteúdo de vídeo longo para o YouTube."
+    arquivo: youtube-script.md
+
+  - id: youtube-shorts
+    nome: "YouTube: Shorts"
+    quandoUsar: "Estações que produzem Shorts ou vídeo vertical curto para o YouTube."
+    arquivo: youtube-shorts.md
+
+  - id: email-newsletter
+    nome: "E-mail: newsletter"
+    quandoUsar: "Estações que produzem newsletters ou conteúdo recorrente para assinantes."
+    arquivo: email-newsletter.md
+
+  - id: email-sales
+    nome: "E-mail: venda"
+    quandoUsar: "Estações que produzem e-mails de venda, prospecção a frio ou campanhas de resposta direta."
+    arquivo: email-sales.md
+
+  - id: blog-post
+    nome: "Blog: post"
+    quandoUsar: "Estações que produzem posts de blog, artigos ou marketing de conteúdo de formato longo."
+    arquivo: blog-post.md
+
+  - id: blog-seo
+    nome: "Blog: post com SEO"
+    quandoUsar: "Estações que produzem posts de blog otimizados para busca."
+    arquivo: blog-seo.md
+
+  - id: whatsapp-broadcast
+    nome: "WhatsApp: lista de transmissão"
+    quandoUsar: "Estações que produzem mensagens de transmissão no WhatsApp ou marketing conversacional."
+    arquivo: whatsapp-broadcast.md

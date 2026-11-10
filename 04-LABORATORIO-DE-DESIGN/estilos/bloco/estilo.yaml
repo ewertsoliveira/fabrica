@@ -1,0 +1,39 @@
+# Estilo de catálogo vindo do modelo de Reels "Bloco": condensada gigante atrás da pessoa, serifada no destaque e blocos em degrau.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: bloco
+nome: Bloco
+linha: Condensada em caixa alta com destaque na serifada itálica, palavra gigante atrás da pessoa e de cada mockup, blocos em degrau.
+origem: catalogo
+combina-com: [moda, arquitetura-e-casa, estetica-e-beleza, negocios-e-servicos]
+tom: [ousado, elegante]
+precisa: [foto-de-pessoa, foto-fundo-liso]
+sugestao:
+  cores: { escuro: "#1A1A1C", claro: "#F1F3F4", acento: "#E0E0DC", neutro: "#55555B" }
+  tipografia: { principal: "Instrument Serif", mono: "Instrument Serif", acento: "Oswald" }
+  google: "family=Oswald:wght@500;700&family=Instrument+Serif:ital@0;1"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-bloco]
+    miolo: [miolo-bloco-abaixo, miolo-bloco-acima]
+    fecho: [fecho-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [escuro, claro, escuro, claro, escuro, acento]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-bloco, metodo: miolo-bloco-abaixo, contratar: fecho-visual }
+  reels: { modelo: bloco, capa: capa-bloco }
+tratamentos: { destaque: italico+fonte, foto: recorte, textura: degrau, grafismo: palavra-gigante }
+kit:
+  regras:
+    - "Condensada em caixa alta; destaque na serifada itálica."
+    - "A palavra gigante fica atrás, sempre com pelo menos metade à mostra."
+    - "Degraus baixos no rodapé, nunca atrás do texto."
+  movimento:
+    - video: "palavra gigante que sobe atrás da pessoa"
+      peca: "palavra gigante fixa entre a foto e o recorte"
+    - video: "blocos em degrau que entram"
+      peca: "degraus no rodapé"
+    - video: "serifada que acende"
+      peca: "destaque em serifada itálica"

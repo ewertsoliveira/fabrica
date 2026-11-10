@@ -1,0 +1,26 @@
+/* Neon, do modelo de Reels de mesmo nome: fundo escuro, moldura neon que passa atrás da pessoa, destaque manuscrito
+   brilhante, mockup com contorno neon e a palavra repetida e desfocada ao fundo. */
+.est-neon .kicker{font:800 var(--piso-micro)/1.2 var(--fonte-principal);letter-spacing:.16em;color:var(--cor-acento);text-shadow:0 0 14px color-mix(in srgb,var(--cor-acento) 60%,transparent)}
+.est-neon .titulo{font-weight:800;letter-spacing:-.02em;line-height:1.04}
+.est-neon .titulo .dst{font-family:var(--fonte-acento);font-weight:400;letter-spacing:0;color:var(--cor-claro);text-shadow:0 0 16px var(--cor-acento),0 0 40px var(--cor-acento)}
+.est-neon .corpo{color:color-mix(in srgb,var(--cor-claro) 82%,var(--cor-escuro))}
+.est-neon .nota{font-size:58px;color:var(--cor-claro);text-shadow:0 0 12px var(--cor-acento),0 0 30px var(--cor-acento)}
+.est-neon .vis-mockup{overflow:visible;padding:30px 0}
+.est-neon .vis-mockup.inclinado > *{transform:none}
+.est-neon .vis-mockup .mk.mk-sombra{box-shadow:0 0 0 6px var(--cor-acento),0 0 46px color-mix(in srgb,var(--cor-acento) 70%,transparent)}
+.est-neon .rep{position:relative !important;z-index:1 !important;align-self:center;margin-bottom:-96px;font:900 160px/.84 var(--fonte-principal);letter-spacing:-.03em;text-transform:uppercase;color:color-mix(in srgb,var(--cor-acento) 34%,transparent);filter:blur(3px);white-space:nowrap;pointer-events:none}
+.est-neon .rep .dst{color:inherit;font-family:inherit;text-shadow:none}
+.est-neon .brilho{position:absolute !important;z-index:0 !important;width:900px;height:900px;right:-380px;top:-300px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--cor-acento) 24%,transparent),transparent 65%)}
+.est-neon .nav-barra i{background:var(--cor-acento)}
+.est-neon .nav-contador{color:var(--cor-acento);background:color-mix(in srgb,var(--cor-acento) 12%,transparent)}
+.est-neon .nav-arraste{opacity:1}
+.est-neon.l-capa-neon{justify-content:flex-end}
+.est-neon.l-capa-neon .titulo{font-size:max(var(--piso-titulo),104px)}
+.est-neon .cv{position:absolute !important;inset:0;z-index:0 !important}
+.est-neon .cv img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.est-neon .cv .moldura{position:absolute;left:50%;top:70px;width:560px;height:740px;transform:translateX(-46%);border:12px solid var(--cor-acento);border-radius:30px;box-shadow:0 0 30px var(--cor-acento),0 0 80px color-mix(in srgb,var(--cor-acento) 55%,transparent),inset 0 0 30px color-mix(in srgb,var(--cor-acento) 50%,transparent)}
+.est-neon .cv .veu{position:absolute;inset:0;background:linear-gradient(transparent 50%,color-mix(in srgb,var(--cor-escuro) 86%,transparent) 61%,color-mix(in srgb,var(--cor-escuro) 95%,transparent) 74%)}
+.lamina.est-neon{gap:28px}
+.est-neon.papel-capa .nav-contador{background:color-mix(in srgb,var(--cor-escuro) 75%,transparent)}
+.est-neon.l-fecho-visual .vis-mockup{padding:10px 0}
+.est-neon.papel-capa .cv img{top:200px;height:100%;-webkit-mask-image:linear-gradient(transparent,#000 180px);mask-image:linear-gradient(transparent,#000 180px)}

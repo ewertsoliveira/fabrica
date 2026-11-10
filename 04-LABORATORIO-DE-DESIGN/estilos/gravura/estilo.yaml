@@ -1,0 +1,34 @@
+# Estilo de catálogo da primeira rodada aprovada ("Gravura", ilustração em traço clássico): ilustrações em traço de gravura, sempre do assunto da lâmina, serifa refinada e respiro.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+# As gravuras (objetos/ilustracao/) são desenhos nossos em traço numa cor só: seguem a cor do texto da lâmina. Não dependem de foto nem de gerador de imagem.
+id: gravura
+nome: Gravura
+linha: Ilustrações em traço de gravura, sempre do assunto da lâmina, serifa refinada com itálico, muito respiro e um painel lateral com a gravura.
+origem: catalogo
+combina-com: [direito, financas, gastronomia, arquitetura-e-casa, psicologia]
+tom: [elegante, sobrio]
+precisa: [funciona-sem-foto]
+sugestao:
+  cores: { escuro: "#12100E", claro: "#F2ECE1", acento: "#6E1F2A", neutro: "#D9B26A" }
+  tipografia: { principal: "Inter", mono: "DM Mono", acento: "Playfair Display" }
+  google: "family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@400;500&family=DM+Mono:wght@400;500"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-gravura]
+    miolo: [miolo-gravura-painel, miolo-gravura-abaixo, miolo-gravura-acima]
+    fecho: [fecho-cartao-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [escuro, claro, escuro, claro, escuro, acento]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-gravura, metodo: miolo-gravura-painel, contratar: fecho-cartao-visual }
+  reels: { modelo: gravura, capa: capa-gravura }
+tratamentos: { destaque: italico+cor, foto: sem-foto, textura: nenhuma, grafismo: gravura }
+objetos: [ilustracao]
+kit:
+  regras:
+    - "Uma gravura por lâmina, sempre do assunto daquela lâmina."
+    - "Traço numa cor só: dourado no fundo escuro, tinta no claro."
+    - "Não depende de foto nem de gerador de imagem: as gravuras são vetoriais."

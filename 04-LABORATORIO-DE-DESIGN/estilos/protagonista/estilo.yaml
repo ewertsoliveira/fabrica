@@ -1,0 +1,32 @@
+# Estilo de catálogo da primeira rodada aprovada ("Protagonista", retrato com título): o profissional recortado é o centro; título grande ao lado.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: protagonista
+nome: Protagonista
+linha: A profissional recortada é o centro da capa, sobre um grande círculo de acento, com o título monumental ao lado e o destaque sublinhado.
+origem: catalogo
+combina-com: [saude, nutricao, estetica-e-beleza, bem-estar, negocios-e-servicos]
+tom: [vibrante, ousado]
+precisa: [foto-de-pessoa, foto-fundo-liso]
+sugestao:
+  cores: { escuro: "#16213A", claro: "#ECE5D8", acento: "#FF6B35", neutro: "#5B6478" }
+  tipografia: { principal: "Inter", mono: "JetBrains Mono", acento: "Inter Tight" }
+  google: "family=Inter+Tight:wght@800;900&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-protagonista]
+    miolo: [miolo-protagonista-abaixo, miolo-protagonista-acima]
+    fecho: [fecho-cartao-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [claro, escuro, claro, escuro, claro, acento]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-protagonista, metodo: miolo-protagonista-abaixo, contratar: fecho-cartao-visual }
+  reels: { modelo: protagonista, capa: capa-protagonista }
+tratamentos: { destaque: cor, foto: recorte, textura: nenhuma, grafismo: circulo }
+kit:
+  regras:
+    - "A profissional recortada na capa, no fixado de apresentação e na capa de Reels."
+    - "Exige foto com fundo liso para o recorte."
+    - "Destaque sublinhado grosso na cor de acento."

@@ -1,0 +1,26 @@
+/* Vitrine, do modelo de Reels de mesmo nome: fundo desfocado da própria cena, texto fino com destaque em itálico
+   pesado e o mockup como o cartão do B-roll, com sombra longa. */
+.est-vitrine .fundo-foto{position:absolute !important;inset:-90px;z-index:0 !important;background-size:cover;background-position:center;filter:blur(30px) brightness(.5) saturate(1.1)}
+.est-vitrine.fundo-claro .fundo-foto,.est-vitrine.fundo-acento .fundo-foto{display:none}
+.est-vitrine .kicker{font:600 var(--piso-micro)/1.2 var(--fonte-mono);letter-spacing:.16em;color:var(--cor-neutro)}
+.est-vitrine.fundo-escuro .kicker{color:var(--cor-acento)}
+.est-vitrine .titulo{font-weight:300;letter-spacing:-.035em;line-height:1.04}
+.est-vitrine .titulo .dst{font-style:italic;font-weight:900;letter-spacing:-.04em;color:inherit}
+.est-vitrine.fundo-escuro .titulo .dst{color:var(--cor-acento)}
+.est-vitrine.fundo-claro .titulo .dst{background:linear-gradient(transparent 60%,color-mix(in srgb,var(--cor-acento) 82%,var(--cor-escuro)) 60%,color-mix(in srgb,var(--cor-acento) 82%,var(--cor-escuro)) 90%,transparent 90%)}
+.est-vitrine.fundo-acento .titulo .dst{background:linear-gradient(transparent 60%,var(--cor-claro) 60%,var(--cor-claro) 90%,transparent 90%)}
+.est-vitrine.fundo-escuro .titulo,.est-vitrine.fundo-escuro .corpo{text-shadow:0 4px 24px rgba(0,0,0,.35)}
+.est-vitrine .vis-mockup{overflow:visible;padding:20px 0 50px}
+.est-vitrine .vis-mockup.inclinado > *{transform:none}
+.est-vitrine .vis-mockup .mk.mk-sombra{box-shadow:0 60px 110px rgba(0,0,0,.42)}
+.est-vitrine.fundo-claro .vis-mockup .mk.mk-sombra,.est-vitrine.fundo-acento .vis-mockup .mk.mk-sombra{box-shadow:0 50px 90px rgba(20,25,35,.2)}
+.est-vitrine .nav-contador{background:none;padding:0;font:300 var(--piso-micro) var(--fonte-principal)}
+.est-vitrine .nav-arraste{opacity:1;font:600 var(--piso-micro) var(--fonte-principal)}
+.est-vitrine.l-capa-vitrine .titulo{font-size:max(var(--piso-titulo),110px)}
+.est-vitrine .cv{flex:1;min-height:0;border-radius:30px;overflow:hidden;box-shadow:0 60px 110px rgba(0,0,0,.45)}
+.est-vitrine .cv img{width:100%;height:100%;object-fit:cover;display:block}
+.est-vitrine .cv .veu{position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.2))}
+.lamina.est-vitrine{gap:28px}
+.est-vitrine.l-fecho-visual .vis-mockup{padding:0 0 10px}
+.est-vitrine .nota{color:var(--cor-neutro);font-size:56px}
+.est-vitrine.fundo-escuro .nota{color:var(--cor-acento)}

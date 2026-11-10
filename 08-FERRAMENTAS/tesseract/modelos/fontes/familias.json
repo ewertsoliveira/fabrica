@@ -1,0 +1,262 @@
+{
+  "descricao": "As letras livres (licença OFL) desta pasta, por família: o arquivo usado como letra da marca, todos os arquivos da família, a licença, a classificação, se tem itálico e os pesos. Lido por 08-FERRAMENTAS/marca/escrever.js (a marca que nasce de um estilo) e pela lista de letras do painel. Os pares (letra do título e letra do texto) são os pares prontos que a tela Sua marca mostra primeiro.",
+  "familias": [
+    {
+      "familia": "Anton",
+      "arquivo": "Anton-Regular.ttf",
+      "arquivos": [
+        "Anton-Regular.ttf"
+      ],
+      "licenca": "Anton-OFL.txt",
+      "classificacao": "sem serifa",
+      "italico": false,
+      "pesos": [400]
+    },
+    {
+      "familia": "Bebas Neue",
+      "arquivo": "BebasNeue-Regular.ttf",
+      "arquivos": [
+        "BebasNeue-Regular.ttf"
+      ],
+      "licenca": "BebasNeue-OFL.txt",
+      "classificacao": "sem serifa",
+      "italico": false,
+      "pesos": [400]
+    },
+    {
+      "familia": "Caveat",
+      "arquivo": "Caveat.ttf",
+      "arquivos": [
+        "Caveat.ttf"
+      ],
+      "licenca": "Caveat-OFL.txt",
+      "classificacao": "manuscrita",
+      "italico": false,
+      "pesos": [400, 500, 600, 700]
+    },
+    {
+      "familia": "Cormorant Garamond",
+      "arquivo": "CormorantGaramond-Medium.ttf",
+      "arquivos": [
+        "CormorantGaramond-Medium.ttf",
+        "CormorantGaramond-MediumItalic.ttf",
+        "CormorantGaramond-SemiBold.ttf",
+        "CormorantGaramond-SemiBoldItalic.ttf"
+      ],
+      "licenca": "CormorantGaramond-OFL.txt",
+      "classificacao": "com serifa",
+      "italico": true,
+      "pesos": [500, 600]
+    },
+    {
+      "familia": "Courier Prime",
+      "arquivo": "CourierPrime-Bold.ttf",
+      "arquivos": [
+        "CourierPrime-Bold.ttf"
+      ],
+      "licenca": "CourierPrime-OFL.txt",
+      "classificacao": "máquina de escrever",
+      "italico": false,
+      "pesos": [700]
+    },
+    {
+      "familia": "DM Mono",
+      "arquivo": "DMMono-Medium.ttf",
+      "arquivos": [
+        "DMMono-Medium.ttf"
+      ],
+      "licenca": "DMMono-OFL.txt",
+      "classificacao": "máquina de escrever",
+      "italico": false,
+      "pesos": [500]
+    },
+    {
+      "familia": "DM Sans",
+      "arquivo": "DMSans-Medium.ttf",
+      "arquivos": [
+        "DMSans-Bold.ttf",
+        "DMSans-Medium.ttf"
+      ],
+      "licenca": "DMSans-OFL.txt",
+      "classificacao": "sem serifa",
+      "italico": false,
+      "pesos": [500, 700]
+    },
+    {
+      "familia": "DM Serif Display",
+      "arquivo": "DMSerifDisplay-Regular.ttf",
+      "arquivos": [
+        "DMSerifDisplay-Italic.ttf",
+        "DMSerifDisplay-Regular.ttf"
+      ],
+      "licenca": "DMSerifDisplay-OFL.txt",
+      "classificacao": "com serifa",
+      "italico": true,
+      "pesos": [400]
+    },
+    {
+      "familia": "Fraunces",
+      "arquivo": "Fraunces-Regular.ttf",
+      "arquivos": [
+        "Fraunces-Italic.ttf",
+        "Fraunces-Regular.ttf",
+        "Fraunces-SemiBold.ttf",
+        "Fraunces-SemiBoldItalic.ttf"
+      ],
+      "licenca": "Fraunces-OFL.txt",
+      "classificacao": "com serifa",
+      "italico": true,
+      "pesos": [400, 600]
+    },
+    {
+      "familia": "Great Vibes",
+      "arquivo": "GreatVibes-Regular.ttf",
+      "arquivos": [
+        "GreatVibes-Regular.ttf"
+      ],
+      "licenca": "GreatVibes-OFL.txt",
+      "classificacao": "manuscrita",
+      "italico": false,
+      "pesos": [400]
+    },
+    {
+      "familia": "Instrument Serif",
+      "arquivo": "InstrumentSerif-Regular.ttf",
+      "arquivos": [
+        "InstrumentSerif-Italic.ttf",
+        "InstrumentSerif-Regular.ttf"
+      ],
+      "licenca": "InstrumentSerif-OFL.txt",
+      "classificacao": "com serifa",
+      "italico": true,
+      "pesos": [400]
+    },
+    {
+      "familia": "Inter",
+      "arquivo": "Inter.ttf",
+      "arquivos": [
+        "Inter-Italic.ttf",
+        "Inter.ttf"
+      ],
+      "licenca": "Inter-OFL.txt",
+      "classificacao": "sem serifa",
+      "italico": true,
+      "pesos": [100, 200, 300, 400, 500, 600, 700, 800, 900]
+    },
+    {
+      "familia": "Inter Tight",
+      "arquivo": "InterTight-SemiBold.ttf",
+      "arquivos": [
+        "InterTight-Black.ttf",
+        "InterTight-ExtraBold.ttf",
+        "InterTight-SemiBold.ttf"
+      ],
+      "licenca": "InterTight-OFL.txt",
+      "classificacao": "sem serifa",
+      "italico": false,
+      "pesos": [600, 800, 900]
+    },
+    {
+      "familia": "JetBrains Mono",
+      "arquivo": "JetBrainsMono-Bold.ttf",
+      "arquivos": [
+        "JetBrainsMono-Bold.ttf"
+      ],
+      "licenca": "JetBrainsMono-OFL.txt",
+      "classificacao": "máquina de escrever",
+      "italico": false,
+      "pesos": [700]
+    },
+    {
+      "familia": "Kaushan Script",
+      "arquivo": "KaushanScript-Regular.ttf",
+      "arquivos": [
+        "KaushanScript-Regular.ttf"
+      ],
+      "licenca": "KaushanScript-OFL.txt",
+      "classificacao": "manuscrita",
+      "italico": false,
+      "pesos": [400]
+    },
+    {
+      "familia": "Montserrat",
+      "arquivo": "Montserrat-SemiBold.ttf",
+      "arquivos": [
+        "Montserrat-SemiBold.ttf"
+      ],
+      "licenca": "Montserrat-OFL.txt",
+      "classificacao": "sem serifa",
+      "italico": false,
+      "pesos": [600]
+    },
+    {
+      "familia": "Oswald",
+      "arquivo": "Oswald.ttf",
+      "arquivos": [
+        "Oswald.ttf"
+      ],
+      "licenca": "Oswald-OFL.txt",
+      "classificacao": "sem serifa",
+      "italico": false,
+      "pesos": [200, 300, 400, 500, 600, 700]
+    },
+    {
+      "familia": "Playfair Display",
+      "arquivo": "PlayfairDisplay-Medium.ttf",
+      "arquivos": [
+        "PlayfairDisplay-Medium.ttf",
+        "PlayfairDisplay-MediumItalic.ttf"
+      ],
+      "licenca": "PlayfairDisplay-OFL.txt",
+      "classificacao": "com serifa",
+      "italico": true,
+      "pesos": [500]
+    },
+    {
+      "familia": "Poppins",
+      "arquivo": "Poppins-SemiBold.ttf",
+      "arquivos": [
+        "Poppins-Bold.ttf",
+        "Poppins-ExtraBold.ttf",
+        "Poppins-SemiBold.ttf"
+      ],
+      "licenca": "Poppins-OFL.txt",
+      "classificacao": "sem serifa",
+      "italico": false,
+      "pesos": [600, 700, 800]
+    },
+    {
+      "familia": "Space Grotesk",
+      "arquivo": "SpaceGrotesk-Medium.ttf",
+      "arquivos": [
+        "SpaceGrotesk-Bold.ttf",
+        "SpaceGrotesk-Medium.ttf"
+      ],
+      "licenca": "SpaceGrotesk-OFL.txt",
+      "classificacao": "sem serifa",
+      "italico": false,
+      "pesos": [500, 700]
+    },
+    {
+      "familia": "Space Mono",
+      "arquivo": "SpaceMono-Bold.ttf",
+      "arquivos": [
+        "SpaceMono-Bold.ttf"
+      ],
+      "licenca": "SpaceMono-OFL.txt",
+      "classificacao": "máquina de escrever",
+      "italico": false,
+      "pesos": [700]
+    }
+  ],
+  "pares": [
+    { "titulo": "Space Grotesk", "texto": "DM Sans" },
+    { "titulo": "DM Serif Display", "texto": "DM Sans" },
+    { "titulo": "Bebas Neue", "texto": "DM Mono" },
+    { "titulo": "Playfair Display", "texto": "Space Grotesk" },
+    { "titulo": "Instrument Serif", "texto": "DM Sans" },
+    { "titulo": "Courier Prime", "texto": "DM Sans" },
+    { "titulo": "Fraunces", "texto": "Inter" },
+    { "titulo": "Cormorant Garamond", "texto": "Inter" }
+  ]
+}

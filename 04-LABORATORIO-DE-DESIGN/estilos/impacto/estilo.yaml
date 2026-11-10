@@ -1,0 +1,39 @@
+# Estilo de catálogo vindo do modelo de Reels "Impacto": caixa alta condensada em ciano, destaque branco com falha cromática e tela cinza do B-roll.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: impacto
+nome: Impacto
+linha: Caixa alta condensada em ciano, destaque branco com a falha cromática dos cortes, mockups na tela cinza do B-roll e grade em perspectiva.
+origem: catalogo
+combina-com: [tecnologia, negocios-e-servicos, educacao]
+tom: [ousado, vibrante]
+precisa: [foto-de-pessoa]
+sugestao:
+  cores: { escuro: "#0B0F12", claro: "#E4F4FA", acento: "#2EC4F2", neutro: "#8E8E8E" }
+  tipografia: { principal: "Inter", mono: "Bebas Neue", acento: "Bebas Neue" }
+  google: "family=Bebas+Neue&family=Inter:wght@400;600;700"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-impacto]
+    miolo: [miolo-impacto-abaixo, miolo-impacto-acima]
+    fecho: [fecho-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [escuro]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-impacto, metodo: miolo-impacto-abaixo, contratar: fecho-visual }
+  reels: { modelo: impacto, capa: capa-impacto }
+tratamentos: { destaque: cor, foto: sangria, textura: grade, grafismo: falha-cromatica }
+kit:
+  regras:
+    - "Caixa alta condensada; o acento ciano é a cor do título."
+    - "O destaque é branco com a falha cromática, no mesmo tamanho do título."
+    - "Mockup sempre sobre a moldura cinza do B-roll."
+  movimento:
+    - video: "corte seco com falha cromática"
+      peca: "destaque branco com falha cromática fixa"
+    - video: "tela cinza do B-roll"
+      peca: "mockup sobre moldura cinza"
+    - video: "grade que se deforma no fim"
+      peca: "grade em perspectiva no rodapé"

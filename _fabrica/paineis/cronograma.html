@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cronograma</title>
+<link rel="icon" href="data:,">
+<!--
+  Tela do Cronograma da Fábrica de Conteúdo. Mostra os posts de UMA empresa (a escolhida no seletor) num calendário
+  do mês e numa lista, com a data, a rede, o estado e a arte ligada a cada post (e se ela já foi aprovada no
+  Laboratório). O botão "Enviar ao cliente" pede ao servidor o arquivo do cliente, que só é gerado se nenhum post
+  citar outra empresa.
+  Todos os dados vêm do servidor local dos painéis (rotas /api/, sempre com a empresa); nenhum arquivo de dados é
+  lido por caminho. As cores e as letras são as da marca da empresa escolhida (ou as de exemplo).
+-->
+<style>
+  :root {
+    --escuro: rgb(30, 32, 36);
+    --claro: rgb(246, 244, 239);
+    --acento: rgb(38, 102, 168);
+    --neutro: rgb(132, 128, 120);
+    --sobre-acento: rgb(255, 255, 255);
+    --sobre-escuro: rgb(246, 244, 239);
+    --letra-titulo: ui-serif, serif;
+    --letra-texto: system-ui, sans-serif;
+    --letra-mono: ui-monospace, monospace;
+    --texto: var(--escuro);
+    --texto-2: color-mix(in srgb, var(--escuro) 68%, var(--claro));
+    --linha: color-mix(in srgb, var(--neutro) 40%, var(--claro));
+    --fundo-2: color-mix(in srgb, var(--neutro) 10%, var(--claro));
+    --mesa: color-mix(in srgb, var(--escuro) 7%, var(--claro));
+    --erro: rgb(170, 40, 40);
+    --raio: 10px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--claro);
+    color: var(--texto);
+    font: 15px/1.5 var(--letra-texto);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  button, select { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+
+  /* ---- topo (o mesmo do Laboratório) ---- */
+  .topo {
+    background: var(--escuro);
+    color: var(--sobre-escuro);
+    padding: 18px 28px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px 24px;
+  }
+  .topo-titulo { min-width: 0; }
+  .topo h1 {
+    margin: 0;
+    font: 600 clamp(24px, 3.2vw, 34px)/1.1 var(--letra-titulo);
+    letter-spacing: -0.01em;
+  }
+  .topo-empresa {
+    margin: 4px 0 0;
+    font-size: 15px;
+    opacity: 0.82;
+    overflow-wrap: anywhere;
+  }
+  .topo-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+  .topo-acoes a { color: var(--sobre-escuro); text-underline-offset: 3px; }
+  .topo-acoes a.link-discreto { font-size: 13px; opacity: 0.75; }
+  .nota-exemplo {
+    font-size: 13px;
+    padding: 3px 10px;
+    border: 1px solid color-mix(in srgb, var(--sobre-escuro) 45%, transparent);
+    border-radius: 999px;
+  }
+
+  /* seletor de empresa (montado por empresa-seletor.js) */
+  .empresa-seletor {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--sobre-escuro) 12%, transparent);
+    cursor: pointer;
+    max-width: 100%;
+  }
+  .empresa-seletor-rotulo { opacity: 0.8; white-space: nowrap; }
+  .empresa-seletor-lista {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--sobre-escuro);
+    font-weight: 600;
+    padding: 0 18px 0 0;
+    margin-right: -14px;
+    cursor: pointer;
+    max-width: 220px;
+    text-overflow: ellipsis;
+  }
+  .empresa-seletor-lista option { color: var(--escuro); background: var(--claro); }
+  .empresa-seletor-seta { pointer-events: none; }
+
+  .aviso {
+    margin: 0;
+    padding: 12px 28px;
+    background: color-mix(in srgb, var(--acento) 14%, var(--claro));
+    border-bottom: 1px solid color-mix(in srgb, var(--acento) 35%, var(--claro));
+    font-weight: 500;
+  }
+
+  /* ---- cartão "Seu estilo" (montado por cartao-estilo.js): capa pequena, nome e "Trocar a cara da marca" ---- */
+  .cartao-estilo {
+    margin: 16px 28px 0;
+    padding: 12px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 16px;
+    background: var(--fundo-2);
+    border: 1px solid var(--linha);
+    border-radius: 14px;
+  }
+  .cartao-estilo-capa {
+    flex: none;
+    width: 52px; height: 65px;
+    border-radius: 6px;
+    object-fit: cover;
+    background: var(--mesa);
+    border: 1px solid var(--linha);
+  }
+  .cartao-estilo-sem-capa { display: grid; place-items: center; font: 600 22px/1 var(--letra-titulo); color: var(--texto-2); }
+  .cartao-estilo-sem-capa:empty { background: transparent; border-style: dashed; }
+  .cartao-estilo-texto { flex: 1 1 220px; min-width: 0; }
+  .cartao-estilo-rotulo { margin: 0; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--texto-2); }
+  .cartao-estilo-nome { margin: 1px 0 0; font: 600 19px/1.2 var(--letra-titulo); overflow-wrap: anywhere; }
+  .cartao-estilo-linha { margin: 2px 0 0; font-size: 13px; color: var(--texto-2); overflow-wrap: anywhere; }
+  .cartao-estilo .botao { flex: none; }
+
+  /* ---- botões ---- */
+  .botao {
+    border: 1px solid var(--linha);
+    background: var(--claro);
+    color: var(--texto);
+    border-radius: 999px;
+    padding: 9px 18px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .botao:hover { background: var(--fundo-2); }
+  .botao-principal { background: var(--acento); border-color: var(--acento); color: var(--sobre-acento); }
+  .botao-principal:hover { background: color-mix(in srgb, var(--acento) 86%, var(--escuro)); }
+  .botao[disabled] { opacity: 0.6; cursor: progress; }
+  .botao-pequeno { padding: 5px 12px; font-size: 13px; }
+
+  /* ---- barra do mês ---- */
+  .barra {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 14px 24px;
+    padding: 22px 28px 18px;
+  }
+  .mes-nav { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .mes-nav h2 { margin: 0; font: 600 clamp(22px, 2.6vw, 28px)/1.15 var(--letra-titulo); white-space: nowrap; }
+  .seta {
+    width: 36px; height: 36px; flex: 0 0 auto;
+    border-radius: 50%;
+    border: 1px solid var(--linha);
+    background: var(--claro);
+    display: grid; place-items: center;
+    cursor: pointer;
+    font-size: 18px; line-height: 1;
+  }
+  .seta:hover { background: var(--fundo-2); }
+  .resumo { margin: 4px 0 0; color: var(--texto-2); font-size: 14px; }
+  .barra-envio { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .barra-envio .discreto { font-size: 13px; }
+
+  /* ---- resultado do envio ---- */
+  .envio {
+    margin: 0 28px 22px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--acento) 10%, var(--claro));
+    border-left: 5px solid var(--acento);
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px;
+  }
+  .envio h3 { margin: 0 0 4px; font: 600 18px/1.25 var(--letra-titulo); }
+  .envio p { margin: 0 0 4px; max-width: 72ch; overflow-wrap: anywhere; }
+  .envio-erro { background: color-mix(in srgb, var(--erro) 9%, var(--claro)); border-left-color: var(--erro); }
+  .envio-erro h3 { color: var(--erro); }
+  .envio a { color: inherit; font-weight: 600; text-underline-offset: 3px; }
+  .caminho { font-family: var(--letra-mono); font-size: 13px; overflow-wrap: anywhere; }
+  .discreto { color: var(--texto-2); font-size: 14px; }
+
+  /* ---- calendário e lista ---- */
+  .quadro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr);
+    gap: 28px;
+    padding: 0 28px 48px;
+    align-items: start;
+  }
+  .calendario {
+    border: 1px solid var(--linha);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--claro);
+  }
+  .semana-cab, .dias { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+  .semana-cab span {
+    padding: 8px 8px 7px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--texto-2);
+    background: var(--fundo-2);
+  }
+  .dia {
+    min-height: 112px;
+    min-width: 0;
+    padding: 6px;
+    border-top: 1px solid var(--linha);
+    border-left: 1px solid var(--linha);
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .dia:nth-child(7n + 1) { border-left: 0; }
+  .dia.fora { background: color-mix(in srgb, var(--neutro) 5%, var(--claro)); }
+  .dia.fora .dia-num { opacity: 0.45; }
+  .dia-num {
+    align-self: flex-start;
+    min-width: 26px; height: 26px; padding: 0 6px;
+    display: grid; place-items: center;
+    border-radius: 999px;
+    font-size: 13px; font-weight: 600;
+  }
+  .dia.hoje .dia-num { background: var(--escuro); color: var(--sobre-escuro); }
+  .chip {
+    display: block; width: 100%;
+    text-align: left;
+    border: 0; border-radius: 6px;
+    padding: 4px 7px 5px;
+    font-size: 12px; line-height: 1.25;
+    cursor: pointer;
+    background: var(--fundo-2);
+    color: var(--texto);
+  }
+  .chip-rede { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; opacity: 0.78; }
+  .chip-titulo { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+  .chip.ok { background: var(--acento); color: var(--sobre-acento); }
+  .chip.espera { background: var(--claro); box-shadow: inset 0 0 0 1.5px var(--acento); }
+  .chip:hover { filter: brightness(0.96); }
+  .legenda-cores {
+    display: flex; flex-wrap: wrap; gap: 8px 18px;
+    padding: 10px 12px;
+    border-top: 1px solid var(--linha);
+    font-size: 13px; color: var(--texto-2);
+  }
+  .legenda-cores span { display: inline-flex; align-items: center; gap: 6px; }
+  .legenda-cores i { width: 14px; height: 14px; border-radius: 4px; display: inline-block; background: var(--fundo-2); }
+  .legenda-cores i.ok { background: var(--acento); }
+  .legenda-cores i.espera { background: var(--claro); box-shadow: inset 0 0 0 1.5px var(--acento); }
+
+  .lista h2 { margin: 0 0 10px; font: 600 18px/1.2 var(--letra-titulo); }
+  .posts { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .post {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 14px;
+    padding: 14px 16px 14px 12px;
+    border: 1px solid var(--linha);
+    border-radius: 12px;
+    background: var(--claro);
+    scroll-margin: 90px;
+    transition: box-shadow 0.3s;
+  }
+  .post.destaque { box-shadow: 0 0 0 3px var(--acento); }
+  .post-data { text-align: center; padding-top: 2px; }
+  .post-data b { display: block; font: 600 26px/1 var(--letra-titulo); }
+  .post-data span { display: block; margin-top: 3px; font-size: 12px; color: var(--texto-2); text-transform: capitalize; }
+  .post-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 4px; font-size: 13px; }
+  .rede { font-weight: 700; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .estado { padding: 1px 9px; border-radius: 999px; font-weight: 600; font-size: 12px; border: 1px solid var(--linha); color: var(--texto-2); }
+  .estado.ok { background: var(--acento); border-color: var(--acento); color: var(--sobre-acento); }
+  .estado.espera { border-color: var(--acento); color: var(--texto); }
+  .post h3 { margin: 0; font: 600 17px/1.3 var(--letra-titulo); overflow-wrap: anywhere; }
+  .post-peca { margin: 6px 0 0; font-size: 13px; color: var(--texto-2); overflow-wrap: anywhere; }
+  .post-peca strong { color: var(--texto); font-weight: 600; }
+  .post details { margin-top: 8px; }
+  .post summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--texto-2); }
+  .legenda {
+    white-space: pre-wrap;
+    background: var(--fundo-2);
+    border-radius: var(--raio);
+    padding: 10px 12px;
+    margin: 8px 0;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+  }
+  .lista-vazia { padding: 18px; border: 1px dashed var(--linha); border-radius: 12px; color: var(--texto-2); margin: 0; }
+
+  /* ---- vazio e erro ---- */
+  .vazio {
+    max-width: 560px;
+    margin: 12vh auto;
+    padding: 0 24px;
+    text-align: center;
+  }
+  .vazio h2 { font: 600 clamp(22px, 3vw, 28px)/1.2 var(--letra-titulo); margin: 0 0 10px; }
+  .vazio p { margin: 0 0 8px; color: var(--texto-2); }
+  .vazio.erro h2 { color: var(--erro); }
+
+  .recado {
+    position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
+    max-width: min(520px, calc(100vw - 32px));
+    background: var(--escuro); color: var(--sobre-escuro);
+    padding: 12px 18px; border-radius: 12px;
+    box-shadow: 0 10px 30px color-mix(in srgb, var(--escuro) 30%, transparent);
+    z-index: 10;
+  }
+
+  /* Lado a lado, o calendário acompanha a rolagem da lista. */
+  @media (min-width: 1041px) {
+    .calendario { position: sticky; top: 16px; }
+  }
+  @media (max-width: 1040px) {
+    .quadro { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 760px) {
+    .topo { padding: 16px 16px 18px; }
+    .aviso { padding: 12px 16px; }
+    .cartao-estilo { margin: 12px 16px 0; }
+    .cartao-estilo .botao { width: 100%; justify-content: center; }
+    .barra { padding: 18px 16px 14px; }
+    .barra-envio { align-items: stretch; width: 100%; }
+    .barra-envio .botao { justify-content: center; }
+    .envio { margin: 0 16px 18px; padding: 14px 16px; }
+    .quadro { padding: 0 16px 36px; }
+    .empresa-seletor-lista { max-width: 180px; }
+  }
+  /* Em tela estreita o calendário dá lugar à lista, que já traz tudo dia a dia. */
+  @media (max-width: 640px) {
+    .calendario { display: none; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .recado { animation: surgir 0.2s ease-out; }
+    @keyframes surgir { from { opacity: 0; transform: translate(-50%, 8px); } }
+  }
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="topo-titulo">
+    <h1>Cronograma</h1>
+    <p class="topo-empresa" id="nome-empresa"></p>
+  </div>
+  <div class="topo-acoes">
+    <span class="nota-exemplo" id="nota-exemplo" hidden>Usando as cores de exemplo</span>
+    <a id="link-laboratorio" href="laboratorio.html" hidden>Abrir o Laboratório</a>
+    <a id="link-estilos" href="estilos.html" hidden>Abrir os Estilos</a>
+    <a id="link-novo-cliente" href="comecar.html?novo=cliente" class="link-discreto" hidden>+ Novo cliente</a>
+    <div id="seletor" hidden></div>
+  </div>
+</header>
+<p class="aviso" id="aviso" role="status" hidden></p>
+<section class="cartao-estilo" id="cartao-estilo" aria-label="Seu estilo" hidden></section>
+
+<main id="conteudo" aria-live="polite">
+  <div class="vazio"><p>Carregando…</p></div>
+</main>
+
+<div class="recado" id="recado" role="status" hidden></div>
+
+<script src="empresa-seletor.js"></script>
+<script src="cartao-estilo.js"></script>
+<script>
+'use strict';
+(function () {
+  const seletor = EmpresaSeletor.criar();
+  const $ = (id) => document.getElementById(id);
+  const conteudo = $('conteudo');
+
+  const PLATAFORMAS = { insta: 'Instagram', yt: 'YouTube', linkedin: 'LinkedIn', blog: 'Blog' };
+  const ESTADOS = {
+    ok: 'Arte aprovada',
+    espera: 'Arte aguardando aprovação',
+    sem: 'Sem arte ainda',
+  };
+
+  // O que a tela mostra da empresa escolhida. `mes` guarda o mês aberto em cada empresa ("AAAA-MM").
+  const tela = { dados: null, mes: {}, enviando: false, envio: null, temLaboratorio: false };
+
+  // ---- utilidades ----
+  function el(tag, props, filhos) {
+    const e = document.createElement(tag);
+    Object.entries(props || {}).forEach(([k, v]) => {
+      if (v === undefined || v === null || v === false) return;
+      if (k === 'texto') e.textContent = v;
+      else if (k === 'classe') e.className = v;
+      else if (k.indexOf('on') === 0) e.addEventListener(k.slice(2), v);
+      else e.setAttribute(k, v === true ? '' : v);
+    });
+    (filhos || []).forEach((f) => { if (f) e.appendChild(typeof f === 'string' ? document.createTextNode(f) : f); });
+    return e;
+  }
+  function trocar(...filhos) { conteudo.textContent = ''; filhos.forEach((f) => conteudo.appendChild(f)); }
+  let tempoRecado = null;
+  function recado(texto) {
+    const r = $('recado');
+    r.textContent = texto;
+    r.hidden = false;
+    clearTimeout(tempoRecado);
+    tempoRecado = setTimeout(() => { r.hidden = true; }, 7000);
+  }
+  const erroDe = (r, padrao) => (r && r.json && r.json.erro) || padrao || 'O servidor dos painéis não respondeu como esperado. Feche o painel e abra de novo pelo atalho.';
+  function vazio(titulo, ...linhas) {
+    return el('div', { classe: 'vazio' }, [el('h2', { texto: titulo })].concat(linhas.map((l) => el('p', { texto: l }))));
+  }
+  function erro(titulo, texto) {
+    const v = vazio(titulo, texto);
+    v.classList.add('erro');
+    return v;
+  }
+
+  // ---- datas (nomes de mês e de dia vêm do próprio navegador, em português) ----
+  const dois = (n) => String(n).padStart(2, '0');
+  function partesData(s) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || ''));
+    if (!m) return null;
+    const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+    if (d.getUTCMonth() !== +m[2] - 1 || d.getUTCDate() !== +m[3]) return null;
+    return { ano: +m[1], mes: +m[2], dia: +m[3], chave: m[1] + '-' + m[2], data: s, quando: d };
+  }
+  const formato = (op) => new Intl.DateTimeFormat('pt-BR', Object.assign({ timeZone: 'UTC' }, op));
+  const maiuscula = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+  const curto = (d) => formato({ weekday: 'short' }).format(d).replace(/\.$/, '');
+  function hojeTexto() { const d = new Date(); return d.getFullYear() + '-' + dois(d.getMonth() + 1) + '-' + dois(d.getDate()); }
+  function nomeDoMes(chave) {
+    const [a, m] = chave.split('-').map(Number);
+    return maiuscula(formato({ month: 'long', year: 'numeric' }).format(new Date(Date.UTC(a, m - 1, 1))));
+  }
+  const soMes = (chave) => { const [a, m] = chave.split('-').map(Number); return formato({ month: 'long' }).format(new Date(Date.UTC(a, m - 1, 1))); };
+  function mudarMes(chave, passo) {
+    const [a, m] = chave.split('-').map(Number);
+    const d = new Date(Date.UTC(a, m - 1 + passo, 1));
+    return d.getUTCFullYear() + '-' + dois(d.getUTCMonth() + 1);
+  }
+  function dataBr(iso) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || ''));
+    return m ? m[3] + '/' + m[2] + '/' + m[1] : '';
+  }
+
+  // ---- empresa ----
+  async function iniciar() {
+    let s;
+    try {
+      s = await seletor.carregar();
+    } catch (e) {
+      trocar(erro('Não consegui abrir o Cronograma', e.message));
+      return;
+    }
+    seletor.montar({ seletor: $('seletor'), aviso: $('aviso'), aoTrocar: carregarEmpresa });
+    if (!s.atual) {
+      $('nome-empresa').textContent = '';
+      $('cartao-estilo').hidden = true;
+      trocar(vazio('Nenhuma empresa configurada ainda',
+        'O Cronograma mostra os posts de uma empresa. Peça ao agente, na conversa com o Claude, para configurar a sua empresa.',
+        'Depois disso, os posts que ele planejar aparecem aqui, dia a dia.'));
+      return;
+    }
+    carregarEmpresa();
+  }
+
+  async function carregarEmpresa() {
+    $('recado').hidden = true; // o recado era da empresa anterior
+    tela.dados = null;
+    tela.envio = null;
+    tela.enviando = false;
+    const codigo = seletor.atual();
+    $('nome-empresa').textContent = seletor.nome();
+    $('link-laboratorio').hidden = true;
+    // A biblioteca de estilos vale para toda empresa: o link aparece sempre, com a empresa do painel.
+    $('link-estilos').href = 'estilos.html?empresa=' + encodeURIComponent(codigo);
+    $('link-estilos').hidden = false;
+    mostrarNovoCliente(codigo);
+    // "Trocar a cara da marca": o cartão do estilo da empresa, fixo no alto (lido à parte, sem segurar os posts)
+    CartaoEstilo.mostrar($('cartao-estilo'), seletor);
+    trocar(el('div', { classe: 'vazio' }, [el('p', { texto: 'Carregando os posts de ' + seletor.nome() + '…' })]));
+    let marca, dados, paineis;
+    try {
+      [marca, dados, paineis] = await Promise.all([seletor.aplicarMarca(), seletor.ler('/api/dados'), seletor.ler('/api/paineis')]);
+    } catch (e) {
+      if (seletor.atual() === codigo) trocar(erro('Não consegui falar com o servidor dos painéis', 'Confira se a janela do servidor continua aberta e recarregue a página.'));
+      return;
+    }
+    if (marca === null || dados === null || paineis === null) return; // a pessoa já trocou de empresa
+    $('nota-exemplo').hidden = !marca.exemplo;
+    if (marca.nome) $('nome-empresa').textContent = marca.nome;
+    tela.temLaboratorio = !!(paineis.ok && paineis.json.laboratorio);
+    if (tela.temLaboratorio) {
+      $('link-laboratorio').href = 'laboratorio.html?empresa=' + encodeURIComponent(codigo);
+      $('link-laboratorio').hidden = false;
+    }
+    if (!dados.ok) {
+      trocar(erro('Não consegui ler os posts desta empresa', erroDe(dados)));
+      return;
+    }
+    const lista = (v) => (Array.isArray(v) ? v.filter((x) => x && typeof x === 'object' && typeof x.id === 'string') : []);
+    tela.dados = {
+      posts: lista(dados.json.posts),
+      pecas: lista(dados.json.pecas),
+      aprovacoes: dados.json.aprovacoes && typeof dados.json.aprovacoes === 'object' ? dados.json.aprovacoes : {},
+    };
+    desenhar();
+  }
+
+  // "+ Novo cliente" (liberação): um link discreto, só na pasta de agência ("Meus clientes"), para o Começar no modo
+  // cliente novo, com a empresa do painel; o seletor aparece desde o primeiro cliente (decisão 9 A). "Minha marca": nada
+  // muda. Lido pelo seletor, como o "Começar o caminho" do Laboratório; resposta de outra empresa não muda nada.
+  async function mostrarNovoCliente(codigo) {
+    $('link-novo-cliente').hidden = true;
+    let r = null;
+    try { r = await seletor.ler('/api/caminho'); } catch (e) { return; }
+    if (r === null || !r.ok || seletor.atual() !== codigo) return;
+    if (r.json.para === 'clientes') {
+      seletor.mostrarSempre(true);
+      $('link-novo-cliente').href = 'comecar.html?empresa=' + encodeURIComponent(codigo) + '&novo=cliente';
+      $('link-novo-cliente').hidden = false;
+    }
+  }
+
+  // ---- os posts com a arte ligada a cada um ----
+  // Uma peça vale para o post da aprovação dela (se aprovada) ou para o post que ela mesma indica, como no Laboratório.
+  function montarPosts() {
+    const { posts, pecas, aprovacoes } = tela.dados;
+    const artes = {};
+    const ligar = (postId, arte) => { if (postId) (artes[postId] = artes[postId] || []).push(arte); };
+    pecas.forEach((p) => {
+      const reg = aprovacoes[p.id];
+      ligar(reg && reg.postId ? reg.postId : p.postId, { nome: p.name || 'Peça sem nome', aprovadaEm: reg ? reg.aprovadoEm : null });
+    });
+    Object.keys(aprovacoes).forEach((id) => { // aprovação de uma peça que já saiu da lista do Laboratório
+      const reg = aprovacoes[id];
+      if (reg && typeof reg === 'object' && !pecas.some((p) => p.id === id)) ligar(reg.postId, { nome: reg.nome || 'Peça aprovada', aprovadaEm: reg.aprovadoEm || '' });
+    });
+    return posts.map((p, ordem) => {
+      const ligadas = artes[p.id] || [];
+      const estado = ligadas.some((a) => a.aprovadaEm !== null) ? 'ok' : ligadas.length ? 'espera' : 'sem';
+      return {
+        ordem, estado, artes: ligadas,
+        data: partesData(p.date),
+        rede: (typeof p.platformLabel === 'string' && p.platformLabel.trim()) || PLATAFORMAS[p.platform] || p.platform || 'Rede a definir',
+        sigla: { insta: 'IG', yt: 'YT', linkedin: 'IN', blog: 'Blog' }[p.platform] || 'Post',
+        titulo: (typeof p.title === 'string' && p.title.trim()) || 'Post sem título',
+        legenda: typeof p.caption === 'string' ? p.caption.trim() : '',
+      };
+    }).sort((a, b) => {
+      if (a.data && b.data) return a.data.data.localeCompare(b.data.data) || a.ordem - b.ordem;
+      if (a.data || b.data) return a.data ? -1 : 1;
+      return a.ordem - b.ordem;
+    });
+  }
+
+  // O mês que abre: o do próximo post a partir de hoje; sem ele, o do último post; sem post com data, o mês de hoje.
+  function mesInicial(posts) {
+    const hoje = hojeTexto();
+    const comData = posts.filter((p) => p.data);
+    const proximo = comData.find((p) => p.data.data >= hoje);
+    if (proximo) return proximo.data.chave;
+    if (comData.length) return comData[comData.length - 1].data.chave;
+    return hoje.slice(0, 7);
+  }
+
+  // ---- desenho ----
+  function desenhar() {
+    const posts = montarPosts();
+    if (!posts.length) {
+      trocar(vazio('Nenhum post no cronograma ainda',
+        'Quando o agente planejar os posts de ' + seletor.nome() + ', eles aparecem aqui, dia a dia, com a data, a rede e a arte de cada um.',
+        'Depois é só usar "Enviar ao cliente" para mandar o cronograma pronto.'));
+      return;
+    }
+    const codigo = seletor.atual();
+    if (!tela.mes[codigo]) tela.mes[codigo] = mesInicial(posts);
+    const mes = tela.mes[codigo];
+    const doMes = posts.filter((p) => p.data && p.data.chave === mes);
+    const semData = posts.filter((p) => !p.data);
+    const aprovados = doMes.filter((p) => p.estado === 'ok').length;
+
+    const ir = (passo) => { tela.mes[codigo] = mudarMes(mes, passo); desenhar(); };
+    const botaoEnviar = el('button', { classe: 'botao botao-principal', type: 'button', id: 'enviar', texto: 'Enviar ao cliente', onclick: enviarAoCliente });
+    const barra = el('div', { classe: 'barra' }, [
+      el('div', {}, [
+        el('div', { classe: 'mes-nav' }, [
+          el('button', { classe: 'seta', type: 'button', 'aria-label': 'Mês anterior', texto: '‹', onclick: () => ir(-1) }),
+          el('h2', { id: 'titulo-mes', texto: nomeDoMes(mes) }),
+          el('button', { classe: 'seta', type: 'button', 'aria-label': 'Próximo mês', texto: '›', onclick: () => ir(1) }),
+        ]),
+        el('p', { classe: 'resumo', texto: doMes.length
+          ? (doMes.length === 1 ? '1 post' : doMes.length + ' posts') + ' neste mês · ' + aprovados + ' com arte aprovada'
+          : 'Nenhum post neste mês. ' + posts.length + (posts.length === 1 ? ' post' : ' posts') + ' no cronograma.' }),
+      ]),
+      el('div', { classe: 'barra-envio' }, [
+        botaoEnviar,
+        el('span', { classe: 'discreto', texto: 'Gera um arquivo só com os posts de ' + seletor.nome() + '.' }),
+      ]),
+    ]);
+    trocar(barra, desenharEnvio(), el('div', { classe: 'quadro' }, [desenharCalendario(mes, doMes), desenharLista(mes, doMes, semData)]));
+    if (tela.enviando) { botaoEnviar.disabled = true; botaoEnviar.textContent = 'Preparando o arquivo…'; }
+  }
+
+  function desenharCalendario(mes, doMes) {
+    const [a, m] = mes.split('-').map(Number);
+    const primeiro = new Date(Date.UTC(a, m - 1, 1));
+    const diasNoMes = new Date(Date.UTC(a, m, 0)).getUTCDate();
+    const inicio = primeiro.getUTCDay(); // a semana começa no dia 0 do calendário (como nos calendários do Brasil)
+    const total = Math.ceil((inicio + diasNoMes) / 7) * 7;
+    const hoje = hojeTexto();
+    const cab = el('div', { classe: 'semana-cab', 'aria-hidden': 'true' },
+      Array.from({ length: 7 }, (_, i) => el('span', { texto: curto(new Date(Date.UTC(2023, 0, 1 + i))) })));
+    const dias = el('div', { classe: 'dias' }, Array.from({ length: total }, (_, i) => {
+      const d = new Date(Date.UTC(a, m - 1, 1 + i - inicio));
+      const iso = d.getUTCFullYear() + '-' + dois(d.getUTCMonth() + 1) + '-' + dois(d.getUTCDate());
+      const fora = d.getUTCMonth() !== m - 1;
+      const doDia = fora ? [] : doMes.filter((p) => p.data.data === iso);
+      return el('div', { classe: 'dia' + (fora ? ' fora' : '') + (iso === hoje ? ' hoje' : '') }, [
+        el('span', { classe: 'dia-num', texto: String(d.getUTCDate()) }),
+      ].concat(doDia.map((p) => el('button', {
+        classe: 'chip ' + p.estado, type: 'button', title: p.rede + ': ' + p.titulo + ' (' + ESTADOS[p.estado] + ')',
+        onclick: () => destacar(p.ordem),
+      }, [el('span', { classe: 'chip-rede', texto: p.sigla }), el('span', { classe: 'chip-titulo', texto: p.titulo })]))));
+    }));
+    const legenda = el('div', { classe: 'legenda-cores' }, ['ok', 'espera', 'sem'].map((k) => el('span', {}, [el('i', { classe: k }), ESTADOS[k]])));
+    return el('section', { classe: 'calendario', 'aria-label': 'Calendário de ' + nomeDoMes(mes) }, [cab, dias, legenda]);
+  }
+
+  function desenharLista(mes, doMes, semData) {
+    const partes = [el('h2', { texto: 'Posts de ' + soMes(mes) })];
+    partes.push(doMes.length
+      ? el('ol', { classe: 'posts' }, doMes.map(desenharPost))
+      : el('p', { classe: 'lista-vazia', texto: 'Nenhum post em ' + soMes(mes) + '. Use as setas para ver os outros meses.' }));
+    if (semData.length) {
+      partes.push(el('h2', { texto: 'Sem data definida', style: 'margin-top: 22px' }));
+      partes.push(el('ol', { classe: 'posts' }, semData.map(desenharPost)));
+    }
+    return el('section', { classe: 'lista', 'aria-label': 'Lista de posts' }, partes);
+  }
+
+  function desenharPost(p) {
+    const arte = p.artes.length
+      ? el('p', { classe: 'post-peca' }, ['Arte: '].concat(p.artes.flatMap((a, i) => [
+        i ? '; ' : '',
+        el('strong', { texto: a.nome }),
+        a.aprovadaEm !== null ? (dataBr(a.aprovadaEm) ? ', aprovada em ' + new Date(a.aprovadaEm).toLocaleDateString('pt-BR') : ', aprovada') : ', aguardando aprovação no Laboratório',
+      ])))
+      : el('p', { classe: 'post-peca', texto: 'Ainda sem arte ligada a este post.' });
+    const legenda = p.legenda ? el('details', {}, [
+      el('summary', { texto: 'Legenda' }),
+      el('p', { classe: 'legenda', texto: p.legenda }),
+      el('button', { classe: 'botao botao-pequeno', type: 'button', texto: 'Copiar legenda', onclick: () => copiar(p.legenda) }),
+    ]) : null;
+    return el('li', { classe: 'post', id: 'post-' + p.ordem }, [
+      el('div', { classe: 'post-data' }, p.data
+        ? [el('b', { texto: String(p.data.dia) }), el('span', { texto: curto(p.data.quando) })]
+        : [el('b', { texto: '—' }), el('span', { texto: 'a definir' })]),
+      el('div', {}, [
+        el('p', { classe: 'post-meta' }, [el('span', { classe: 'rede', texto: p.rede }), el('span', { classe: 'estado ' + p.estado, texto: ESTADOS[p.estado] })]),
+        el('h3', { texto: p.titulo }),
+        arte,
+        legenda,
+      ]),
+    ]);
+  }
+
+  function destacar(ordem) {
+    const alvo = $('post-' + ordem);
+    if (!alvo) return;
+    alvo.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    alvo.classList.add('destaque');
+    setTimeout(() => alvo.classList.remove('destaque'), 1800);
+  }
+
+  async function copiar(texto) {
+    try { await navigator.clipboard.writeText(texto); recado('Legenda copiada.'); } catch (e) { recado('Não consegui copiar. Selecione a legenda e copie à mão.'); }
+  }
+
+  // ---- enviar ao cliente ----
+  function desenharEnvio() {
+    const e = tela.envio;
+    if (!e) return el('div', { hidden: true });
+    if (!e.ok) {
+      return el('section', { classe: 'envio envio-erro', role: 'alert' }, [
+        el('div', {}, [
+          el('h3', { texto: 'O cronograma não foi gerado' }),
+          el('p', { texto: e.erro }),
+          el('p', { classe: 'discreto', texto: 'Nenhum arquivo foi criado. Depois de corrigir, clique de novo em "Enviar ao cliente".' }),
+        ]),
+      ]);
+    }
+    const nome = e.arquivo.split(/[\\/]/).pop();
+    const pasta = e.arquivo.slice(0, e.arquivo.length - nome.length).replace(/[\\/]$/, '');
+    return el('section', { classe: 'envio', role: 'status' }, [
+      el('div', {}, [
+        el('h3', { texto: 'Cronograma pronto para o cliente' }),
+        el('p', {}, ['Arquivo: ', el('a', { href: e.endereco, target: '_blank', rel: 'noopener', texto: nome })]),
+        el('p', {}, ['O arquivo está em ', el('span', { classe: 'caminho', texto: pasta }), '.']),
+        el('p', { classe: 'discreto', texto: 'É um arquivo só, com os posts e as cores de ' + seletor.nome() + '. Mande para o cliente: ele abre em qualquer navegador.' }),
+      ]),
+      el('a', { classe: 'botao', href: e.endereco, target: '_blank', rel: 'noopener', texto: 'Abrir o arquivo' }),
+    ]);
+  }
+
+  async function enviarAoCliente() {
+    if (tela.enviando) return;
+    const codigo = seletor.atual();
+    const botao = $('enviar');
+    tela.enviando = true;
+    tela.envio = null;
+    botao.disabled = true;
+    botao.textContent = 'Preparando o arquivo…';
+    let r;
+    try { r = await seletor.enviar('/api/enviar-cliente', {}); } catch (e) { r = undefined; }
+    if (r === null || seletor.atual() !== codigo) return; // a pessoa trocou de empresa: a tela já é de outra
+    tela.enviando = false;
+    tela.envio = r && r.ok
+      ? { ok: true, arquivo: String(r.json.arquivo || ''), endereco: String(r.json.endereco || '') }
+      : { ok: false, erro: erroDe(r) };
+    desenhar();
+    if (tela.envio.ok) recado('Arquivo do cliente pronto.');
+  }
+
+  iniciar();
+})();
+</script>
+</body>
+</html>

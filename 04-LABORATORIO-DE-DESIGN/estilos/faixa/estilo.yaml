@@ -1,0 +1,40 @@
+# Estilo de catálogo vindo do modelo de Reels "Faixa": moldura fina azul, texto fino com itálico pesado amarelo, faixas diagonais e palavra em contorno.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+# O neutro é o amarelo do destaque sobre o azul (o vídeo não tem um cinza próprio).
+id: faixa
+nome: Faixa
+linha: Moldura fina azul, texto fino com destaque em itálico pesado, faixas diagonais nos cantos e a palavra repetida em contorno atrás de cada mockup.
+origem: catalogo
+combina-com: [educacao, negocios-e-servicos, tecnologia, financas]
+tom: [vibrante, ousado]
+precisa: [foto-de-pessoa]
+sugestao:
+  cores: { escuro: "#141B33", claro: "#F4F6FB", acento: "#2969ED", neutro: "#F7D63B" }
+  tipografia: { principal: "Inter", mono: "Inter", acento: "" }
+  google: "family=Inter:ital,wght@0,300;0,400;0,700;0,900;1,900"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-faixa]
+    miolo: [miolo-faixa-abaixo, miolo-faixa-acima]
+    fecho: [fecho-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [escuro, claro, acento, claro, acento, claro]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-faixa, metodo: miolo-faixa-abaixo, contratar: fecho-visual }
+  reels: { modelo: faixa, capa: capa-faixa }
+tratamentos: { destaque: cor+peso, foto: sangria, textura: contorno, grafismo: faixa-diagonal }
+kit:
+  regras:
+    - "Moldura fina em toda lâmina."
+    - "Texto fino; destaque em itálico pesado (amarelo sobre o azul)."
+    - "A palavra da lâmina em contorno, logo acima do mockup, metade à mostra."
+  movimento:
+    - video: "faixas diagonais que cruzam a tela"
+      peca: "faixas fixas nos cantos"
+    - video: "palavra repetida em contorno que corre"
+      peca: "linha da palavra em contorno atrás do mockup"
+    - video: "moldura fina que fecha o quadro"
+      peca: "moldura fixa"

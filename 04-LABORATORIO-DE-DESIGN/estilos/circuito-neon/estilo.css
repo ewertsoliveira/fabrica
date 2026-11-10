@@ -1,0 +1,32 @@
+/* Circuito Néon (primeira rodada, escuro técnico): grade técnica no fundo, colchetes nos cantos do visual e em volta
+   da chamada, grotesca técnica e um único acento néon no destaque sublinhado. */
+.lamina.est-circuito-neon{gap:28px;--neon:var(--cor-acento)}
+.est-circuito-neon.fundo-claro{--neon:color-mix(in srgb,var(--cor-acento) 45%,var(--cor-escuro))}
+.est-circuito-neon.fundo-acento{--neon:var(--cor-escuro)}
+.lamina.est-circuito-neon::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(color-mix(in srgb,var(--neon) 9%,transparent) 2px,transparent 2px),linear-gradient(90deg,color-mix(in srgb,var(--neon) 9%,transparent) 2px,transparent 2px);background-size:90px 90px}
+.est-circuito-neon .titulo{font-family:var(--fonte-acento);font-weight:700;letter-spacing:-.035em;line-height:1.02;font-size:max(var(--piso-titulo),100px)}
+.est-circuito-neon .titulo .dst{color:var(--neon);text-decoration:underline;text-decoration-thickness:.07em;text-underline-offset:.12em}
+.est-circuito-neon.papel-capa .titulo{font-size:max(var(--piso-titulo),124px)}
+.est-circuito-neon .kicker{font:500 var(--piso-micro)/1.2 var(--fonte-mono);letter-spacing:.12em;color:color-mix(in srgb,var(--t) 66%,var(--f))}
+.est-circuito-neon .kicker::before{content:"[ ";color:var(--neon)}.est-circuito-neon .kicker::after{content:" ]";color:var(--neon)}
+.est-circuito-neon .vis{position:relative}
+.est-circuito-neon .vis::before,.est-circuito-neon .vis::after{content:"";position:absolute;width:76px;height:76px;border:5px solid var(--neon);z-index:3;pointer-events:none}
+.est-circuito-neon .vis::before{left:-10px;top:-10px;border-right:0;border-bottom:0}
+.est-circuito-neon .vis::after{right:-10px;bottom:-10px;border-left:0;border-top:0}
+.est-circuito-neon .vis-mockup{overflow:visible}
+.est-circuito-neon .vis-mockup.inclinado > *{transform:none}
+.est-circuito-neon .vis-mockup{padding:30px 10px}
+.est-circuito-neon .vis-mockup .mk{border-radius:12px}
+.est-circuito-neon .vis-mockup .mk.mk-sombra{box-shadow:0 0 0 3px var(--cor-acento),0 0 0 13px color-mix(in srgb,var(--cor-acento) 10%,transparent),0 30px 70px rgba(0,0,0,.6)}
+.est-circuito-neon.fundo-claro .vis-mockup .mk.mk-sombra{box-shadow:0 0 0 3px var(--cor-escuro),12px 12px 0 3px var(--cor-acento)}
+.est-circuito-neon .vis-foto{overflow:visible;border-radius:0}
+.est-circuito-neon .vis-foto img{object-fit:contain}
+.est-circuito-neon .nav-barra{border-radius:0}.est-circuito-neon .nav-barra i{border-radius:0;background:var(--neon)}
+.est-circuito-neon .nav-contador{background:none;padding:0;font:600 var(--piso-micro) var(--fonte-mono)}
+.est-circuito-neon .nav-arraste{opacity:1;font:700 var(--piso-micro) var(--fonte-mono)}
+.est-circuito-neon .nav-contador{color:var(--neon)}
+.est-circuito-neon.l-fecho-cartao-visual{--cartao-f:var(--cor-escuro);--cartao-t:var(--cor-claro);--raio-cartao:10px;--raio-botao:6px}
+.est-circuito-neon.l-fecho-cartao-visual .cartao{background-image:linear-gradient(color-mix(in srgb,var(--cor-acento) 8%,transparent) 2px,transparent 2px),linear-gradient(90deg,color-mix(in srgb,var(--cor-acento) 8%,transparent) 2px,transparent 2px);background-size:90px 90px}
+.est-circuito-neon.l-fecho-cartao-visual .cartao .titulo .dst{color:var(--cor-acento)}
+.est-circuito-neon.l-fecho-cartao-visual .kicker::before,.est-circuito-neon.l-fecho-cartao-visual .kicker::after{color:var(--cor-acento)}
+.est-circuito-neon.l-fecho-cartao-visual .vis::before,.est-circuito-neon.l-fecho-cartao-visual .vis::after{display:none}

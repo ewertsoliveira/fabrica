@@ -1,0 +1,31 @@
+/* Visor, do modelo de Reels de mesmo nome: azul-marinho, cantoneiras de câmera em volta do mockup, dados de exposição,
+   "REC" com a contagem das lâminas, título âmbar, clarão de luz e a anotação na barra preta mono. */
+.est-visor .kicker{font:700 var(--piso-micro)/1.2 var(--fonte-mono);letter-spacing:.2em;color:var(--cor-acento)}
+.est-visor .kicker::before{content:"● "}
+.est-visor .titulo{font-weight:900;letter-spacing:-.03em;line-height:1.02}
+.est-visor .titulo .dst{color:var(--cor-acento)}
+.est-visor .vis-mockup{overflow:visible;padding:46px 32px 84px;background:linear-gradient(var(--cor-claro),var(--cor-claro)) left 0px top 0px/64px 5px no-repeat,linear-gradient(var(--cor-claro),var(--cor-claro)) left 0px top 0px/5px 64px no-repeat,linear-gradient(var(--cor-claro),var(--cor-claro)) right 0px top 0px/64px 5px no-repeat,linear-gradient(var(--cor-claro),var(--cor-claro)) right 0px top 0px/5px 64px no-repeat,linear-gradient(var(--cor-claro),var(--cor-claro)) left 0px bottom 0px/64px 5px no-repeat,linear-gradient(var(--cor-claro),var(--cor-claro)) left 0px bottom 0px/5px 64px no-repeat,linear-gradient(var(--cor-claro),var(--cor-claro)) right 0px bottom 0px/64px 5px no-repeat,linear-gradient(var(--cor-claro),var(--cor-claro)) right 0px bottom 0px/5px 64px no-repeat}
+.est-visor .vis-mockup.inclinado > *{transform:none}
+.est-visor .vis-mockup::after{content:"1/60   f2.8   ISO 400";position:absolute;left:0;right:0;bottom:16px;text-align:center;white-space:pre;font:700 var(--piso-micro)/1 var(--fonte-mono);letter-spacing:.24em;color:color-mix(in srgb,var(--cor-claro) 78%,transparent)}
+.est-visor .nota{font:700 var(--piso-micro)/1.3 var(--fonte-mono);background:rgba(8,8,10,.94);color:var(--cor-claro);padding:8px 18px;transform:none;letter-spacing:.05em;text-transform:uppercase}
+.est-visor .nota::after{content:""}
+.est-visor .luz{position:absolute !important;inset:0;z-index:1 !important;background:textura(luz) center/cover;mix-blend-mode:screen;opacity:.5;pointer-events:none;-webkit-mask-image:linear-gradient(transparent 45%,#000);mask-image:linear-gradient(transparent 45%,#000)}
+.est-visor .lado{position:absolute !important;right:26px;top:0;bottom:0;z-index:1 !important;display:flex;align-items:center;writing-mode:vertical-rl;font:700 var(--piso-micro) var(--fonte-mono);letter-spacing:.3em;color:color-mix(in srgb,var(--cor-acento) 55%,transparent)}
+.est-visor .nav-contador{top:auto;right:auto;left:var(--pad);bottom:calc(var(--seg-base) - 96px);padding:0;background:none;font:700 var(--piso-micro) var(--fonte-mono);letter-spacing:.12em;color:var(--cor-claro)}
+.est-visor .nav-contador::before{content:"● REC  ";white-space:pre;color:var(--cor-acento)}
+.est-visor .nav-barra{left:calc(var(--pad) + 290px)}
+.est-visor .nav-barra i{background:var(--cor-acento)}
+.est-visor .nav-arraste{opacity:1;font:700 var(--piso-micro) var(--fonte-mono)}
+.est-visor.l-capa-visor{justify-content:flex-end;padding-left:130px;padding-right:130px;padding-bottom:172px}
+.est-visor .cv{position:absolute !important;left:56px;top:110px;width:968px;height:1110px;z-index:0 !important;border-radius:36px;overflow:hidden}
+.est-visor .cv img{width:100%;height:100%;object-fit:cover}
+.est-visor .cv .veu{position:absolute;inset:0;background:linear-gradient(transparent 46%,color-mix(in srgb,var(--cor-neutro) 86%,transparent) 60%,color-mix(in srgb,var(--cor-neutro) 95%,transparent) 76%)}
+.est-visor .cv .mira{position:absolute;inset:40px;background:linear-gradient(var(--cor-claro),var(--cor-claro)) left 0px top 0px/70px 5px no-repeat,linear-gradient(var(--cor-claro),var(--cor-claro)) left 0px top 0px/5px 70px no-repeat,linear-gradient(var(--cor-claro),var(--cor-claro)) right 0px top 0px/70px 5px no-repeat,linear-gradient(var(--cor-claro),var(--cor-claro)) right 0px top 0px/5px 70px no-repeat,linear-gradient(var(--cor-claro),var(--cor-claro)) left 0px bottom 0px/70px 5px no-repeat,linear-gradient(var(--cor-claro),var(--cor-claro)) left 0px bottom 0px/5px 70px no-repeat,linear-gradient(var(--cor-claro),var(--cor-claro)) right 0px bottom 0px/70px 5px no-repeat,linear-gradient(var(--cor-claro),var(--cor-claro)) right 0px bottom 0px/5px 70px no-repeat}
+.est-visor.l-capa-visor .luz{-webkit-mask-image:linear-gradient(transparent 50%,#000 95%);mask-image:linear-gradient(transparent 50%,#000 95%)}
+.est-visor .barra{background:rgba(8,8,10,.92);padding:6px 16px;line-height:1.55;color:var(--cor-claro);-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.lamina.est-visor{gap:28px}
+.est-visor.l-fecho-visual .vis-mockup{background:none;padding:0}
+.est-visor.l-fecho-visual .vis-mockup::after{content:none}
+.est-visor.l-capa-visor.formato-reels{padding-bottom:520px}
+.est-visor.formato-reels .cv{top:250px;height:1270px}
+.est-visor.formato-reels .cv .veu{background:linear-gradient(transparent 40%,color-mix(in srgb,var(--cor-neutro) 86%,transparent) 56%,color-mix(in srgb,var(--cor-neutro) 95%,transparent) 72%)}

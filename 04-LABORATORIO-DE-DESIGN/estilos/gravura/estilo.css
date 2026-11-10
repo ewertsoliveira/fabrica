@@ -1,0 +1,32 @@
+/* Gravura (primeira rodada, ilustração em traço clássico): gravura do assunto da lâmina num painel lateral (ou no alto
+   da capa), traço numa cor só (dourado no escuro, tinta no claro), serifa refinada com itálico e muito respiro. */
+.lamina.est-gravura{gap:28px;--grav:var(--cor-neutro);--painel:color-mix(in srgb,var(--cor-escuro) 86%,var(--cor-claro));--fio:var(--cor-neutro)}
+.est-gravura.fundo-claro{--grav:color-mix(in srgb,var(--cor-escuro) 80%,var(--cor-acento));--painel:color-mix(in srgb,var(--cor-claro) 88%,var(--cor-escuro));--fio:var(--cor-acento)}
+.est-gravura.fundo-acento{--grav:var(--cor-claro)}
+.est-gravura .titulo{font-family:var(--fonte-acento);font-weight:400;letter-spacing:-.015em;line-height:1.04;font-size:max(var(--piso-titulo),100px)}
+.est-gravura .titulo .dst{font-style:italic;color:var(--cor-neutro)}
+.est-gravura.fundo-claro .titulo .dst{color:var(--cor-acento)}
+.est-gravura.fundo-acento .titulo .dst{color:inherit}
+.est-gravura.papel-capa .titulo{font-size:max(var(--piso-titulo),120px)}
+.est-gravura .kicker{font:400 var(--piso-micro)/1.2 var(--fonte-mono);letter-spacing:.26em;color:color-mix(in srgb,var(--t) 64%,var(--f))}
+.est-gravura .gravura{display:block;height:100%;width:auto;max-width:100%;color:var(--grav)}
+.est-gravura .gravura-capa{flex:0 0 400px;justify-content:center;color:var(--grav)}
+.est-gravura .gravura-capa .gravura{width:100%;height:auto;max-height:100%;stroke-width:5}
+.est-gravura .painel{position:absolute !important;right:0;top:0;width:300px;height:620px;z-index:1 !important;background:var(--painel);border-left:1.5px solid var(--fio);border-bottom:1.5px solid var(--fio);display:flex;align-items:center;justify-content:center;padding:120px 24px 40px;--f:var(--painel)}
+.est-gravura.l-miolo-gravura-painel .kicker,.est-gravura.l-miolo-gravura-painel .titulo,.est-gravura.l-miolo-gravura-painel .corpo{margin-right:250px}
+.lamina.est-gravura.l-miolo-gravura-painel{gap:22px}
+.est-gravura.l-miolo-gravura-painel .titulo{font-size:max(var(--piso-titulo),88px)}
+.est-gravura.l-miolo-gravura-painel .vis-mockup{padding:0 0 30px;align-items:flex-start}
+.est-gravura .vis-mockup{overflow:visible}
+.est-gravura .vis-mockup.inclinado > *{transform:none}
+.est-gravura .vis-mockup .mk{border-radius:6px}
+.est-gravura .vis-mockup .mk.mk-sombra{box-shadow:0 0 0 1.5px var(--cor-neutro),0 40px 80px rgba(0,0,0,.5)}
+.est-gravura.fundo-claro .vis-mockup .mk.mk-sombra{box-shadow:0 0 0 1.5px color-mix(in srgb,var(--cor-neutro) 60%,var(--cor-claro)),0 30px 60px rgba(40,30,20,.14)}
+.est-gravura .nav-barra{border-radius:0}.est-gravura .nav-barra i{border-radius:0;background:var(--fio)}
+.est-gravura .nav-contador{background:none;padding:0;font:600 var(--piso-micro) var(--fonte-mono)}
+.est-gravura .nav-arraste{opacity:1;font:700 var(--piso-micro) var(--fonte-mono)}
+.est-gravura .logo-marca{left:var(--pad)}
+.est-gravura.l-fecho-cartao-visual{--cartao-f:var(--cor-claro);--cartao-t:var(--cor-escuro);--raio-cartao:2px;--raio-botao:0;--cartao-sombra:0 40px 80px rgba(0,0,0,.35)}
+.est-gravura.l-fecho-cartao-visual .cartao .titulo .dst{color:var(--cor-acento)}
+.est-gravura.formato-reels .gravura-capa{flex:0 0 760px}
+.est-gravura.formato-fixados .gravura-capa{flex:0 0 500px}

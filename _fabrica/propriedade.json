@@ -1,0 +1,41 @@
+{
+  "descricao": "O que a atualização pode trocar (modelo) e o que ela nunca toca (tudo o mais, que é da empresa).",
+  "modelo": [
+    "_fabrica/core/",
+    "_fabrica/catalogo-de-skills/",
+    "_fabrica/paineis/",
+    "_fabrica/versao.json",
+    "_fabrica/propriedade.json",
+    "_fabrica/modelo.json",
+    ".claude/skills/",
+    "08-FERRAMENTAS/",
+    "05-ESTRATEGIA/nucleo-de-conteudo/regras/",
+    "linhas/reels/",
+    "06-MARCA-E-FOTOS/marca.exemplo.yaml",
+    "06-MARCA-E-FOTOS/estilo-de-video.exemplo.md",
+    "06-MARCA-E-FOTOS/exemplo/",
+    "CORE.md",
+    "INSTALAR.md",
+    ".env.example",
+    "NOTICE.md",
+    "LICENSE.md",
+    "package.json",
+    "04-LABORATORIO-DE-DESIGN/layouts/",
+    "04-LABORATORIO-DE-DESIGN/estilos/",
+    "04-LABORATORIO-DE-DESIGN/biblioteca/",
+    "05-ESTRATEGIA/nucleo-de-conteudo/agentes/"
+  ],
+  "protegidos": [
+    "linhas/reels/dados/preferencias-aprovadas.md",
+    "linhas/reels/dados/biblioteca-de-modelos.md",
+    "linhas/reels/memoria/",
+    "linhas/reels/saida/",
+    "linhas/reels/estado.json",
+    "04-LABORATORIO-DE-DESIGN/referencias/",
+    "06-MARCA-E-FOTOS/estilos-proprios/",
+    "empresas/"
+  ],
+  "mesclar": [
+    ".gitignore"
+  ]
+}

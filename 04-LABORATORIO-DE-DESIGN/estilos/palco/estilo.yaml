@@ -1,0 +1,39 @@
+# Estilo de catálogo vindo do modelo de Reels "Palco": cena em cima, cartão arredondado com o rosto embaixo e selo fixo no alto.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: palco
+nome: Palco
+linha: Selo fixo no alto com a chamada, a cena em cima (o mockup) e o cartão de cantos arredondados embaixo, com o rosto e o destaque em azul.
+origem: catalogo
+combina-com: [educacao, saude, nutricao, negocios-e-servicos]
+tom: [acolhedor, sobrio]
+precisa: [foto-de-pessoa, fotos-do-assunto]
+sugestao:
+  cores: { escuro: "#171A21", claro: "#F1F3F4", acento: "#3366F2", neutro: "#46484E" }
+  tipografia: { principal: "Inter", mono: "Inter", acento: "" }
+  google: "family=Inter:wght@400;700;900"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-palco]
+    miolo: [miolo-palco-rosto, miolo-palco-cartao]
+    fecho: [fecho-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [claro]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-palco, metodo: miolo-palco-rosto, contratar: fecho-visual }
+  reels: { modelo: palco, capa: capa-palco }
+tratamentos: { destaque: cor, foto: cartao-arredondado, textura: nenhuma, grafismo: selo-fixo }
+kit:
+  regras:
+    - "A chamada vira o selo fixo no alto, com a contagem."
+    - "Cena em cima, cartão arredondado embaixo; o rosto em cartões alternados."
+    - "Destaque em faixa azul dentro do cartão."
+  movimento:
+    - video: "selo fixo no alto do vídeo"
+      peca: "chamada como selo no alto"
+    - video: "cena em cima e rosto em cartão embaixo"
+      peca: "mockup em cima, cartão com o rosto embaixo"
+    - video: "destaque azul na legenda"
+      peca: "destaque em faixa azul"

@@ -1,0 +1,47 @@
+[
+  {
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-sentada.jpg",
+    "recorte": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-sentada-recorte.webp",
+    "posicao_foto": "62% 20%",
+    "palavra": "nutri",
+    "kicker": "Nutricionista",
+    "titulo": "Comer bem *sem terrorismo*",
+    "subtitulo": "Atendimento online e presencial, com um plano que respeita a sua rotina.",
+    "visual": {
+      "tipo": "foto",
+      "arquivo": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-sentada.jpg"
+    }
+  },
+  {
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/prato-salmao.jpg",
+    "retrato": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-sentada.jpg",
+    "palavra": "plano",
+    "ilustracao": "trigo",
+    "kicker": "Como eu trabalho",
+    "titulo": "Um plano que *cabe na rotina*",
+    "itens": [
+      {
+        "titulo": "Conversa",
+        "texto": "Entendo a sua rotina e o que você já come."
+      },
+      {
+        "titulo": "Plano possível",
+        "texto": "Cardápio que cabe no seu horário."
+      },
+      {
+        "titulo": "Ajuste",
+        "texto": "Revisão a cada 30 dias."
+      }
+    ],
+    "numeral": "3"
+  },
+  {
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/xicara.jpg",
+    "retrato": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-sentada.jpg",
+    "palavra": "agenda",
+    "kicker": "Consultas",
+    "titulo": "Como *agendar*",
+    "subtitulo": "A primeira consulta pode ser online ou presencial. Ela dura uma hora e já sai com o seu primeiro plano.",
+    "botao": "Chame no direct"
+  }
+]

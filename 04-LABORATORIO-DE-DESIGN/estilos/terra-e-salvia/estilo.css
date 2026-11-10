@@ -1,0 +1,27 @@
+/* Terra e Sálvia (primeira rodada, orgânico pastel): tons de terra e sálvia, duas formas orgânicas cortadas pela borda
+   (uma no alto, outra embaixo), serifa macia com destaque em itálico terracota e cantos redondos em tudo. */
+.lamina.est-terra-e-salvia{gap:28px;--forma1:color-mix(in srgb,var(--cor-neutro) 45%,var(--f));--forma2:color-mix(in srgb,var(--cor-acento) 22%,var(--f))}
+.est-terra-e-salvia.fundo-escuro{--forma1:color-mix(in srgb,var(--cor-neutro) 18%,var(--f));--forma2:color-mix(in srgb,var(--cor-acento) 18%,var(--f))}
+.est-terra-e-salvia.fundo-acento{--forma1:color-mix(in srgb,var(--cor-claro) 16%,var(--f));--forma2:color-mix(in srgb,var(--cor-escuro) 12%,var(--f))}
+.est-terra-e-salvia .forma{position:absolute !important;z-index:0 !important;pointer-events:none}
+.est-terra-e-salvia .f1{width:660px;height:580px;right:-300px;top:-260px;background:var(--forma1);border-radius:58% 42% 63% 37%/46% 55% 45% 54%}
+.est-terra-e-salvia .f2{width:560px;height:500px;left:-300px;bottom:-280px;background:var(--forma2);border-radius:42% 58% 37% 63%/55% 44% 56% 45%}
+.est-terra-e-salvia .titulo{font-family:var(--fonte-acento);font-weight:400;letter-spacing:-.01em;line-height:1;font-size:max(var(--piso-titulo),104px)}
+.est-terra-e-salvia .titulo .dst{font-style:italic}
+.est-terra-e-salvia.fundo-claro .titulo .dst{color:var(--cor-acento)}
+.est-terra-e-salvia.fundo-escuro .titulo .dst{color:color-mix(in srgb,var(--cor-acento) 45%,var(--cor-claro))}
+.est-terra-e-salvia.papel-capa .titulo{font-size:max(var(--piso-titulo),128px)}
+.est-terra-e-salvia .kicker{font:400 var(--piso-micro)/1.2 var(--fonte-mono);letter-spacing:.1em;color:color-mix(in srgb,var(--t) 62%,var(--f))}
+.est-terra-e-salvia .vis-mockup{overflow:visible}
+.est-terra-e-salvia .vis-mockup.inclinado > *{transform:none}
+.est-terra-e-salvia .vis-mockup .mk{border-radius:36px}
+.est-terra-e-salvia .vis-mockup .mk.mk-sombra{box-shadow:0 30px 60px rgba(90,60,30,.14)}
+.est-terra-e-salvia.fundo-escuro .vis-mockup .mk.mk-sombra{box-shadow:0 30px 60px rgba(0,0,0,.3)}
+.est-terra-e-salvia .vis-foto{overflow:visible;border-radius:0}
+.est-terra-e-salvia .vis-foto img{object-fit:contain}
+.est-terra-e-salvia .nav-barra i{background:var(--cor-acento)}
+.est-terra-e-salvia.fundo-escuro .nav-barra i,.est-terra-e-salvia.fundo-acento .nav-barra i{background:var(--t)}
+.est-terra-e-salvia .nav-contador{background:none;padding:0;font:600 var(--piso-micro) var(--fonte-mono)}
+.est-terra-e-salvia .nav-arraste{opacity:1;font:700 var(--piso-micro) var(--fonte-mono)}
+.est-terra-e-salvia.l-fecho-cartao-visual{--cartao-f:var(--cor-claro);--cartao-t:var(--cor-escuro);--raio-cartao:48px;--cartao-sombra:0 30px 60px rgba(90,40,20,.22)}
+.est-terra-e-salvia.l-fecho-cartao-visual .cartao .titulo .dst{color:var(--cor-acento)}

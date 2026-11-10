@@ -1,0 +1,39 @@
+# Estilo de catálogo vindo do modelo de Reels "Visor": azul-marinho, cantoneiras de câmera, dados de exposição e título âmbar.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: visor
+nome: Visor
+linha: Azul-marinho com cantoneiras de câmera, dados de exposição, "REC" com a contagem, título âmbar e anotação na barra preta mono.
+origem: catalogo
+combina-com: [tecnologia, educacao, negocios-e-servicos]
+tom: [tecnico, ousado]
+precisa: [foto-de-pessoa]
+sugestao:
+  cores: { escuro: "#1C294A", claro: "#F4F6FA", acento: "#F59E38", neutro: "#0F1628" }
+  tipografia: { principal: "Inter", mono: "Space Mono", acento: "" }
+  google: "family=Inter:wght@400;700;900&family=Space+Mono:wght@700"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-visor]
+    miolo: [miolo-visor-abaixo, miolo-visor-acima]
+    fecho: [fecho-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [escuro]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-visor, metodo: miolo-visor-abaixo, contratar: fecho-visual }
+  reels: { modelo: visor, capa: capa-visor }
+tratamentos: { destaque: cor, foto: quadro-arredondado, textura: luz, grafismo: cantoneira-de-camera }
+kit:
+  regras:
+    - "Cantoneiras de câmera em volta de todo visual."
+    - "Contador como 'REC 02/06'; dados de exposição na lateral."
+    - "Anotação e texto de apoio da capa em barra preta mono."
+  movimento:
+    - video: "cantoneiras e REC piscando"
+      peca: "cantoneiras fixas e o REC no contador"
+    - video: "clarão de luz que passa"
+      peca: "luz parada num canto"
+    - video: "legenda em barra preta"
+      peca: "anotação em barra preta mono"

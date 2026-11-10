@@ -1,0 +1,32 @@
+# Estilo de catálogo da primeira rodada aprovada ("Revista de Domingo", editorial claro): muito branco, serifa elegante, fios finos e destaque em itálico.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: revista-dominical
+nome: Revista de Domingo
+linha: Muito respiro, serifa elegante com destaque em itálico terracota, fios finos separando os blocos e visual com moldura leve.
+origem: catalogo
+combina-com: [psicologia, arquitetura-e-casa, gastronomia, bem-estar, direito]
+tom: [elegante, sobrio]
+precisa: [funciona-sem-foto]
+sugestao:
+  cores: { escuro: "#1E2A26", claro: "#F6F2EA", acento: "#A8472F", neutro: "#7B756B" }
+  tipografia: { principal: "Inter", mono: "DM Mono", acento: "Fraunces" }
+  google: "family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-revista-dominical]
+    miolo: [miolo-revista-dominical-abaixo, miolo-revista-dominical-acima]
+    fecho: [fecho-cartao-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [claro, escuro, claro, escuro, claro, acento]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-revista-dominical, metodo: miolo-revista-dominical-abaixo, contratar: fecho-cartao-visual }
+  reels: { modelo: revista-dominical, capa: capa-revista-dominical }
+tratamentos: { destaque: italico+cor, foto: sem-foto, textura: fio, grafismo: fio-fino }
+kit:
+  regras:
+    - "O texto nunca ocupa mais de 40% da lâmina: o resto é respiro e visual."
+    - "Destaque em itálico serifado, nunca em caixa colorida."
+    - "Fios finos separam chamada, título e visual."

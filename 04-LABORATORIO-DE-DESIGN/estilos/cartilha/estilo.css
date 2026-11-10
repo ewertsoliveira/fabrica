@@ -1,0 +1,24 @@
+/* Cartilha (primeira rodada, didático numerado): o número do passo num círculo amarelo grande ao lado da chamada,
+   destaque em pílula amarela, títulos redondos e pesados. Feito para tutorial, lista e passo a passo. */
+.lamina.est-cartilha{gap:28px}
+.est-cartilha .titulo{font-family:var(--fonte-acento);font-weight:800;letter-spacing:-.035em;line-height:1.06;font-size:max(var(--piso-titulo),100px)}
+.est-cartilha .titulo .dst{background:var(--cor-acento);color:var(--cor-escuro);border-radius:.28em;padding:0 .16em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.est-cartilha.fundo-acento .titulo .dst{background:var(--cor-escuro);color:var(--cor-acento)}
+.est-cartilha.papel-capa .titulo{font-size:max(var(--piso-titulo),124px)}
+.est-cartilha .kicker{font:700 var(--piso-micro)/1.2 var(--fonte-mono);letter-spacing:.14em;color:color-mix(in srgb,var(--t) 64%,var(--f))}
+.est-cartilha .passo{display:flex;align-items:center;gap:26px}
+.est-cartilha .passo .num{flex:none;width:130px;height:130px;border-radius:50%;background:var(--cor-acento);color:var(--cor-escuro);font:800 84px/130px var(--fonte-acento);text-align:center}
+.est-cartilha .vis-mockup{overflow:visible}
+.est-cartilha .vis-mockup.inclinado > *{transform:none}
+.est-cartilha .vis-mockup .mk{border-radius:28px}
+.est-cartilha .vis-mockup .mk.mk-sombra{box-shadow:0 24px 50px rgba(16,42,67,.14)}
+.est-cartilha.fundo-escuro .vis-mockup .mk.mk-sombra{box-shadow:0 30px 60px rgba(0,0,0,.35)}
+.est-cartilha .vis-foto{overflow:visible;border-radius:0}
+.est-cartilha .vis-foto img{object-fit:contain}
+.est-cartilha .nav-barra i{background:var(--cor-acento)}
+.est-cartilha.fundo-acento .nav-barra i{background:var(--cor-escuro)}
+.est-cartilha .nav-contador{background:none;padding:0;font:600 var(--piso-micro) var(--fonte-mono)}
+.est-cartilha .nav-arraste{opacity:1;font:700 var(--piso-micro) var(--fonte-mono)}
+.est-cartilha.l-fecho-cartao-visual{--cartao-f:var(--cor-escuro);--cartao-t:var(--cor-claro);--raio-cartao:32px}
+.est-cartilha.l-fecho-cartao-visual .cartao .titulo .dst{background:var(--cor-acento);color:var(--cor-escuro)}
+.est-cartilha.l-fecho-cartao-visual .kicker{color:var(--cor-acento)}

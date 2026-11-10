@@ -1,0 +1,32 @@
+# Estilo de catálogo da primeira rodada aprovada ("Terra e Sálvia", orgânico pastel): tons de terra e sálvia, formas orgânicas e cantos redondos, tom acolhedor.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: terra-e-salvia
+nome: Terra e Sálvia
+linha: Tons de terra e sálvia, formas orgânicas cortadas pela borda, serifa macia com itálico terracota e cantos redondos em tudo.
+origem: catalogo
+combina-com: [saude, bem-estar, psicologia, nutricao]
+tom: [acolhedor]
+precisa: [funciona-sem-foto]
+sugestao:
+  cores: { escuro: "#2F3E33", claro: "#F5EDE2", acento: "#C0603F", neutro: "#A9B89D" }
+  tipografia: { principal: "DM Sans", mono: "DM Mono", acento: "DM Serif Display" }
+  google: "family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-terra-e-salvia]
+    miolo: [miolo-terra-e-salvia-abaixo, miolo-terra-e-salvia-acima]
+    fecho: [fecho-cartao-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [claro, escuro, claro, escuro, claro, acento]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-terra-e-salvia, metodo: miolo-terra-e-salvia-abaixo, contratar: fecho-cartao-visual }
+  reels: { modelo: terra-e-salvia, capa: capa-terra-e-salvia }
+tratamentos: { destaque: italico+cor, foto: sem-foto, textura: nenhuma, grafismo: forma-organica }
+kit:
+  regras:
+    - "Formas orgânicas cortadas pela borda, em no máximo duas cores."
+    - "Cantos arredondados em tudo, inclusive nos mockups."
+    - "Indicado para saúde, bem-estar e psicologia."

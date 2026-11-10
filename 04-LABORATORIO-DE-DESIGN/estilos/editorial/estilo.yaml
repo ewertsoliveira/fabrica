@@ -1,0 +1,34 @@
+# Estilo de catálogo: foto de revista na capa com degradê suave, serifa fina com itálico e um miolo calmo, num fundo só,
+# com assinatura no alto e o assunto em foto redonda, foto em arco, cartões ou número grande.
+# Cores e fontes abaixo são só a sugestão de demonstração; na produção, valem as do marca.yaml.
+id: editorial
+nome: Editorial
+linha: Foto de revista com degradê suave, serifa fina com itálico e miolo calmo em fundo único, com assinatura no alto.
+origem: catalogo
+combina-com: [estetica-e-beleza, moda, psicologia, arquitetura-e-casa, bem-estar]
+tom: [elegante, acolhedor]
+precisa: [foto-de-pessoa, fotos-do-assunto]
+sugestao:
+  cores: { escuro: "#4F3127", claro: "#E3C6B4", acento: "#A86F55", neutro: "#F6ECE4" }
+  tipografia: { principal: "Cormorant Garamond", mono: "Montserrat", acento: "" }
+  google: "family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Montserrat:wght@400;500;600"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-foto]
+    miolo: [miolo-assinado]
+    fecho: [miolo-assinado]
+    molde_do_miolo: fixo
+    alinhamento: centro
+    navegacao: { barra: false, arraste: false, contador: false }
+    fundos: [claro]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-foto, metodo: capa-foto, contratar: capa-foto }
+  reels: { modelo: editorial, capa: capa-foto }
+tratamentos: { destaque: italico, foto: circulo, textura: grao, grafismo: nenhum }
+objetos: [circulo, arco, cartoes, numero]
+kit:
+  regras:
+    - "Foto de revista com degradê suave, que nunca escurece o rosto."
+    - "Serifa fina com itálico no destaque."
+    - "Assinatura com retrato no alto do miolo."

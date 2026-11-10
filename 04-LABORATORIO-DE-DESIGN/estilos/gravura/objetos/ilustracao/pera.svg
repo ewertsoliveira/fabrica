@@ -1,0 +1,16 @@
+<svg class="gravura" viewBox="0 0 400 900"><defs>
+<pattern id="h-pera-3" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(38)"><line x1="0" y1="0" x2="0" y2="9" stroke="currentColor" stroke-width="2.2"/></pattern>
+<pattern id="x-pera-3" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-38)"><line x1="0" y1="0" x2="0" y2="9" stroke="currentColor" stroke-width="2.2"/></pattern>
+</defs><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+<ellipse cx="205" cy="742" rx="150" ry="16" fill="url(#h-pera-3)" stroke="none"/>
+<line x1="20" y1="730" x2="390" y2="730" stroke-width="2.5"/>
+<path d="M200 230C170 230 160 280 150 330C140 380 80 420 75 520C70 640 140 720 205 720C275 720 335 650 330 530C326 430 262 380 252 330C242 285 232 230 200 230Z" fill="var(--f)"/>
+<path d="M250 340C262 390 326 430 330 530C335 650 275 720 205 720C270 680 300 610 295 530C290 450 255 400 250 340Z" fill="url(#h-pera-3)" stroke="none"/>
+<path d="M268 600C285 640 278 676 255 700" stroke-width="2.5"/>
+<path d="M120 470C108 500 104 530 106 560" stroke-width="3"/>
+<path d="M203 232C205 200 215 175 235 160" stroke-width="5"/>
+<path d="M215 195C250 150 300 150 332 170C300 202 255 212 215 195Z" fill="var(--f)"/>
+<path d="M260 190C290 186 310 178 332 170C300 202 255 212 215 195C235 196 245 194 260 190Z" fill="url(#h-pera-3)" stroke="none"/>
+<path d="M220 192C255 178 290 172 325 170" stroke-width="2.5"/>
+<circle cx="160" cy="580" r="3" fill="currentColor"/><circle cx="182" cy="620" r="3" fill="currentColor"/><circle cx="145" cy="640" r="3" fill="currentColor"/><circle cx="200" cy="560" r="3" fill="currentColor"/>
+</g></svg>

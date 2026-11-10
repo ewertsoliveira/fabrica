@@ -1,0 +1,40 @@
+# Estilo de catálogo vindo do modelo de Reels "Retrô": fundo creme, janelas de sistema antigo, manuscrito limão e pixels.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: retro
+nome: Retrô
+linha: Fundo creme, mockups dentro de janelas de sistema antigo em cascata, destaque manuscrito limão e a dissolução em pixels.
+origem: catalogo
+combina-com: [tecnologia, educacao, negocios-e-servicos, moda]
+tom: [divertido, vibrante]
+precisa: [foto-de-pessoa, fotos-do-assunto]
+sugestao:
+  cores: { escuro: "#1F1F1A", claro: "#F2F2D9", acento: "#E6F533", neutro: "#8C8C78" }
+  tipografia: { principal: "Inter", mono: "Inter", acento: "Kaushan Script" }
+  google: "family=Inter:wght@400;600;700;800&family=Kaushan+Script"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-retro]
+    miolo: [miolo-retro-abaixo, miolo-retro-acima]
+    fecho: [fecho-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [claro, escuro]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-retro, metodo: miolo-retro-abaixo, contratar: fecho-visual }
+  reels: { modelo: retro, capa: capa-retro }
+tratamentos: { destaque: cor+fonte, foto: janela, textura: pixel, grafismo: janela-de-sistema }
+objetos: [janelas]
+kit:
+  regras:
+    - "Todo mockup dentro de uma janela de sistema, com a de trás deslocada."
+    - "Destaque manuscrito: limão no fundo escuro, com marca-texto no claro."
+    - "Pixels se dissolvendo no canto da janela."
+  movimento:
+    - video: "janelas que abrem em cascata"
+      peca: "mockups em janelas empilhadas"
+    - video: "dissolução em pixels"
+      peca: "pixels fixos no canto da janela"
+    - video: "manuscrito limão que surge"
+      peca: "destaque manuscrito"

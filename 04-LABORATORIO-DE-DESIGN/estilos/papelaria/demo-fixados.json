@@ -1,0 +1,28 @@
+[
+  {
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-sentada.jpg",
+    "recorte": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-sentada-recorte.webp",
+    "posicao_foto": "62% 20%",
+    "palavra": "nutri",
+    "kicker": "Nutricionista",
+    "titulo": "Comer bem *sem terrorismo*",
+    "subtitulo": "Atendimento online e presencial, com um plano que respeita a sua rotina."
+  },
+  {
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/prato-salmao.jpg",
+    "retrato": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-sentada.jpg",
+    "palavra": "plano",
+    "ilustracao": "trigo",
+    "kicker": "Como eu trabalho",
+    "titulo": "Um plano que *cabe na rotina*",
+    "subtitulo": "Primeiro eu entendo a sua rotina. Depois monto um cardápio que cabe no seu horário e reviso a cada 30 dias."
+  },
+  {
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/xicara.jpg",
+    "retrato": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-sentada.jpg",
+    "palavra": "agenda",
+    "kicker": "Consultas",
+    "titulo": "Como *agendar*",
+    "subtitulo": "A primeira consulta pode ser online ou presencial. Ela dura uma hora e já sai com o seu primeiro plano."
+  }
+]

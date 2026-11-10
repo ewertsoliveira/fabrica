@@ -1,0 +1,78 @@
+[
+  {
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-livros.jpg",
+    "posicao_foto": "0% 30%",
+    "kicker": "Finanças com método",
+    "titulo": "Planilha bonita *não* organiza conta.",
+    "subtitulo": "O que muda quando o controle começa pela sua rotina."
+  },
+  {
+    "fundo": "acento",
+    "titulo": "Cortar tudo *não* funciona.",
+    "visual": {
+      "tipo": "postit",
+      "texto": "Corte radical dura até o **primeiro imprevisto**."
+    },
+    "corpo": "Sem reserva, qualquer conserto vira **dívida no cartão**, e o juro come o que sobrou do mês."
+  },
+  {
+    "fundo": "claro",
+    "titulo": "Método é saber o que vem *antes* do número.",
+    "visual": {
+      "tipo": "cartao",
+      "texto": "Quando entra, quando sai e o que é fixo.",
+      "apoio": "É daí que o controle nasce."
+    }
+  },
+  {
+    "fundo": "escuro",
+    "titulo": "O primeiro café *decide* o mês.",
+    "visual": {
+      "tipo": "foto",
+      "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/xicara.jpg",
+      "posicao": "50% 55%"
+    },
+    "corpo": "Dez minutos com o extrato em dia evitam **o susto do dia 30** e as decisões feitas com pressa."
+  },
+  {
+    "fundo": "claro",
+    "titulo": "O que eu pergunto na *primeira* conversa:",
+    "visual": {
+      "tipo": "folha",
+      "itens": [
+        "Quanto **entra** por mês",
+        "Quais contas são **fixas**",
+        "Onde está a **reserva**",
+        "Quais **dívidas** existem",
+        "O que você **já tentou**"
+      ]
+    }
+  },
+  {
+    "fundo": "acento",
+    "titulo": "Organizar papel *é metade* do controle.",
+    "visual": {
+      "tipo": "foto",
+      "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/pastas.jpg",
+      "posicao": "50% 50%"
+    },
+    "corpo": "Nota, boleto e extrato no mesmo lugar valem **mais que um aplicativo novo**. Comece pela gaveta."
+  },
+  {
+    "fundo": "escuro",
+    "titulo": "Resultado vem de *repetir*, não de sofrer.",
+    "visual": {
+      "tipo": "etiqueta",
+      "texto": "Um controle seguido **80% do tempo** ganha de um perfeito que dura uma semana."
+    }
+  },
+  {
+    "fundo": "claro",
+    "titulo": "Quer um controle *com método*?",
+    "visual": {
+      "tipo": "postit",
+      "texto": "Mande **CONTAS** no direct e eu te explico como começar."
+    },
+    "corpo": "Atendo empresas de todo o Brasil, por vídeo, com **um plano feito para a sua rotina**."
+  }
+]

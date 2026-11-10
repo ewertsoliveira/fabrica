@@ -1,0 +1,26 @@
+/* Revista (estilo revista-dominical, primeira rodada, editorial claro): muito respiro, serifa elegante com destaque em itálico
+   terracota, fios finos separando chamada, título e visual, e mockup com moldura leve. */
+.lamina.est-revista-dominical{gap:30px;padding-left:96px;padding-right:96px;--fio:color-mix(in srgb,var(--t) 18%,transparent)}
+.est-revista-dominical .titulo{font-family:var(--fonte-acento);font-weight:350;letter-spacing:-.02em;line-height:1.02;font-variation-settings:'opsz' 144;font-size:max(var(--piso-titulo),100px)}
+.est-revista-dominical .titulo .dst{font-style:italic}
+.est-revista-dominical.fundo-claro .titulo .dst{color:var(--cor-acento)}
+.est-revista-dominical.papel-capa .titulo{font-size:max(var(--piso-titulo),128px)}
+.est-revista-dominical .kicker{font:400 var(--piso-micro)/1.2 var(--fonte-mono);letter-spacing:.2em;color:color-mix(in srgb,var(--t) 62%,var(--f));border-bottom:1.5px solid var(--fio);padding-bottom:18px}
+.est-revista-dominical .corpo{font-weight:400}
+.est-revista-dominical .vis{position:relative}
+.est-revista-dominical .vis::after{content:"";position:absolute;inset:-6px 0;border-top:1.5px solid var(--fio);border-bottom:1.5px solid var(--fio);pointer-events:none;z-index:-1}
+.est-revista-dominical .vis-mockup{overflow:visible;padding:26px 0}
+.est-revista-dominical .vis-mockup.inclinado > *{transform:none}
+.est-revista-dominical .vis-mockup .mk{border-radius:10px}
+.est-revista-dominical .vis-mockup .mk.mk-sombra{box-shadow:0 0 0 1.5px color-mix(in srgb,var(--cor-escuro) 14%,transparent),0 24px 50px rgba(60,40,20,.12)}
+.est-revista-dominical.fundo-escuro .vis-mockup .mk.mk-sombra{box-shadow:0 30px 60px rgba(0,0,0,.35)}
+.est-revista-dominical .vis-foto{overflow:visible;border-radius:0}
+.est-revista-dominical .vis-foto img{object-fit:contain}
+.est-revista-dominical .nav-barra{border-radius:0}
+.est-revista-dominical .nav-contador{background:none;padding:0;font:600 var(--piso-micro) var(--fonte-mono)}
+.est-revista-dominical .nav-arraste{opacity:1;font:700 var(--piso-micro) var(--fonte-mono)}
+.est-revista-dominical .logo-marca{left:96px}
+.est-revista-dominical.l-fecho-cartao-visual{--cartao-f:var(--cor-claro);--cartao-t:var(--cor-escuro);--raio-cartao:4px;--raio-botao:0;--cartao-sombra:0 30px 60px rgba(60,20,10,.3)}
+.est-revista-dominical.l-fecho-cartao-visual .cartao .titulo .dst{color:var(--cor-acento)}
+.est-revista-dominical.l-fecho-cartao-visual .vis::after{display:none}
+.est-revista-dominical.l-fecho-cartao-visual .botao{letter-spacing:.04em}

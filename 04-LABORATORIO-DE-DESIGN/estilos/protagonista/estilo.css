@@ -1,0 +1,26 @@
+/* Protagonista (primeira rodada, retrato com título): a profissional recortada é o centro da capa, sobre um grande
+   círculo de acento, com o título monumental ao lado; destaque sublinhado em faixa grossa. */
+.lamina.est-protagonista{gap:28px}
+.est-protagonista .titulo{font-family:var(--fonte-acento);font-weight:900;text-transform:uppercase;letter-spacing:-.035em;line-height:.98;font-size:max(var(--piso-titulo),104px)}
+.est-protagonista .titulo .dst{color:inherit;background:linear-gradient(transparent 76%,var(--cor-acento) 76%,var(--cor-acento) 92%,transparent 92%);padding:0 .04em}
+.est-protagonista.fundo-acento .titulo .dst{background:linear-gradient(transparent 76%,var(--cor-escuro) 76%,var(--cor-escuro) 92%,transparent 92%);color:inherit}
+.est-protagonista .kicker{font:700 var(--piso-micro)/1.2 var(--fonte-mono);letter-spacing:.12em;color:color-mix(in srgb,var(--cor-acento) 72%,var(--cor-escuro))}
+.est-protagonista.fundo-escuro .kicker{color:color-mix(in srgb,var(--t) 70%,var(--f))}
+.est-protagonista .vis-mockup{overflow:visible}
+.est-protagonista .vis-mockup.inclinado > *{transform:none}
+.est-protagonista .vis-mockup .mk{border-radius:26px}
+.est-protagonista .vis-mockup .mk.mk-sombra{box-shadow:0 26px 50px rgba(22,33,58,.18)}
+.est-protagonista.fundo-escuro .vis-mockup .mk.mk-sombra{box-shadow:0 30px 60px rgba(0,0,0,.4)}
+.est-protagonista .nav-barra i{background:var(--cor-acento)}
+.est-protagonista .nav-contador{background:none;padding:0;font:600 var(--piso-micro) var(--fonte-mono)}
+.est-protagonista .nav-arraste{opacity:1;font:700 var(--piso-micro) var(--fonte-mono)}
+.est-protagonista.papel-capa .titulo{font-size:max(var(--piso-titulo),150px)}
+.est-protagonista.papel-capa .corpo{margin-top:auto;max-width:430px;position:relative;z-index:3 !important}
+.est-protagonista .circulo{position:absolute !important;z-index:1 !important;width:760px;height:760px;right:-200px;bottom:-80px;border-radius:50%;background:var(--cor-acento)}
+.est-protagonista .pessoa{position:absolute !important;z-index:2 !important;right:-60px;bottom:0;width:680px;height:680px;flex:none}
+.est-protagonista .pessoa img{width:100%;height:100%;object-fit:cover}
+.est-protagonista .pessoa .redonda{border-radius:50%;width:520px;height:520px;margin:120px 0 0 120px}
+.est-protagonista.l-fecho-cartao-visual{--cartao-f:var(--cor-escuro);--cartao-t:var(--cor-claro);--raio-cartao:30px}
+.est-protagonista.l-fecho-cartao-visual .cartao .titulo{font-size:max(var(--piso-titulo),74px)}
+.est-protagonista.l-fecho-cartao-visual .cartao .titulo .dst{background:linear-gradient(transparent 76%,var(--cor-acento) 76%,var(--cor-acento) 92%,transparent 92%)}
+.est-protagonista.l-fecho-cartao-visual .kicker{color:var(--cor-acento)}

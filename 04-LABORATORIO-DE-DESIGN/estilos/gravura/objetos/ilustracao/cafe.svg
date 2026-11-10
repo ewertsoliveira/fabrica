@@ -1,0 +1,26 @@
+<svg class="gravura" viewBox="0 0 900 560"><defs>
+<pattern id="h-cafe-1" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(38)"><line x1="0" y1="0" x2="0" y2="9" stroke="currentColor" stroke-width="2.2"/></pattern>
+<pattern id="x-cafe-1" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-38)"><line x1="0" y1="0" x2="0" y2="9" stroke="currentColor" stroke-width="2.2"/></pattern>
+</defs><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+<rect x="20" y="472" width="860" height="56" fill="url(#h-cafe-1)" stroke="none"/>
+<line x1="20" y1="470" x2="880" y2="470" stroke-width="3"/>
+<path d="M525 310V432C525 446 536 452 555 452S585 446 585 432V310Z" fill="var(--f)"/>
+<path d="M565 312H585V432C585 446 575 451 562 452C572 440 568 400 565 312Z" fill="url(#h-cafe-1)" stroke="none"/>
+<rect x="516" y="288" width="78" height="24" rx="4" fill="var(--f)"/>
+<rect x="532" y="352" width="46" height="48" stroke-width="2.5" fill="var(--f)"/>
+<path d="M540 368H570M540 382H562" stroke-width="2.5"/>
+<path d="M170 300C150 270 190 250 170 220M210 300C190 270 230 250 210 220" stroke-width="3"/>
+<ellipse cx="190" cy="452" rx="122" ry="22" fill="var(--f)"/>
+<path d="M110 340C110 430 150 455 190 455S270 430 270 340Z" fill="var(--f)"/>
+<path d="M226 344H270C270 420 240 450 200 455C230 430 232 390 226 344Z" fill="url(#h-cafe-1)" stroke="none"/>
+<ellipse cx="190" cy="340" rx="80" ry="16" fill="var(--f)"/>
+<ellipse cx="190" cy="342" rx="66" ry="11" fill="url(#x-cafe-1)" stroke-width="2.5"/>
+<path d="M268 362C322 362 322 422 262 422" stroke-width="5"/>
+<ellipse cx="470" cy="448" rx="172" ry="34" fill="var(--f)"/>
+<ellipse cx="470" cy="444" rx="126" ry="23" stroke-width="2.5"/>
+<path d="M410 437C400 417 440 407 465 414C495 402 535 417 525 434C540 452 470 460 440 454C420 452 405 447 410 437Z" fill="var(--f)" stroke-width="3"/>
+<ellipse cx="470" cy="428" rx="22" ry="12" fill="url(#x-cafe-1)" stroke-width="3"/>
+<path d="M640 458C620 458 610 422 625 396C645 361 700 346 760 351C820 356 850 386 845 421C842 451 820 460 790 460Z" fill="var(--f)"/>
+<path d="M760 352C820 357 850 387 845 422C842 452 820 460 790 460H730C790 440 805 395 760 352Z" fill="url(#h-cafe-1)" stroke="none"/>
+<path d="M672 376C684 386 692 398 698 410M722 366C734 378 742 392 746 404M772 368C782 380 788 394 790 406" stroke-width="3"/>
+</g></svg>

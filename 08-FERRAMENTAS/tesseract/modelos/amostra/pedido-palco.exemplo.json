@@ -1,0 +1,15 @@
+{
+  "titulo": "Amostra do modelo Palco",
+  "video": "../../assets-fonte/videos/SEU-VIDEO.mp4",
+  "palavras": "palavras.json",
+  "trecho": { "ini": 0, "fim": 14.0 },
+  "destaques": ["palavra1", "palavra2"],
+  "palco": { "ini": 2.4, "fim": 14.0 },
+  "broll": [
+    { "img": "../../assets-fonte/mockups/SUA-IMAGEM-1.png", "ini": 2.6, "fim": 5.6, "fundo": "#F1F3F4" },
+    { "img": "../../assets-fonte/mockups/SUA-IMAGEM-2.png", "ini": 6.8, "fim": 10.9, "fundo": "#F1F3F4" }
+  ],
+  "palavraTela": { "texto": "Primeira linha|Linha de destaque", "ini": 11.6, "fim": 14.0 },
+  "aviso": "Simulação ilustrativa de tela",
+  "marca": { "acento": "#2FB59A" }
+}

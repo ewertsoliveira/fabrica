@@ -1,0 +1,1606 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sua marca</title>
+<link rel="icon" href="data:,">
+<!--
+  Tela "Sua marca" (passo 3 do caminho) e "Personalizar" da Fábrica de Conteúdo, para UMA empresa (a do seletor).
+  - A pergunta "Sua marca já tem cores e letras definidas?" com três respostas. "Sim, já tenho" e "Tenho uma parte" abrem o
+    editor: o logo (as cores saem dele por código, cores-do-logo.js, lido por <img> num canvas), as quatro cores com o
+    papel sugerido e troca por toque, o que faltar em três versões completas, os pares de letras prontos (ou uma letra por
+    vez, ou o arquivo da letra), o manual em PDF (vira pedido ao agente) e, antes de gravar, o quadro da marca com as cores
+    e letras de verdade. Marca que nasceu de um estilo e a marca de verdade chegando: os dois quadros lado a lado.
+  - "Ainda não tenho": os três caminhos (um dos nossos modelos, do zero, referências). Os dois últimos viram pedidos ao
+    agente; referências são só arquivos (nunca endereço de internet).
+  - "Personalizar" (marca.html?personalizar=<estilo>&papel=<papel>&cor=<RRGGBB>): os mesmos editores de cor e letra, com a
+    cor sugerida já no lugar e marcada, e os detalhes do estilo (pedido ao agente). Nada é gravado ao abrir.
+  Quando as cores deixam um texto difícil de ler, a tela sugere de 2 a 3 cores que passam e combinam com a marca
+  (legibilidade.js), cada uma com prévia; a pessoa escolhe. Grava só pelo seletor (que põe a empresa por último): a marca
+  (/api/marca, /api/marca/desfazer), os arquivos (/api/arquivo) e os pedidos (/api/pedido). Trocar de empresa descarta o
+  que não foi guardado, com aviso. Nenhuma cor de marca fica escrita aqui: as cores vêm da empresa ou da pessoa.
+-->
+<style>
+  :root {
+    --escuro: rgb(30, 32, 36);
+    --claro: rgb(246, 244, 239);
+    --acento: rgb(38, 102, 168);
+    --neutro: rgb(132, 128, 120);
+    --sobre-acento: rgb(255, 255, 255);
+    --sobre-escuro: rgb(246, 244, 239);
+    --letra-titulo: ui-serif, serif;
+    --letra-texto: system-ui, sans-serif;
+    --letra-mono: ui-monospace, monospace;
+    --texto: var(--escuro);
+    --texto-2: color-mix(in srgb, var(--escuro) 68%, var(--claro));
+    --linha: color-mix(in srgb, var(--neutro) 40%, var(--claro));
+    --fundo-2: color-mix(in srgb, var(--neutro) 10%, var(--claro));
+    --mesa: color-mix(in srgb, var(--escuro) 7%, var(--claro));
+    --papel: color-mix(in srgb, var(--claro) 70%, white);
+    --erro: rgb(170, 40, 40);
+    --certo: rgb(36, 112, 72);
+    --raio: 12px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--claro);
+    color: var(--texto);
+    font: 15px/1.5 var(--letra-texto);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  button, select, input, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+  .so-leitor { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+  /* ---- topo (igual ao das outras telas) ---- */
+  .topo {
+    background: var(--escuro);
+    color: var(--sobre-escuro);
+    padding: 18px 28px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px 24px;
+  }
+  .topo-titulo { min-width: 0; }
+  .topo h1 { margin: 0; font: 600 clamp(24px, 3.2vw, 34px)/1.1 var(--letra-titulo); letter-spacing: -0.01em; }
+  .topo-empresa { margin: 4px 0 0; font-size: 15px; opacity: 0.82; overflow-wrap: anywhere; }
+  .topo-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+  .topo-acoes a { color: var(--sobre-escuro); text-underline-offset: 3px; }
+  .empresa-seletor {
+    position: relative; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px;
+    background: color-mix(in srgb, var(--sobre-escuro) 12%, transparent); cursor: pointer; max-width: 100%;
+  }
+  .empresa-seletor-rotulo { opacity: 0.8; white-space: nowrap; }
+  .empresa-seletor-lista {
+    appearance: none; -webkit-appearance: none; background: transparent; border: 0; color: var(--sobre-escuro); font-weight: 600;
+    padding: 0 18px 0 0; margin-right: -14px; cursor: pointer; max-width: 220px; text-overflow: ellipsis;
+  }
+  .empresa-seletor-lista option { color: var(--escuro); background: var(--claro); }
+  .empresa-seletor-seta { pointer-events: none; }
+  .aviso {
+    margin: 0; padding: 12px 28px; font-weight: 500;
+    background: color-mix(in srgb, var(--acento) 14%, var(--claro));
+    border-bottom: 1px solid color-mix(in srgb, var(--acento) 35%, var(--claro));
+  }
+
+  /* ---- trilho dos passos (decisão 1 B: só nos passos 1 a 3) ---- */
+  .trilho { background: var(--mesa); border-bottom: 1px solid var(--linha); padding: 12px 28px 10px; }
+  .trilho ol { list-style: none; margin: 0 auto; padding: 0; max-width: 760px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .trilho li { position: relative; display: grid; justify-items: center; align-content: start; gap: 4px; text-align: center; min-width: 0; }
+  .trilho li + li::before { content: ""; position: absolute; top: 12px; right: 50%; width: 100%; height: 2px; background: var(--linha); z-index: 0; }
+  .trilho li.feito + li::before { background: var(--escuro); }
+  .t-num {
+    position: relative; z-index: 1; width: 25px; height: 25px; border-radius: 50%; display: grid; place-items: center;
+    font-size: 12px; font-weight: 700; background: var(--claro); border: 2px solid var(--linha); color: var(--texto-2);
+  }
+  .feito .t-num { background: var(--escuro); border-color: var(--escuro); color: var(--sobre-escuro); }
+  .atual .t-num { background: var(--acento); border-color: var(--acento); color: var(--sobre-acento); }
+  .t-rot { font-size: 12px; line-height: 1.2; color: var(--texto-2); padding: 0 2px; overflow-wrap: anywhere; }
+  .atual .t-rot { color: var(--texto); font-weight: 700; }
+
+  /* ---- miolo ---- */
+  .miolo { max-width: 1180px; margin: 0 auto; padding: 26px 28px 72px; display: grid; gap: 26px; }
+  .secao { display: grid; gap: 12px; min-width: 0; }
+  .secao > h2, .pergunta { margin: 0; font: 600 clamp(21px, 2.6vw, 26px)/1.25 var(--letra-titulo); }
+  .apoio { margin: 0; color: var(--texto-2); max-width: 72ch; }
+  .estado { margin: 0; padding: 10px 14px; border-radius: 10px; background: var(--mesa); }
+  .estado.certo { background: color-mix(in srgb, var(--certo) 12%, var(--claro)); border: 1px solid color-mix(in srgb, var(--certo) 35%, var(--claro)); }
+  .estado.erro { background: color-mix(in srgb, var(--erro) 10%, var(--claro)); border: 1px solid color-mix(in srgb, var(--erro) 35%, var(--claro)); color: var(--erro); }
+  .estado-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 8px; }
+  .vazio { max-width: 560px; margin: 12vh auto; padding: 0 24px; text-align: center; }
+  .vazio h2 { font: 600 clamp(22px, 3vw, 28px)/1.2 var(--letra-titulo); margin: 0 0 10px; }
+  .vazio p { margin: 0 0 8px; color: var(--texto-2); }
+  .vazio.erro h2 { color: var(--erro); }
+
+  .botao {
+    border: 1px solid var(--linha); background: var(--claro); color: var(--texto); border-radius: 999px;
+    padding: 8px 18px; font-weight: 600; cursor: pointer;
+  }
+  .botao:hover { background: var(--fundo-2); }
+  .botao.principal { background: var(--escuro); border-color: var(--escuro); color: var(--sobre-escuro); }
+  .botao.principal:hover { background: color-mix(in srgb, var(--escuro) 86%, var(--claro)); }
+  .botao[disabled] { opacity: 0.45; cursor: default; }
+  .botao-link {
+    border: 0; background: none; padding: 0; color: inherit; font-weight: 600; cursor: pointer;
+    text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;
+  }
+  .acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; }
+  .nota { margin: 0; font-size: 13.5px; color: var(--texto-2); }
+
+  /* ---- a pergunta e os três ladrilhos ---- */
+  .ladrilhos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .ladrilho {
+    display: grid; gap: 2px; justify-items: start; text-align: left; border: 1.5px solid var(--linha); border-radius: 14px;
+    padding: 16px; background: var(--papel); cursor: pointer; min-width: 0;
+  }
+  .ladrilho:hover { background: var(--fundo-2); }
+  .ladrilho[aria-pressed="true"] { border-color: var(--acento); background: color-mix(in srgb, var(--acento) 10%, var(--claro)); }
+  .ladrilho-icone { font-size: 22px; line-height: 1; margin-bottom: 8px; }
+  .ladrilho b { font-size: 15.5px; }
+  .ladrilho span { font-size: 13.5px; color: var(--texto-2); }
+  .tranquilo {
+    margin: 0; padding: 12px 16px; border-radius: 10px; font-size: 14px;
+    background: color-mix(in srgb, var(--certo) 9%, var(--claro)); border: 1px solid color-mix(in srgb, var(--certo) 28%, var(--claro));
+  }
+
+  /* ---- o editor (cores, letras) com o quadro ao lado ---- */
+  .editor { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 22px 28px; align-items: start; }
+  .editor-campos { display: grid; gap: 16px; min-width: 0; }
+  .editor-quadro { position: sticky; top: 14px; display: grid; gap: 12px; min-width: 0; }
+  .campo { border: 1px solid var(--linha); border-radius: var(--raio); padding: 16px; background: var(--papel); display: grid; gap: 10px; min-width: 0; }
+  .campo > h3, .campo-titulo { margin: 0; font: 600 18px/1.3 var(--letra-titulo); }
+  .campo p { margin: 0; }
+  .solta {
+    position: relative; display: grid; place-items: center; gap: 2px; text-align: center; padding: 18px 14px;
+    border: 1.5px dashed color-mix(in srgb, var(--neutro) 70%, var(--claro)); border-radius: 10px; background: var(--claro);
+    color: var(--texto-2); cursor: pointer;
+  }
+  .solta:hover, .solta.por-cima { border-color: var(--acento); background: color-mix(in srgb, var(--acento) 6%, var(--claro)); }
+  .solta:focus-within { outline: 3px solid var(--acento); outline-offset: 2px; }
+  .solta b { color: var(--texto); }
+  .logo-escolhido { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
+  .logo-caixa {
+    width: 180px; max-width: 100%; height: 84px; border: 1px solid var(--linha); border-radius: 10px; background: var(--claro);
+    display: grid; place-items: center; padding: 8px;
+  }
+  .logo-caixa img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+
+  /* quatro cores com o papel (decisão 2 A) */
+  .quadrados { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .quadrado { display: grid; gap: 6px; justify-items: stretch; border: 0; background: none; padding: 0; cursor: pointer; text-align: left; min-width: 0; }
+  .quadrado-cor {
+    position: relative; aspect-ratio: 1; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--escuro) 14%, transparent);
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--escuro) 12%, transparent);
+  }
+  .quadrado[aria-expanded="true"] .quadrado-cor { outline: 3px solid var(--acento); outline-offset: 2px; }
+  .quadrado-cor.falta {
+    display: grid; place-items: center; color: var(--texto-2); font-weight: 600; font-size: 13px; border-style: dashed;
+    background: repeating-linear-gradient(45deg, var(--claro) 0 8px, var(--mesa) 8px 16px);
+  }
+  .quadrado-nome { font-size: 13px; font-weight: 600; line-height: 1.25; }
+  .quadrado-codigo { font: 12px/1.2 var(--letra-mono); color: var(--texto-2); overflow-wrap: anywhere; }
+  .selo-sugerida {
+    position: absolute; left: 6px; bottom: 6px; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 999px;
+    background: var(--claro); color: var(--escuro); box-shadow: 0 1px 3px color-mix(in srgb, var(--escuro) 25%, transparent);
+  }
+  .troca { border: 1px solid var(--linha); border-radius: 10px; padding: 12px; background: var(--claro); display: grid; gap: 10px; }
+  .troca h4 { margin: 0; font-size: 14px; }
+  .amostras { display: flex; flex-wrap: wrap; gap: 8px; }
+  .amostra {
+    width: 40px; height: 40px; border-radius: 10px; border: 1px solid color-mix(in srgb, var(--escuro) 16%, transparent);
+    cursor: pointer; padding: 0;
+  }
+  .amostra[aria-pressed="true"] { outline: 3px solid var(--escuro); outline-offset: 2px; }
+  .troca-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .outra-cor { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--linha); border-radius: 999px; padding: 4px 6px 4px 14px; background: var(--claro); cursor: pointer; font-weight: 600; }
+  .outra-cor input { width: 34px; height: 28px; border: 0; padding: 0; background: none; cursor: pointer; }
+  .codigo-cor { width: 11ch; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--linha); background: var(--claro); font-family: var(--letra-mono); }
+  .erro-campo { margin: 0; color: var(--erro); font-size: 13.5px; }
+
+  /* leitura difícil: as cores que resolvem, com prévia */
+  .leitura { border-radius: 10px; padding: 12px; display: grid; gap: 10px; background: color-mix(in srgb, var(--erro) 6%, var(--claro)); border: 1px solid color-mix(in srgb, var(--erro) 28%, var(--claro)); }
+  .leitura h4 { margin: 0; font-size: 14.5px; }
+  .sugestoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .sugestao { display: grid; gap: 6px; border: 1px solid var(--linha); border-radius: 10px; padding: 10px; background: var(--papel); min-width: 0; }
+  .leitura-previa { display: grid; place-items: center; min-height: 56px; border-radius: 8px; padding: 8px; font: 600 17px/1.2 var(--letra-texto); text-align: center; }
+  .sugestao small { color: var(--texto-2); font-size: 12.5px; }
+  .previa-botao { padding: 7px 13px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+
+  /* três versões completas (decisão 4 A) */
+  .versoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+  .versao { display: grid; gap: 8px; align-content: start; border: 1.5px solid var(--linha); border-radius: 12px; padding: 12px; background: var(--claro); min-width: 0; }
+  .versao.escolhida { border-color: var(--acento); }
+  .versao h4 { margin: 0; font-size: 14.5px; }
+
+  /* letras: pares prontos (decisão 3 B) e uma por vez */
+  .pares { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .par, .letra {
+    display: grid; gap: 6px; align-content: start; text-align: left; border: 1.5px solid var(--linha); border-radius: 12px;
+    padding: 14px; background: var(--claro); cursor: pointer; min-width: 0; color: var(--texto);
+  }
+  .par:hover, .letra:hover { background: var(--fundo-2); }
+  .par[aria-pressed="true"], .letra[aria-pressed="true"] { border-color: var(--acento); box-shadow: 0 0 0 2px color-mix(in srgb, var(--acento) 30%, transparent); }
+  .par-titulo { font-size: 21px; line-height: 1.15; overflow-wrap: anywhere; }
+  .par-rotulo { font-size: 12px; line-height: 1.3; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--texto-2); overflow-wrap: anywhere; }
+  .par-nome, .letra-nome { font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+  .letra-aa { font-size: 34px; line-height: 1; }
+  .letra-frase { font-size: 15px; line-height: 1.3; overflow-wrap: anywhere; }
+  .letra small { color: var(--texto-2); font-size: 12.5px; }
+  .papeis-letra, .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1px solid var(--linha); background: var(--claro); border-radius: 999px; padding: 5px 13px; font-size: 14px; cursor: pointer; }
+  .chip[aria-pressed="true"] { background: var(--escuro); border-color: var(--escuro); color: var(--sobre-escuro); }
+  .busca { width: min(420px, 100%); padding: 9px 16px; border-radius: 999px; border: 1px solid var(--linha); background: var(--claro); }
+  .resumo-letras { margin: 0; font-size: 14px; }
+
+  /* o quadro da marca: cores e letras de verdade num cartão neutro */
+  .quadro { margin: 0; display: grid; gap: 10px; min-width: 0; }
+  .quadro-legenda { font-weight: 700; font-size: 14px; }
+  .q-peca { border-radius: 12px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--escuro) 14%, transparent); }
+  .q-claro { background: var(--q-claro); color: var(--q-escuro); padding: 16px 16px 16px 20px; display: grid; gap: 8px; justify-items: start; border-left: 6px solid var(--q-acento); }
+  /* como nas peças: título, texto e botão na letra principal; só a etiqueta pequena em caixa-alta na dos rótulos */
+  .q-kicker { font: 600 11.5px/1.2 var(--q-rotulo); letter-spacing: 0.08em; text-transform: uppercase; color: var(--q-escuro); overflow-wrap: anywhere; }
+  .q-titulo { font: 600 22px/1.15 var(--q-principal); overflow-wrap: anywhere; }
+  .q-texto { font: 14px/1.45 var(--q-principal); }
+  .q-botao { font: 600 13px/1 var(--q-principal); background: var(--q-acento); color: var(--q-sobre-acento); padding: 8px 14px; border-radius: 999px; }
+  .q-escuro { background: var(--q-escuro); color: var(--q-claro); padding: 14px 16px 16px 20px; display: grid; gap: 10px; }
+  .q-escuro .q-titulo { font-size: 18px; }
+  .q-linha { display: block; height: 4px; width: 42%; border-radius: 4px; background: var(--q-neutro); }
+  .q-cores { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .q-cores li { display: grid; gap: 4px; font-size: 12px; color: var(--texto-2); min-width: 0; }
+  .q-amostra { display: block; height: 34px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--escuro) 14%, transparent); }
+  .q-letras { margin: 0; display: grid; gap: 2px; font-size: 13.5px; color: var(--texto-2); }
+  .q-letras b { font-size: 20px; color: var(--texto); margin-right: 6px; font-weight: 500; }
+  .quadro.mini .q-titulo { font-size: 17px; }
+  .quadro.mini .q-claro { padding: 12px 12px 12px 14px; }
+  .quadro.mini .q-escuro { display: none; }
+  .quadro.mini .q-amostra { height: 22px; }
+  .quadro.mini .q-cores li { font-size: 0; }
+  .quadro-falta { margin: 0; padding: 18px; border-radius: 12px; background: var(--mesa); color: var(--texto-2); }
+  .contrastes { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font-size: 13.5px; color: var(--texto-2); }
+  .contrastes .dificil { color: var(--erro); font-weight: 600; }
+  .lado-a-lado { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+  .lado-a-lado .quadro { border: 1px solid var(--linha); border-radius: 12px; padding: 10px; background: var(--papel); }
+  .lado-a-lado .quadro.nova { border: 2px solid var(--acento); }
+  .lado-a-lado .q-titulo { font-size: 18px; }
+  .lado-a-lado .q-escuro { display: none; }
+  .recebemos { margin: 0; padding: 12px 14px; border-radius: 10px; background: color-mix(in srgb, var(--acento) 12%, var(--claro)); }
+
+  /* os três caminhos sem marca */
+  .caminhos { display: grid; gap: 12px; }
+  .caminho {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; text-align: left; width: 100%;
+    border: 1.5px solid var(--linha); border-radius: 12px; padding: 14px; background: var(--papel); color: var(--texto);
+    cursor: pointer; text-decoration: none;
+  }
+  .caminho:hover { background: var(--fundo-2); }
+  .caminho[aria-expanded="true"] { border-color: var(--acento); }
+  .caminho-icone { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-size: 19px; background: color-mix(in srgb, var(--acento) 12%, var(--claro)); }
+  .caminho b { display: block; font-size: 15.5px; }
+  .caminho span span { display: block; font-size: 13.5px; color: var(--texto-2); }
+  .caminho em { font-style: normal; font-size: 12.5px; font-weight: 700; color: var(--certo); }
+  .caminho-area { border: 1px solid var(--linha); border-radius: 12px; padding: 16px; background: var(--claro); display: grid; gap: 12px; margin-top: -4px; }
+  .recado { width: 100%; min-height: 84px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--linha); background: var(--papel); resize: vertical; }
+  .rotulo { font-weight: 600; font-size: 14px; }
+  .rotulo small { font-weight: 400; color: var(--texto-2); }
+  .contador { font-size: 12.5px; color: var(--texto-2); justify-self: end; }
+  .miniaturas { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
+  .miniaturas li { position: relative; aspect-ratio: 4 / 5; border-radius: 10px; overflow: hidden; background: var(--mesa); border: 1px solid var(--linha); }
+  .miniaturas img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .tirar {
+    position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border-radius: 50%; border: 0; cursor: pointer;
+    background: color-mix(in srgb, var(--escuro) 82%, transparent); color: var(--sobre-escuro); font-weight: 700; line-height: 1;
+  }
+  .detalhes-lista { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .detalhes-lista label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .detalhes-lista input { width: 18px; height: 18px; }
+
+  @media (max-width: 900px) {
+    .editor { grid-template-columns: minmax(0, 1fr); }
+    .editor-quadro { position: static; }
+  }
+  @media (max-width: 800px) {
+    .ladrilhos { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .topo { padding: 16px 16px 18px; }
+    .aviso { padding: 12px 16px; }
+    .trilho { padding: 10px 6px 8px; }
+    .t-rot { font-size: 10.5px; }
+    .miolo { padding: 20px 16px 56px; gap: 22px; }
+    .campo { padding: 14px 12px; }
+    .quadrados { gap: 8px; }
+    .quadrado-nome { font-size: 12px; }
+    .empresa-seletor-lista { max-width: 180px; }
+    .pares { grid-template-columns: minmax(0, 1fr); }
+    .letra-aa { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="topo-titulo">
+    <h1 id="titulo">Sua marca</h1>
+    <p class="topo-empresa" id="nome-empresa"></p>
+  </div>
+  <div class="topo-acoes">
+    <a id="link-estilos" href="estilos.html" hidden>Abrir os Estilos</a>
+    <div id="seletor" hidden></div>
+  </div>
+</header>
+<p class="aviso" id="aviso" role="status" hidden></p>
+<nav class="trilho" id="trilho" aria-label="Passos do começo" hidden>
+  <ol>
+    <li class="feito"><span class="t-num" aria-hidden="true">✓</span><span class="t-rot">Para quem é</span></li>
+    <li class="feito"><span class="t-num" aria-hidden="true">✓</span><span class="t-rot">O que criar</span></li>
+    <li class="atual" aria-current="step"><span class="t-num">3</span><span class="t-rot">Sua marca</span></li>
+    <li><span class="t-num">4</span><span class="t-rot">Biblioteca</span></li>
+    <li><span class="t-num">5</span><span class="t-rot">Estilo inteiro</span></li>
+    <li><span class="t-num">6</span><span class="t-rot">Decidir</span></li>
+  </ol>
+</nav>
+
+<main id="conteudo">
+  <div class="vazio"><p>Carregando…</p></div>
+</main>
+
+<script src="empresa-seletor.js"></script>
+<script src="cores-do-logo.js"></script>
+<script src="../../08-FERRAMENTAS/marca/legibilidade.js"></script>
+<script>
+'use strict';
+(function () {
+  const seletor = EmpresaSeletor.criar();
+  const $ = (id) => document.getElementById(id);
+  const conteudo = $('conteudo');
+
+  // ---- textos ----
+  const PERGUNTA = 'Sua marca já tem cores e letras definidas?';
+  const SEM_SERVIDOR = 'Não consegui falar com o servidor dos painéis. Confira se a janela do servidor continua aberta e tente de novo.';
+  const AVISO_DESCARTE = 'Você trocou de empresa. O que não estava guardado foi descartado.';
+  const PEDIDO_PRONTO = 'Pronto. No Claude, digite /fabrica continuar';
+  const FRASE_TITULO = 'Três jeitos de começar a semana com calma';
+  const FRASE_ROTULO = 'Passo 1 de 3 · Para começar';
+  const COMPARACAO = 'O estilo continua o mesmo; só as cores e letras mudam. Dá para desfazer.';
+  const VER_NA_MARCA = 'Ver os estilos na minha marca';
+  const MARCA_GUARDADA = 'Pronto. A sua marca foi guardada.';
+  const PREVIAS_DEMORAM = 'Pronto. A sua marca foi guardada. As prévias na sua marca vão demorar um pouco mais.';
+
+  // ---- o que a tela conhece ----
+  const PAPEIS = ['escuro', 'claro', 'acento', 'neutro'];
+  const NOME_PAPEL = { escuro: 'Fundo escuro', claro: 'Fundo claro', acento: 'Destaque', neutro: 'Apoio' };
+  const PAPEIS_LETRA = ['principal', 'mono', 'acento'];
+  // os papéis da marca (marca.exemplo.yaml): `principal` vai na legenda, nos títulos, nos cartões e no botão; `mono`, nos
+  // rótulos pequenos em caixa-alta
+  const NOME_LETRA = { principal: 'Letra principal', mono: 'Letra dos rótulos', acento: 'Destaque' };
+  const DA_LETRA = { principal: 'principal', mono: 'dos rótulos', acento: 'de destaque' };
+  const PARA_QUE_SERVE = 'A principal vai nos títulos, nas legendas e nos botões; a dos rótulos, nas etiquetas pequenas em caixa-alta.';
+  const CLASSES = ['com serifa', 'sem serifa', 'máquina de escrever', 'manuscrita'];
+  const CODIGO_ESTILO = /^[a-z0-9][a-z0-9-]{0,63}$/;
+  const MB = 1024 * 1024;
+  const LIMITES = { logo: 5 * MB, fonte: 5 * MB, referencia: 10 * MB, manual: 30 * MB };
+  const LIMITE_RECADO = 500;
+  const MAXIMO_REFERENCIAS = 12;
+  const DETALHES = [
+    { valor: 'arranjo-da-imagem', rotulo: 'Arranjo da imagem no vídeo' },
+    { valor: 'alinhamento', rotulo: 'Alinhamento' },
+    { valor: 'outro', rotulo: 'Outro' },
+  ];
+  const ENDERECO_LETRA_DO_MODELO = /^\/08-FERRAMENTAS\/tesseract\/modelos\/fontes\/[A-Za-z0-9._%-]+$/;
+  const NOME_SIMPLES = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
+  // "qualquer imagem" no seletor de arquivos (montado em duas partes: a barra seguida de asterisco abriria um comentário
+  // para quem lê o código); o servidor confere o tipo de verdade pelo conteúdo.
+  const QUALQUER_IMAGEM = 'image/' + '*';
+
+  // O pedido do endereço (?personalizar=<estilo>&papel=<papel>&cor=<RRGGBB>), lido uma vez, na abertura.
+  const DO_ENDERECO = lerPersonalizar(location.search);
+
+  // O que a tela mostra da empresa escolhida. Tudo que não foi guardado mora só aqui (na memória da página).
+  let tela = novoEstado();
+  let letrasDaFabrica = null; // { letras, pares } de /api/letras (é do modelo: vale para todas as empresas)
+  let contadorDeVez = 0;
+  const partes = {}; // as caixas da página que são redesenhadas
+
+  function novoEstado() {
+    return {
+      vez: 0, nome: '', definida: false, origem: null, marcaHoje: null, doEstilo: null, estilos: [], proprios: [],
+      modo: 'marca', estiloAberto: null, sugeridaPedida: null, resposta: null,
+      cores: { escuro: null, claro: null, acento: null, neutro: null }, ultimo: null, versao: null, papelAberto: null, erroCodigo: '',
+      logo: null, letras: { principal: null, mono: null, acento: null }, modoLetras: 'pares', papelLetra: 'principal', busca: '', classe: '',
+      erroLetra: '', referencias: [], recadoRef: '', recadoZero: '', manual: null, detalhes: [], recadoDetalhes: '',
+      abertos: { zero: false, referencias: false }, mensagens: {}, sujo: false, aviso: '',
+    };
+  }
+
+  // ---- utilidades ----
+  function el(tag, props, filhos) {
+    const e = document.createElement(tag);
+    Object.entries(props || {}).forEach(([k, v]) => {
+      if (v === undefined || v === null || v === false) return;
+      if (k === 'texto') e.textContent = v;
+      else if (k === 'classe') e.className = v;
+      else if (k.indexOf('on') === 0) e.addEventListener(k.slice(2), v);
+      else e.setAttribute(k, v === true ? '' : v);
+    });
+    (filhos || []).forEach((f) => { if (f) e.appendChild(typeof f === 'string' ? document.createTextNode(f) : f); });
+    return e;
+  }
+  function trocar(...filhos) { conteudo.textContent = ''; filhos.forEach((f) => conteudo.appendChild(f)); }
+  function encher(alvo, filhos) { alvo.textContent = ''; filhos.filter(Boolean).forEach((f) => alvo.appendChild(f)); }
+  const erroDe = (r, padrao) => (r && r.json && typeof r.json.erro === 'string' && r.json.erro) || padrao || SEM_SERVIDOR;
+  const objeto = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v : {});
+  const lista = (v) => (Array.isArray(v) ? v : []);
+  const texto = (v) => (typeof v === 'string' ? v : '');
+  const limpo = (v, max) => (typeof v === 'string' ? v.replace(/[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]+/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, max) : '');
+  const corValida = (c) => (typeof c === 'string' && /^#[0-9a-f]{6}$/i.test(c) ? c.toUpperCase() : null);
+  const semAcento = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  // número com uma casa, arredondado para baixo (nunca promete mais contraste do que tem), com vírgula
+  const numero = (n) => (Math.floor(n * 10) / 10).toFixed(1).replace('.', ',');
+  const juntos = (itens) => (itens.length <= 1 ? itens.join('') : itens.slice(0, -1).join(', ') + ' e ' + itens[itens.length - 1]);
+  const maiuscula = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+  function vazio(titulo, ...linhas) {
+    return el('div', { classe: 'vazio' }, [el('h2', { texto: titulo })].concat(linhas.map((l) => (typeof l === 'string' ? el('p', { texto: l }) : l))));
+  }
+  // Redesenha mantendo o foco no mesmo controle (os controles que se redesenham levam data-foco com uma chave da tela).
+  function comFoco(fn) {
+    const ativo = document.activeElement;
+    const chave = ativo && ativo.getAttribute ? ativo.getAttribute('data-foco') : null;
+    fn();
+    if (chave) {
+      const novo = conteudo.querySelector('[data-foco="' + chave + '"]');
+      if (novo) novo.focus();
+    }
+  }
+  // Uma mensagem num lugar da tela (role=status): { texto, tipo: 'certo' | 'erro' | 'espera', acoes }.
+  function mensagem(onde, texto, tipo, acoes) {
+    tela.mensagens[onde] = texto ? { texto, tipo: tipo || '', acoes: acoes || null } : null;
+    const alvo = partes['msg-' + onde];
+    if (alvo) desenharMensagem(alvo, onde);
+  }
+  function caixaDeMensagem(onde) {
+    const alvo = el('div', { role: 'status' });
+    partes['msg-' + onde] = alvo;
+    desenharMensagem(alvo, onde);
+    return alvo;
+  }
+  function desenharMensagem(alvo, onde) {
+    const m = tela.mensagens[onde];
+    if (!m) { alvo.textContent = ''; return; }
+    const p = el('div', { classe: 'estado ' + m.tipo }, [el('p', { texto: m.texto, style: 'margin:0' })]);
+    if (m.acoes) p.appendChild(el('div', { classe: 'estado-acoes' }, m.acoes()));
+    encher(alvo, [p]);
+  }
+
+  // ---- o endereço da página ----
+  // ?personalizar=<estilo> (código simples) abre o Personalizar; &papel=<escuro|claro|acento|neutro>&cor=<RRGGBB> traz a
+  // cor sugerida pela tela de Estilos. Valor estranho ou repetido é ignorado: o estilo ruim volta para "Sua marca"; o papel
+  // ou a cor ruins abrem o Personalizar sem cor sugerida. O estilo ainda é conferido no catálogo (estiloDoCatalogo).
+  function lerPersonalizar(busca) {
+    let p;
+    try { p = new URLSearchParams(String(busca || '')); } catch (e) { return null; }
+    const um = (k) => { const v = p.getAll(k); return v.length === 1 ? v[0] : null; };
+    const estilo = um('personalizar');
+    if (estilo === null || !CODIGO_ESTILO.test(estilo)) return null;
+    const papel = um('papel');
+    const cor = um('cor');
+    const vale = papel !== null && PAPEIS.includes(papel) && cor !== null && /^[0-9A-Fa-f]{6}$/.test(cor);
+    // origem: "proprio" (o estilo próprio da empresa, que pode ter o código de um do catálogo) ou "catalogo"; senão, null
+    const origem = um('origem');
+    return { estilo, papel: vale ? papel : null, cor: vale ? '#' + cor.toUpperCase() : null, origem: origem === 'proprio' || origem === 'catalogo' ? origem : null };
+  }
+  // Os caminhos sem marca da tela de Estilos chegam com a âncora da seção: #criar-do-zero ou #enviar-referencias (só essas).
+  function ancoraDoEndereco(hash) {
+    if (hash === '#criar-do-zero') return 'zero';
+    if (hash === '#enviar-referencias') return 'referencias';
+    return null;
+  }
+  // A cor sugerida no editor daquele papel, marcada como sugerida (um estado novo; o de antes fica como estava).
+  function aplicarSugerida(cores, pedido) {
+    if (!pedido || !PAPEIS.includes(pedido.papel) || typeof pedido.cor !== 'string' || !/^#[0-9A-F]{6}$/.test(pedido.cor)) return cores;
+    const nova = Object.assign({}, cores);
+    nova[pedido.papel] = { cor: pedido.cor, de: 'sugerida' };
+    return nova;
+  }
+
+  // ---- arquivos ----
+  // O tamanho é conferido aqui, antes de enviar (os mesmos limites do servidor); a recusa do servidor aparece como veio.
+  function conferirTamanho(tipo, tamanho) {
+    const limite = LIMITES[tipo];
+    if (!limite) return 'Não entendi que arquivo é este. Escolha de novo.';
+    return tamanho > limite ? 'Este arquivo é grande demais: o limite é de ' + (limite / MB) + ' MB.' : null;
+  }
+  function lerComoDados(arquivo) {
+    return new Promise((resolve, reject) => {
+      const leitor = new FileReader();
+      leitor.onload = () => resolve(String(leitor.result));
+      leitor.onerror = () => reject(new Error('Não consegui ler este arquivo do seu computador. Escolha de novo.'));
+      leitor.readAsDataURL(arquivo);
+    });
+  }
+  // { nome } (o nome que o servidor deu), { erro } ou null (a pessoa trocou de empresa no meio).
+  async function enviarArquivo(tipo, arquivo) {
+    const grande = conferirTamanho(tipo, arquivo.size);
+    if (grande) return { erro: grande };
+    const dados = await lerComoDados(arquivo);
+    const r = await seletor.enviar('/api/arquivo', { tipo, dados });
+    if (r === null) return null;
+    if (!r.ok || !r.json || typeof r.json.nome !== 'string') return { erro: (r.json && typeof r.json.erro === 'string' && r.json.erro) || 'Não consegui guardar o arquivo. Tente de novo.' };
+    return { nome: r.json.nome };
+  }
+  // A miniatura de uma imagem escolhida: sempre um <img> com o endereço local do arquivo (um desenho com código nunca
+  // entra na página; num <img> ele não roda).
+  function miniatura(item, rotulo) {
+    return el('img', { src: item.url, alt: rotulo, decoding: 'async' });
+  }
+  function itemDeArquivo(arquivo) { return { arquivo, url: URL.createObjectURL(arquivo), nome: null }; }
+  function soltarItem(item) { if (item && item.url) { URL.revokeObjectURL(item.url); item.url = null; } }
+
+  // ---- pedidos ao agente ----
+  // O corpo de cada tipo, fechado: só os campos que o tipo usa (a empresa o seletor põe, por último).
+  function corpoDoPedido(tipo, dados) {
+    const d = dados || {};
+    const nota = typeof d.nota === 'string' ? d.nota.trim() : '';
+    const corpo = { tipo };
+    if (tipo === 'personalizar') { corpo.estilo = d.estilo; corpo.detalhes = Array.isArray(d.detalhes) ? d.detalhes.slice() : []; }
+    else if (tipo === 'enviar-referencias' || tipo === 'ler-manual') corpo.anexos = Array.isArray(d.anexos) ? d.anexos.slice() : [];
+    else if (tipo !== 'criar-do-zero') throw new Error('Este tipo de pedido não sai desta tela.');
+    if (nota && tipo !== 'ler-manual') corpo.nota = nota;
+    return corpo;
+  }
+  async function enviarPedido(tipo, dados) {
+    const r = await seletor.enviar('/api/pedido', corpoDoPedido(tipo, dados));
+    if (r === null) return null;
+    if (!r.ok) return { erro: erroDe(r, 'Não consegui guardar o pedido. Tente de novo.') };
+    return { mensagem: (r.json && typeof r.json.mensagem === 'string' && r.json.mensagem) || PEDIDO_PRONTO };
+  }
+
+  // ---- legibilidade (correção do responsável: sugerir, nunca só avisar) ----
+  // Até 3 cores para o papel que fica difícil de ler sobre o fundo: as que passam e combinam com a marca
+  // (legibilidade.js), nunca a cor de outro papel (a marca continua com quatro cores).
+  function sugestoesPara(cores, papel, fundo, minimo) {
+    const outras = PAPEIS.filter((p) => p !== papel).map((p) => cores[p]);
+    const saida = [];
+    const juntar = (opcoes) => opcoes.forEach((s) => {
+      if (saida.length < 3 && !outras.includes(s.cor) && !saida.some((x) => x.cor === s.cor)) saida.push({ cor: s.cor, contraste: s.contraste, rotulo: s.rotulo });
+    });
+    juntar(LegibilidadeDaMarca.sugerir({ papel, cores, fundo: cores[fundo], minimo }));
+    if (saida.length < 2) juntar(LegibilidadeDaMarca.sugerir({ papel, cores: { [papel]: cores[papel] }, fundo: cores[fundo], minimo }));
+    return saida;
+  }
+  // O que fica difícil de ler com as quatro cores: o texto claro no fundo escuro (mínimo 4,5) e o destaque, que precisa
+  // de 3 com um dos dois fundos. `ultimo`: o papel em que a pessoa mexeu por último (a sugestão vai para ele).
+  function problemasDeLeitura(cores, ultimo) {
+    if (!PAPEIS.every((p) => typeof cores[p] === 'string')) return [];
+    const saida = [];
+    const par = CoresDoLogo.contraste(cores.escuro, cores.claro);
+    if (par < 4.5) {
+      const papel = ultimo === 'escuro' ? 'escuro' : 'claro';
+      const fundo = papel === 'escuro' ? 'claro' : 'escuro';
+      saida.push({ papel, fundo, minimo: 4.5, contraste: par, sugestoes: sugestoesPara(cores, papel, fundo, 4.5) });
+    }
+    const comEscuro = CoresDoLogo.contraste(cores.acento, cores.escuro);
+    const comClaro = CoresDoLogo.contraste(cores.acento, cores.claro);
+    if (Math.max(comEscuro, comClaro) < 3) saida.push({ papel: 'acento', fundo: 'claro', minimo: 3, contraste: comClaro, sugestoes: sugestoesPara(cores, 'acento', 'claro', 3) });
+    return saida;
+  }
+
+  // ---- cores e letras de agora ----
+  const coresAgora = () => { const c = {}; PAPEIS.forEach((p) => { c[p] = tela.cores[p] ? tela.cores[p].cor : null; }); return c; };
+  const coresCompletas = () => PAPEIS.every((p) => tela.cores[p]);
+  function escolherCor(papel, valor, de) {
+    const c = corValida(valor);
+    if (!c) return false;
+    // a cor já está em outro papel: os dois trocam de lugar (troca por toque)
+    const outro = PAPEIS.find((p) => p !== papel && tela.cores[p] && tela.cores[p].cor === c);
+    if (outro) tela.cores[outro] = tela.cores[papel] ? { cor: tela.cores[papel].cor, de: 'pessoa' } : null;
+    tela.cores[papel] = { cor: c, de };
+    tela.ultimo = papel;
+    tela.sujo = true;
+    return true;
+  }
+
+  // Letras: as da lista da Fábrica (/api/letras), conferidas; a letra de uma marca guardada pelo endereço do arquivo.
+  function conferirLetras(j) {
+    const letras = lista(objeto(j).letras).map((l) => {
+      const o = objeto(l);
+      const familia = limpo(o.familia, 60);
+      const arquivo = typeof o.arquivo === 'string' && NOME_SIMPLES.test(o.arquivo) && !o.arquivo.includes('..') ? o.arquivo : null;
+      const endereco = typeof o.endereco === 'string' && ENDERECO_LETRA_DO_MODELO.test(o.endereco) ? o.endereco : null;
+      const arquivos = lista(o.arquivos).filter((a) => typeof a === 'string');
+      return familia && arquivo && endereco ? { familia, arquivo, endereco, arquivos, classificacao: CLASSES.includes(o.classificacao) ? o.classificacao : '' } : null;
+    }).filter(Boolean);
+    const conhecidas = new Set(letras.map((l) => l.familia));
+    const pares = lista(objeto(j).pares).map((p) => ({ titulo: texto(objeto(p).titulo), texto: texto(objeto(p).texto) }))
+      .filter((p) => conhecidas.has(p.titulo) && conhecidas.has(p.texto)).slice(0, 24);
+    return { letras, pares };
+  }
+  const letraDaLista = (familia) => (letrasDaFabrica ? letrasDaFabrica.letras.find((l) => l.familia === familia) || null : null);
+  function letraDe(familia, de) {
+    const l = letraDaLista(familia);
+    return l ? { familia: l.familia, arquivo: l.arquivo, endereco: l.endereco, de } : null;
+  }
+  // O endereço de uma letra que veio do servidor: um arquivo deste mesmo servidor, sem ".." nem "." e sem barra invertida.
+  function enderecoDeLetra(u) {
+    if (typeof u !== 'string' || !/^\/[^/?#\\][^?#\\]*$/.test(u)) return null;
+    return u.split('/').slice(1).every((p) => { let d; try { d = decodeURIComponent(p); } catch (e) { return false; } return p !== '' && d !== '.' && d !== '..' && !/[\\/]/.test(d); }) ? u : null;
+  }
+  // A letra de uma marca guardada (só para mostrar: não volta para o servidor a não ser que a pessoa troque).
+  function letraDaMarca(endereco) {
+    const u = enderecoDeLetra(endereco);
+    if (!u) return null;
+    let arquivo;
+    try { arquivo = decodeURIComponent(u.split('/').pop()); } catch (e) { arquivo = ''; }
+    const daLista = letrasDaFabrica ? letrasDaFabrica.letras.find((l) => l.arquivo === arquivo || l.arquivos.includes(arquivo)) : null;
+    return { familia: daLista ? daLista.familia : 'Sua letra', endereco: u, de: 'marca' };
+  }
+
+  // As letras na página: cada arquivo vira uma família com nome nosso (FontFace), uma vez só.
+  const fontesNaPagina = new Map();
+  function fonteDaPagina(endereco) {
+    const u = enderecoDeLetra(endereco);
+    if (!u) return null;
+    if (fontesNaPagina.has(u)) return fontesNaPagina.get(u);
+    const nome = 'Letra da tela ' + (fontesNaPagina.size + 1);
+    fontesNaPagina.set(u, nome);
+    try {
+      const f = new FontFace(nome, 'url("' + u.replace(/"/g, '%22') + '")', { display: 'swap' });
+      document.fonts.add(f);
+      f.load().catch(() => { /* arquivo com defeito: fica a letra do sistema */ });
+    } catch (e) { /* navegador sem FontFace: fica a letra do sistema */ }
+    return nome;
+  }
+  function familiaDe(letra) {
+    if (!letra || letra.nenhuma) return null;
+    if (letra.fonte) return letra.fonte;
+    return letra.endereco ? fonteDaPagina(letra.endereco) : null;
+  }
+  const pilha = (nome, reserva) => (nome ? '"' + nome + '", ' : '') + reserva;
+  const nomeDaLetra = (letra) => (letra && !letra.nenhuma ? letra.familia : letra && letra.nenhuma ? 'sem letra de destaque' : 'a do sistema');
+
+  // ---- o quadro da marca ----
+  // `cores` com os quatro papéis; `letras` { principal, mono }. Nada de texto de arquivo vira HTML: tudo por textContent,
+  // e as cores (já conferidas) entram como variáveis de CSS.
+  function quadroDaMarca(cores, letras, op) {
+    const o = op || {};
+    const fig = el('figure', { classe: 'quadro' + (o.mini ? ' mini' : '') + (o.classe ? ' ' + o.classe : '') });
+    PAPEIS.forEach((p) => fig.style.setProperty('--q-' + p, cores[p]));
+    fig.style.setProperty('--q-sobre-acento', EmpresaSeletor.melhorContraste(cores.acento, cores.escuro, cores.claro));
+    fig.style.setProperty('--q-principal', pilha(familiaDe(letras.principal), 'ui-serif, serif'));
+    fig.style.setProperty('--q-rotulo', pilha(familiaDe(letras.mono), 'system-ui, sans-serif'));
+    if (o.legenda) fig.appendChild(el('figcaption', { classe: 'quadro-legenda', texto: o.legenda }));
+    fig.appendChild(el('div', { classe: 'q-peca', 'aria-hidden': 'true' }, [
+      el('div', { classe: 'q-claro' }, [
+        el('span', { classe: 'q-kicker', texto: (tela.nome || 'Sua marca').slice(0, 40) }),
+        el('strong', { classe: 'q-titulo', texto: FRASE_TITULO }),
+        o.mini ? null : el('span', { classe: 'q-texto', texto: 'Um exemplo curto para ver as cores e as letras da marca juntas.' }),
+        el('span', { classe: 'q-botao', texto: 'Ver o passo a passo' }),
+      ]),
+      el('div', { classe: 'q-escuro' }, [el('strong', { classe: 'q-titulo', texto: 'No fundo escuro, o texto claro' }), el('span', { classe: 'q-linha' })]),
+    ]));
+    const cs = el('ul', { classe: 'q-cores' });
+    PAPEIS.forEach((p) => {
+      const a = el('span', { classe: 'q-amostra' });
+      a.style.background = cores[p];
+      cs.appendChild(el('li', {}, [a, el('span', { texto: NOME_PAPEL[p] })]));
+    });
+    fig.appendChild(cs);
+    const aa = (papel) => {
+      const b = el('b', { texto: 'Aa' });
+      b.style.fontFamily = pilha(familiaDe(letras[papel]), papel === 'principal' ? 'ui-serif, serif' : 'system-ui, sans-serif');
+      return el('span', {}, [b, NOME_LETRA[papel] + ' · ' + nomeDaLetra(letras[papel])]);
+    };
+    fig.appendChild(el('p', { classe: 'q-letras' }, [aa('principal'), aa('mono')]));
+    fig.setAttribute('aria-label', 'Quadro da marca: ' + PAPEIS.map((p) => NOME_PAPEL[p] + ' ' + cores[p]).join(', ') + '; letra principal ' + nomeDaLetra(letras.principal) + ', letra dos rótulos ' + nomeDaLetra(letras.mono) + '.');
+    return fig;
+  }
+  function contrastes(cores) {
+    const par = CoresDoLogo.contraste(cores.escuro, cores.claro);
+    const acento = Math.max(CoresDoLogo.contraste(cores.acento, cores.escuro), CoresDoLogo.contraste(cores.acento, cores.claro));
+    return el('ul', { classe: 'contrastes' }, [
+      el('li', { classe: par < 4.5 ? 'dificil' : '', texto: 'Texto claro no fundo escuro: contraste ' + numero(par) + (par < 4.5 ? ' (difícil de ler; o mínimo é 4,5)' : ' (fácil de ler)') }),
+      el('li', { classe: acento < 3 ? 'dificil' : '', texto: 'Destaque: contraste ' + numero(acento) + (acento < 3 ? ' (difícil de ver; o mínimo é 3)' : ' (fácil de ver)') }),
+    ]);
+  }
+
+  // ---- empresa ----
+  async function iniciar() {
+    let s;
+    try {
+      s = await seletor.carregar();
+    } catch (e) {
+      trocar(vazio('Não consegui abrir a sua marca', e.message));
+      return;
+    }
+    seletor.montar({ seletor: $('seletor'), aviso: $('aviso'), aoTrocar: () => carregarEmpresa(false) });
+    if (!s.atual) {
+      trocar(vazio('Nenhuma empresa ainda', 'Comece dizendo para quem você vai criar.', el('p', {}, [el('a', { href: 'comecar.html', texto: 'Começar' })])));
+      return;
+    }
+    carregarEmpresa(true);
+  }
+
+  // O que não foi guardado sai daqui: os endereços locais dos arquivos escolhidos são devolvidos.
+  function descartarRascunho() {
+    if (tela.logo) { URL.revokeObjectURL(tela.logo.url); tela.logo.url = null; }
+    tela.referencias.forEach((r) => { URL.revokeObjectURL(r.url); r.url = null; });
+    tela.referencias = [];
+  }
+
+  // `primeira`: true na abertura da página (vale a cor sugerida do endereço); false quando a pessoa troca de empresa
+  // (descarta o que não foi guardado, com aviso); 'de-novo' depois de desfazer (relê sem aviso).
+  async function carregarEmpresa(primeira) {
+    const tinhaRascunho = tela.sujo || tela.referencias.length > 0 || !!tela.manual || !!tela.recadoZero || !!tela.recadoRef || tela.detalhes.length > 0 || !!tela.recadoDetalhes;
+    descartarRascunho();
+    const vez = ++contadorDeVez;
+    const pedido = DO_ENDERECO ? { estilo: DO_ENDERECO.estilo, origem: DO_ENDERECO.origem, papel: primeira === true ? DO_ENDERECO.papel : null, cor: primeira === true ? DO_ENDERECO.cor : null } : null;
+    const mensagemDeAntes = primeira === 'de-novo' ? tela.mensagens.geral : null;
+    tela = novoEstado();
+    tela.vez = vez;
+    tela.aviso = primeira === false && tinhaRascunho ? AVISO_DESCARTE : '';
+    if (mensagemDeAntes) tela.mensagens.geral = mensagemDeAntes;
+    const codigo = seletor.atual();
+    tela.nome = seletor.nome();
+    $('nome-empresa').textContent = tela.nome;
+    $('link-estilos').href = 'estilos.html?empresa=' + encodeURIComponent(codigo);
+    $('link-estilos').hidden = false;
+    trocar(el('div', { classe: 'vazio' }, [el('p', { texto: 'Carregando a marca de ' + tela.nome + '…' })]));
+    let marca; let caminho; let letras;
+    try {
+      [marca, caminho, letras] = await Promise.all([seletor.aplicarMarca(), seletor.ler('/api/caminho'), letrasDaFabrica ? Promise.resolve('guardadas') : seletor.ler('/api/letras')]);
+    } catch (e) {
+      if (vez === contadorDeVez) trocar(vazio('Não consegui falar com o servidor dos painéis', 'Confira se a janela do servidor continua aberta e recarregue a página.'));
+      return;
+    }
+    if (vez !== contadorDeVez || marca === null || caminho === null || letras === null) return; // a pessoa já trocou de empresa
+    if (letras !== 'guardadas' && letras.ok) letrasDaFabrica = conferirLetras(letras.json);
+    if (marca.nome) { tela.nome = limpo(marca.nome, 80) || tela.nome; $('nome-empresa').textContent = tela.nome; }
+    tela.definida = !marca.exemplo;
+    const doCaminho = caminho.ok ? objeto(caminho.json) : {};
+    tela.origem = tela.definida && typeof objeto(doCaminho.marca).origem === 'string' ? doCaminho.marca.origem : null;
+    if (tela.definida) {
+      const cores = {};
+      PAPEIS.forEach((p) => { const c = corValida(objeto(marca.cores)[p]); cores[p] = c; });
+      const fontes = objeto(marca.fontes);
+      tela.marcaHoje = { cores, letras: { principal: letraDaMarca(fontes.principal), mono: letraDaMarca(fontes.mono), acento: letraDaMarca(fontes.acento) } };
+    }
+    // o catálogo só quando precisa: o estilo do Personalizar, ou o nome do estilo de onde a marca nasceu
+    const daMarca = /^estilo:([a-z0-9][a-z0-9-]{0,63})$/.exec(tela.origem || '');
+    if (pedido || daMarca) {
+      let b = null;
+      try { b = await seletor.ler('/api/biblioteca'); } catch (e) { b = { ok: false }; }
+      if (vez !== contadorDeVez || b === null) return;
+      tela.estilos = b.ok ? lista(objeto(b.json).estilos) : [];
+      tela.proprios = b.ok ? lista(objeto(b.json).proprios) : [];
+    }
+    if (pedido) {
+      const e = estiloDoCatalogo(pedido.estilo, pedido.origem);
+      if (e) { tela.modo = 'personalizar'; tela.estiloAberto = e; }
+    }
+    if (/^estilo:/.test(tela.origem || '')) {
+      const e = daMarca ? estiloDoCatalogo(daMarca[1]) : null;
+      tela.doEstilo = e ? 'do estilo ' + e.nome : 'de um dos nossos estilos';
+    }
+    preencherEditor();
+    if (tela.modo === 'personalizar' && pedido && pedido.papel) {
+      tela.cores = aplicarSugerida(tela.cores, pedido);
+      tela.sugeridaPedida = pedido.papel;
+      tela.ultimo = pedido.papel;
+      tela.sujo = true;
+    }
+    // os caminhos sem marca que a tela de Estilos abre (#criar-do-zero, #enviar-referencias): a seção certa já aberta
+    const ancora = ancoraDoEndereco(location.hash);
+    if (ancora && tela.modo === 'marca') { tela.resposta = 'nao'; tela.abertos[ancora] = true; }
+    if (tela.aviso) mensagem('geral', AVISO_DESCARTE, '');
+    desenhar();
+    if (ancora && tela.modo === 'marca') mostrarAncora(ancora);
+  }
+  // Leva a seção aberta pela âncora para a vista (ela nasce depois de a página carregar: o navegador não pula sozinho).
+  function mostrarAncora(ancora) {
+    const area = $(ancora === 'zero' ? 'criar-do-zero' : 'enviar-referencias');
+    const botao = area && area.previousElementSibling;
+    if (botao) { botao.scrollIntoView({ block: 'start' }); botao.focus({ preventScroll: true }); }
+  }
+
+  // O endereço de volta para o estilo em Estilos: o próprio pela chave dele ("proprio:<id>"; pode ter o código de um do
+  // catálogo), o do catálogo pelo código.
+  function enderecoDoEstilo(e) {
+    return 'estilos.html?empresa=' + encodeURIComponent(seletor.atual()) + '#estilo=' + encodeURIComponent((e.proprio ? 'proprio:' : '') + e.id);
+  }
+  // Um estilo do catálogo da biblioteca pelo código (nome e cores conferidos), ou null. Também um estilo próprio DESTA
+  // empresa (os `proprios` da biblioteca), marcado com `proprio: true`.
+  // `origem` do endereço: "proprio" só nos estilos da empresa, "catalogo" só no catálogo; sem ela, o catálogo primeiro.
+  function estiloDoCatalogo(id, origem) {
+    if (typeof id !== 'string' || !CODIGO_ESTILO.test(id)) return null;
+    const doCatalogo = origem === 'proprio' ? undefined : tela.estilos.find((x) => objeto(x).id === id);
+    const e = doCatalogo || (origem === 'catalogo' ? undefined : tela.proprios.find((x) => objeto(x).id === id));
+    if (!e) return null;
+    const cores = {};
+    PAPEIS.forEach((p) => { cores[p] = corValida(objeto(e.cores)[p]); });
+    const fontes = {};
+    PAPEIS_LETRA.forEach((p) => { fontes[p] = texto(objeto(e.fontes)[p]); });
+    return { id, nome: limpo(e.nome, 80) || id, cores, fontes, proprio: !doCatalogo };
+  }
+
+  // O editor começa com a marca de hoje. Marca que nasceu de um estilo: as letras de hoje, mas as cores em branco (a
+  // pessoa traz as dela e compara). No Personalizar sem marca: as cores e letras do estilo.
+  function preencherEditor() {
+    const doEstilo = /^estilo:/.test(tela.origem || '');
+    if (tela.marcaHoje) {
+      PAPEIS.forEach((p) => { const c = tela.marcaHoje.cores[p]; tela.cores[p] = c && (tela.modo === 'personalizar' || !doEstilo) ? { cor: c, de: 'marca' } : null; });
+      PAPEIS_LETRA.forEach((p) => { tela.letras[p] = tela.marcaHoje.letras[p]; });
+    } else if (tela.modo === 'personalizar' && tela.estiloAberto) {
+      PAPEIS.forEach((p) => { const c = tela.estiloAberto.cores[p]; tela.cores[p] = c ? { cor: c, de: 'estilo' } : null; });
+      PAPEIS_LETRA.forEach((p) => { tela.letras[p] = tela.estiloAberto.fontes[p] ? letraDe(tela.estiloAberto.fontes[p], 'estilo') : null; });
+    }
+  }
+
+  // ---- a página ----
+  function desenhar() {
+    Object.keys(partes).forEach((k) => { delete partes[k]; });
+    const personalizar = tela.modo === 'personalizar';
+    $('titulo').textContent = personalizar ? 'Personalizar' : 'Sua marca';
+    document.title = personalizar ? 'Personalizar' : 'Sua marca';
+    $('nome-empresa').textContent = personalizar ? tela.nome + ' · estilo ' + tela.estiloAberto.nome : tela.nome;
+    $('trilho').hidden = personalizar;
+    const miolo = el('div', { classe: 'miolo' }, [caixaDeMensagem('geral')]);
+    if (personalizar) {
+      desenharPersonalizar(miolo);
+    } else {
+      if (tela.marcaHoje && coresDe(tela.marcaHoje)) miolo.appendChild(secaoMarcaDeHoje());
+      miolo.appendChild(secaoPergunta());
+      partes.ramo = el('div', { classe: 'secao' });
+      miolo.appendChild(partes.ramo);
+      desenharRamo();
+    }
+    trocar(miolo);
+  }
+  const coresDe = (m) => (m && PAPEIS.every((p) => m.cores[p]) ? m.cores : null);
+
+  function secaoMarcaDeHoje() {
+    const origem = tela.doEstilo ? 'Hoje a ' + tela.nome + ' usa as cores e letras ' + tela.doEstilo + '.' : 'Estas são as cores e letras guardadas da ' + tela.nome + '.';
+    return el('section', { classe: 'secao', 'aria-labelledby': 'hoje-titulo' }, [
+      el('h2', { id: 'hoje-titulo', texto: 'Sua marca hoje' }),
+      el('p', { classe: 'apoio', texto: origem + ' Quer trocar alguma coisa? Responda abaixo.' }),
+      el('div', { style: 'max-width:440px' }, [quadroDaMarca(tela.marcaHoje.cores, tela.marcaHoje.letras)]),
+    ]);
+  }
+
+  function secaoPergunta() {
+    const opcoes = [
+      { valor: 'tenho', icone: '✓', titulo: 'Sim, já tenho', apoio: 'Cores, letras e logo, ou um manual da marca' },
+      { valor: 'parte', icone: '◐', titulo: 'Tenho uma parte', apoio: 'Só o logo, ou só as cores; completamos o resto juntos' },
+      { valor: 'nao', icone: '○', titulo: 'Ainda não tenho', apoio: 'Tudo bem, você escolhe ou cria a sua aqui' },
+    ];
+    const grupo = el('div', { classe: 'ladrilhos', role: 'group', 'aria-labelledby': 'pergunta' });
+    opcoes.forEach((o) => {
+      grupo.appendChild(el('button', {
+        type: 'button', classe: 'ladrilho', 'aria-pressed': String(tela.resposta === o.valor), 'data-foco': 'resposta-' + o.valor,
+        onclick: () => { tela.resposta = o.valor; mensagem('geral', null); comFoco(() => { grupo.querySelectorAll('.ladrilho').forEach((b, i) => b.setAttribute('aria-pressed', String(opcoes[i].valor === o.valor))); desenharRamo(); }); },
+      }, [el('span', { classe: 'ladrilho-icone', 'aria-hidden': 'true', texto: o.icone }), el('b', { texto: o.titulo }), el('span', { texto: o.apoio })]));
+    });
+    return el('section', { classe: 'secao' }, [
+      el('h2', { classe: 'pergunta', id: 'pergunta', texto: PERGUNTA }),
+      el('p', { classe: 'apoio', texto: 'Com elas, mostramos todos os modelos já com a cara da sua marca.' }),
+      grupo,
+      el('p', { classe: 'tranquilo' }, [el('b', { texto: 'Não tem? Tudo bem.' }), ' Você pode usar as cores de um dos nossos modelos, criar uma identidade do zero com a gente, ou mandar referências do que você gosta. E dá para mudar quando quiser.']),
+    ]);
+  }
+
+  function desenharRamo() {
+    const alvo = partes.ramo;
+    alvo.textContent = '';
+    if (tela.resposta === 'nao') { desenharSemMarca(alvo); return; }
+    if (tela.resposta === 'tenho' || tela.resposta === 'parte') desenharEditor(alvo, { comLogo: true, comManual: true });
+  }
+
+  // ---- o editor: logo, cores, o que falta, letras, manual; e o quadro ao lado ----
+  function desenharEditor(alvo, op) {
+    const campos = el('div', { classe: 'editor-campos' });
+    if (op.comLogo) { partes.logo = el('div', { classe: 'campo' }); campos.appendChild(partes.logo); desenharLogo(); }
+    partes.cores = el('div', { classe: 'campo' });
+    partes.completar = el('div', { classe: 'campo' });
+    partes.letras = el('div', { classe: 'campo' });
+    campos.append(partes.cores, partes.completar, partes.letras);
+    if (op.comManual) { partes.manual = el('div', { classe: 'campo' }); campos.appendChild(partes.manual); desenharManual(); }
+    partes.quadro = el('aside', { classe: 'editor-quadro', 'aria-label': 'Prévia da marca' });
+    const titulo = tela.resposta === 'parte'
+      ? 'Mande o que você já tem. O que faltar, a Fábrica sugere com prévia, e você aprova.'
+      : 'Mande o logo, confira as cores e escolha as letras. Antes de guardar, você vê tudo junto num quadro.';
+    if (tela.modo !== 'personalizar') alvo.appendChild(el('p', { classe: 'apoio', texto: titulo }));
+    alvo.appendChild(el('div', { classe: 'editor' }, [campos, partes.quadro]));
+    desenharCores(); desenharCompletar(); desenharLetras(); desenharQuadro();
+  }
+  function atualizar() {
+    comFoco(() => { desenharCores(); desenharCompletar(); desenharLetras(); desenharQuadro(); });
+  }
+
+  function desenharLogo() {
+    const alvo = partes.logo;
+    const entrada = el('input', { type: 'file', accept: QUALQUER_IMAGEM, classe: 'so-leitor', 'data-foco': 'logo-arquivo', onchange: (ev) => { const f = ev.target.files && ev.target.files[0]; ev.target.value = ''; if (f) escolherLogo(f); } });
+    const solta = el('label', { classe: 'solta' }, [el('b', { texto: tela.logo ? 'Trocar o logo' : 'Arraste o logo aqui, ou clique para escolher' }), el('span', { texto: 'Imagem de até 5 MB' }), entrada]);
+    aceitarSoltar(solta, (arquivos) => { if (arquivos[0]) escolherLogo(arquivos[0]); });
+    const filhos = [el('h3', { texto: 'Logo' }), el('p', { texto: 'A Fábrica tira as cores do logo e mostra para você confirmar.' })];
+    if (tela.logo) {
+      filhos.push(el('div', { classe: 'logo-escolhido' }, [
+        el('div', { classe: 'logo-caixa' }, [miniatura(tela.logo, 'Seu logo')]),
+        el('button', { type: 'button', classe: 'botao-link', texto: 'Tirar o logo', onclick: () => { soltarItem(tela.logo); tela.logo = null; PAPEIS.forEach((p) => { if (tela.cores[p] && tela.cores[p].de === 'logo') tela.cores[p] = { cor: tela.cores[p].cor, de: 'pessoa' }; }); tela.sujo = true; comFoco(desenharLogo); } }),
+      ]));
+    }
+    filhos.push(solta);
+    if (tela.logo && tela.logo.erro) filhos.push(el('p', { classe: 'erro-campo', role: 'status', texto: tela.logo.erro }));
+    encher(alvo, filhos);
+  }
+  // Arrastar e soltar arquivos numa área (o clique abre o seletor de arquivos do próprio <label>).
+  function aceitarSoltar(area, fn) {
+    area.addEventListener('dragover', (ev) => { ev.preventDefault(); area.classList.add('por-cima'); });
+    area.addEventListener('dragleave', () => area.classList.remove('por-cima'));
+    area.addEventListener('drop', (ev) => { ev.preventDefault(); area.classList.remove('por-cima'); const fs = ev.dataTransfer && ev.dataTransfer.files ? Array.from(ev.dataTransfer.files) : []; if (fs.length) fn(fs); });
+  }
+  async function escolherLogo(arquivo) {
+    const vez = tela.vez;
+    soltarItem(tela.logo);
+    const item = itemDeArquivo(arquivo);
+    tela.logo = item;
+    tela.sujo = true;
+    const grande = conferirTamanho('logo', arquivo.size);
+    if (grande) { item.erro = grande; comFoco(desenharLogo); return; }
+    comFoco(desenharLogo);
+    let lido;
+    try {
+      const px = await CoresDoLogo.deArquivo(arquivo);
+      lido = CoresDoLogo.extrair(px.rgba, px.largura, px.altura);
+    } catch (e) {
+      if (vez !== tela.vez || tela.logo !== item) return;
+      // frase da tela (a do módulo é para quem programa); o logo que não abriu não vai junto com a marca
+      item.erro = 'Não consegui abrir esta imagem, e ela não vai junto com a marca. Use outra imagem do logo, ou escolha as cores abaixo.';
+      comFoco(desenharLogo);
+      return;
+    }
+    if (vez !== tela.vez || tela.logo !== item) return;
+    item.cores = lido;
+    const papeis = CoresDoLogo.papeis(lido);
+    PAPEIS.forEach((p) => { tela.cores[p] = papeis[p] ? { cor: papeis[p], de: 'logo' } : null; });
+    tela.versao = null;
+    tela.papelAberto = null;
+    tela.ultimo = null;
+    comFoco(desenharLogo);
+    atualizar();
+  }
+
+  function desenharCores() {
+    const alvo = partes.cores;
+    if (!alvo) return;
+    const doLogo = !!(tela.logo && tela.logo.cores && PAPEIS.some((p) => tela.cores[p] && tela.cores[p].de === 'logo'));
+    const filhos = [
+      el('h3', { texto: doLogo ? 'As cores tiradas do seu logo' : 'As cores da sua marca' }),
+      el('p', { classe: 'nota', texto: doLogo ? 'Já pusemos cada cor no seu papel. Toque numa cor para trocar.' : 'Toque num quadrado para escolher a cor, ou cole o código da cor.' }),
+    ];
+    if (tela.modo === 'personalizar' && tela.sugeridaPedida && tela.cores[tela.sugeridaPedida] && tela.cores[tela.sugeridaPedida].de === 'sugerida') {
+      filhos.push(el('p', { classe: 'estado', texto: 'A cor sugerida já está no lugar do ' + NOME_PAPEL[tela.sugeridaPedida] + '. Confira no quadro e guarde, se gostar.' }));
+    }
+    const grade = el('div', { classe: 'quadrados' });
+    PAPEIS.forEach((p) => {
+      const c = tela.cores[p];
+      const cor = el('span', { classe: 'quadrado-cor' + (c ? '' : ' falta') }, c ? [c.de === 'sugerida' || c.de === 'completar' ? el('span', { classe: 'selo-sugerida', texto: 'Sugerida' }) : null] : ['Falta']);
+      if (c) cor.style.background = c.cor;
+      grade.appendChild(el('button', {
+        type: 'button', classe: 'quadrado', 'data-foco': 'cor-' + p, 'aria-expanded': String(tela.papelAberto === p),
+        'aria-label': NOME_PAPEL[p] + ': ' + (c ? c.cor + (c.de === 'sugerida' || c.de === 'completar' ? ', sugerida' : '') : 'falta escolher') + '. Trocar',
+        onclick: () => { tela.papelAberto = tela.papelAberto === p ? null : p; tela.erroCodigo = ''; comFoco(desenharCores); },
+      }, [cor, el('span', { classe: 'quadrado-nome', texto: NOME_PAPEL[p] }), el('span', { classe: 'quadrado-codigo', texto: c ? c.cor : '' })]));
+    });
+    filhos.push(grade);
+    if (tela.papelAberto) filhos.push(painelDeTroca(tela.papelAberto));
+    partes.leitura = el('div', { role: 'status' });
+    filhos.push(partes.leitura);
+    encher(alvo, filhos);
+    desenharLeitura(partes.leitura);
+  }
+  function painelDeTroca(papel) {
+    const atual = tela.cores[papel];
+    const usar = (valor, de) => { if (escolherCor(papel, valor, de)) { tela.papelAberto = null; tela.erroCodigo = ''; atualizar(); const q = conteudo.querySelector('[data-foco="cor-' + papel + '"]'); if (q) q.focus(); } };
+    const filhos = [el('h4', { texto: 'Trocar o ' + NOME_PAPEL[papel] + ' por:' })];
+    const doLogo = tela.logo && tela.logo.cores ? tela.logo.cores.map((c) => c.cor) : [];
+    if (doLogo.length) {
+      filhos.push(el('div', { classe: 'amostras', role: 'group', 'aria-label': 'Cores do seu logo' }, doLogo.map((c, i) => {
+        const b = el('button', { type: 'button', classe: 'amostra', 'data-foco': 'amostra-' + i, 'aria-pressed': String(!!atual && atual.cor === c), 'aria-label': 'Cor do logo ' + c, onclick: () => usar(c, 'logo') });
+        b.style.background = c;
+        return b;
+      })));
+    }
+    const seletorDeCor = el('input', { type: 'color', 'aria-label': 'Outra cor para o ' + NOME_PAPEL[papel], 'data-foco': 'outra-cor', onchange: (ev) => usar(String(ev.target.value).toUpperCase(), 'pessoa') });
+    if (atual) seletorDeCor.value = atual.cor.toLowerCase();
+    const codigo = el('input', { type: 'text', classe: 'codigo-cor', 'aria-label': 'Código da cor', placeholder: 'Código da cor', maxlength: '7', spellcheck: 'false', autocomplete: 'off', 'data-foco': 'codigo-cor' });
+    const colar = () => {
+      const v = codigo.value.trim();
+      const c = /^#?[0-9A-Fa-f]{6}$/.test(v) ? '#' + v.replace('#', '').toUpperCase() : null;
+      if (!c) { tela.erroCodigo = 'Este código não é uma cor. Use # seguido de seis números ou letras de A a F.'; erro.textContent = tela.erroCodigo; erro.hidden = false; codigo.focus(); return; }
+      usar(c, 'pessoa');
+    };
+    codigo.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); colar(); } });
+    const erro = el('p', { classe: 'erro-campo', role: 'status', texto: tela.erroCodigo, hidden: !tela.erroCodigo });
+    filhos.push(el('div', { classe: 'troca-linha' }, [
+      el('label', { classe: 'outra-cor' }, ['Outra cor', seletorDeCor]),
+      el('span', { classe: 'troca-linha' }, [el('span', { classe: 'rotulo', texto: 'Colar o código da cor' }), codigo, el('button', { type: 'button', classe: 'botao', texto: 'Usar', 'data-foco': 'usar-codigo', onclick: colar })]),
+    ]));
+    filhos.push(erro);
+    filhos.push(el('div', {}, [el('button', { type: 'button', classe: 'botao-link', texto: 'Fechar', onclick: () => { tela.papelAberto = null; comFoco(desenharCores); const q = conteudo.querySelector('[data-foco="cor-' + papel + '"]'); if (q) q.focus(); } })]));
+    const painel = el('div', { classe: 'troca' }, filhos);
+    painel.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') { tela.papelAberto = null; desenharCores(); const q = conteudo.querySelector('[data-foco="cor-' + papel + '"]'); if (q) q.focus(); } });
+    return painel;
+  }
+
+  // A prévia de uma cor sugerida: o texto de exemplo na cor, sobre o fundo de verdade.
+  // O destaque aparece como o botão da peça, sobre o fundo claro.
+  function previaDeLeitura(fundo, cor, papel) {
+    const caixa = el('span', { classe: 'leitura-previa', 'aria-hidden': 'true' });
+    caixa.style.background = fundo;
+    if (papel === 'acento') {
+      const botao = el('span', { classe: 'previa-botao', texto: 'Ver o passo a passo' });
+      botao.style.background = cor;
+      botao.style.color = EmpresaSeletor.melhorContraste(cor, tela.cores.escuro ? tela.cores.escuro.cor : fundo, tela.cores.claro ? tela.cores.claro.cor : fundo);
+      caixa.appendChild(botao);
+    } else {
+      caixa.style.color = cor;
+      caixa.textContent = 'Aa Texto de exemplo';
+    }
+    return caixa;
+  }
+  function desenharLeitura(alvo) {
+    if (!alvo) return;
+    alvo.textContent = '';
+    const cores = coresAgora();
+    let problemas;
+    try { problemas = problemasDeLeitura(cores, tela.ultimo); } catch (e) { problemas = []; }
+    problemas.forEach((p) => {
+      const onde = p.papel === 'acento' ? 'o destaque fica difícil de ver sobre os fundos' : p.papel === 'claro' ? 'o texto claro fica difícil de ler no fundo escuro' : 'o texto fica difícil de ler: o fundo escuro está claro demais para o fundo claro';
+      const caixa = el('div', { classe: 'leitura' }, [
+        el('h4', { texto: 'Com estas cores, ' + onde + ' (contraste ' + numero(p.contraste) + '; o mínimo é ' + numero(p.minimo) + ').' }),
+        el('p', { classe: 'nota', texto: p.sugestoes.length ? 'Cores que resolvem e combinam com a sua marca, para o ' + NOME_PAPEL[p.papel] + ':' : 'Nenhum tom desta cor fica fácil de ler aqui. Toque no ' + NOME_PAPEL[p.fundo] + ' para escolher outra cor de fundo.' }),
+      ]);
+      if (p.sugestoes.length) {
+        caixa.appendChild(el('div', { classe: 'sugestoes' }, p.sugestoes.map((s, i) => el('div', { classe: 'sugestao' }, [
+          previaDeLeitura(cores[p.fundo], s.cor, p.papel),
+          el('span', { texto: s.rotulo }),
+          el('small', { texto: 'Código da cor ' + s.cor + ' · contraste ' + numero(s.contraste) }),
+          el('button', {
+            type: 'button', classe: 'botao', texto: 'Usar esta cor', 'data-foco': 'sugestao-' + p.papel + '-' + i,
+            'aria-label': 'Usar esta cor: ' + s.rotulo + ', ' + s.cor + ', no ' + NOME_PAPEL[p.papel],
+            onclick: () => { escolherCor(p.papel, s.cor, 'sugerida'); atualizar(); const q = conteudo.querySelector('[data-foco="cor-' + p.papel + '"]'); if (q) q.focus(); },
+          }),
+        ]))));
+      }
+      alvo.appendChild(caixa);
+    });
+  }
+
+  function desenharCompletar() {
+    const alvo = partes.completar;
+    if (!alvo) return;
+    const dados = {};
+    PAPEIS.forEach((p) => { const c = tela.cores[p]; if (c && c.de !== 'completar') dados[p] = c.cor; });
+    const faltam = PAPEIS.filter((p) => !dados[p]);
+    alvo.hidden = !faltam.length || !Object.keys(dados).length && tela.resposta === 'tenho' && !tela.logo;
+    if (alvo.hidden) { alvo.textContent = ''; return; }
+    let opcoes;
+    try { opcoes = CoresDoLogo.completar(dados); } catch (e) { alvo.hidden = true; return; }
+    const letras = { principal: tela.letras.principal, mono: tela.letras.mono };
+    const grade = el('div', { classe: 'versoes' });
+    opcoes.forEach((o, i) => {
+      const escolhida = tela.versao === o.nome && faltam.every((p) => tela.cores[p] && tela.cores[p].de === 'completar' && tela.cores[p].cor === o.cores[p]);
+      grade.appendChild(el('article', { classe: 'versao' + (escolhida ? ' escolhida' : '') }, [
+        el('h4', { texto: o.nome }),
+        quadroDaMarca(o.cores, letras, { mini: true }),
+        o.aa ? null : el('p', { classe: 'nota', texto: 'Esta versão deixa algum texto difícil de ler.' }),
+        el('button', {
+          type: 'button', classe: escolhida ? 'botao principal' : 'botao', texto: escolhida ? '✓ Escolhida' : 'Usar esta', 'aria-pressed': String(escolhida), 'data-foco': 'versao-' + i,
+          'aria-label': (escolhida ? 'Escolhida: ' : 'Usar esta: ') + 'versão ' + o.nome,
+          onclick: () => { faltam.forEach((p) => { tela.cores[p] = { cor: o.cores[p], de: 'completar' }; }); tela.versao = o.nome; tela.sujo = true; atualizar(); },
+        }),
+      ]));
+    });
+    encher(alvo, [
+      el('h3', { texto: 'Três jeitos de completar a sua marca' }),
+      el('p', { classe: 'nota', texto: 'Falta' + (faltam.length > 1 ? 'm' : '') + ': ' + juntos(faltam.map((p) => NOME_PAPEL[p])) + '. Cada versão mostra a marca inteira; as cores que você já tem ficam iguais nas três.' }),
+      grade,
+    ]);
+  }
+
+  // ---- letras ----
+  function desenharLetras() {
+    const alvo = partes.letras;
+    if (!alvo) return;
+    if (!letrasDaFabrica || !letrasDaFabrica.letras.length) {
+      encher(alvo, [el('h3', { texto: 'Letras' }), el('p', { classe: 'nota', texto: 'Não consegui carregar a lista de letras agora. Recarregue a página para tentar de novo.' })]);
+      return;
+    }
+    const filhos = [];
+    const resumo = el('p', { classe: 'resumo-letras' }, [
+      el('b', { texto: NOME_LETRA.principal + ': ' }), nomeDaLetra(tela.letras.principal) + ' · ',
+      el('b', { texto: NOME_LETRA.mono + ': ' }), nomeDaLetra(tela.letras.mono),
+      tela.letras.acento ? ' · ' : '', tela.letras.acento ? el('b', { texto: 'Destaque: ' }) : null, tela.letras.acento ? nomeDaLetra(tela.letras.acento) : '',
+    ]);
+    const arquivoDeLetra = el('input', { type: 'file', accept: '.ttf,.otf', classe: 'so-leitor', tabindex: '-1', onchange: (ev) => { const f = ev.target.files && ev.target.files[0]; ev.target.value = ''; if (f) escolherArquivoDeLetra(f); } });
+    const enviarArquivoDeLetra = el('p', { classe: 'nota' }, [
+      'Tem o arquivo da sua letra? ',
+      el('button', { type: 'button', classe: 'botao-link', 'data-foco': 'enviar-letra', texto: tela.modoLetras === 'pares' ? 'Enviar o arquivo' : 'Enviar o arquivo para a letra ' + DA_LETRA[tela.papelLetra], onclick: () => {
+        // nos pares, o arquivo vai para a letra principal; depois a tela passa para "uma letra por vez" (onde dá para trocar)
+        if (tela.modoLetras === 'pares') tela.papelLetra = 'principal';
+        arquivoDeLetra.click();
+      } }),
+      '. Use só letras que você tem direito de usar.', arquivoDeLetra,
+    ]);
+    if (tela.modoLetras === 'pares') {
+      filhos.push(el('h3', { texto: 'Escolha um par de letras' }), el('p', { classe: 'nota', texto: 'Cada quadro mostra a letra principal e a dos rótulos juntas, como na peça. ' + PARA_QUE_SERVE }));
+      const grade = el('div', { classe: 'pares' });
+      letrasDaFabrica.pares.forEach((par, i) => {
+        const t = letraDaLista(par.titulo); const x = letraDaLista(par.texto);
+        const escolhido = !!(tela.letras.principal && tela.letras.mono && tela.letras.principal.familia === par.titulo && tela.letras.mono.familia === par.texto);
+        const titulo = el('strong', { classe: 'par-titulo', texto: FRASE_TITULO });
+        titulo.style.fontFamily = pilha(fonteDaPagina(t.endereco), 'ui-serif, serif');
+        const corpo = el('span', { classe: 'par-rotulo', texto: FRASE_ROTULO });
+        corpo.style.fontFamily = pilha(fonteDaPagina(x.endereco), 'system-ui, sans-serif');
+        grade.appendChild(el('button', {
+          type: 'button', classe: 'par', 'aria-pressed': String(escolhido), 'data-foco': 'par-' + i, 'aria-label': 'Par de letras: ' + par.titulo + ' na letra principal e ' + par.texto + ' nos rótulos',
+          onclick: () => { tela.letras.principal = letraDe(par.titulo, 'pessoa'); tela.letras.mono = letraDe(par.texto, 'pessoa'); tela.sujo = true; atualizar(); },
+        }, [titulo, corpo, el('span', { classe: 'par-nome', texto: (escolhido ? '✓ ' : '') + par.titulo + ' e ' + par.texto })]));
+      });
+      filhos.push(grade, resumo);
+      filhos.push(el('p', { classe: 'nota' }, [el('button', { type: 'button', classe: 'botao-link', 'data-foco': 'uma-por-vez', texto: 'Prefiro escolher uma letra por vez', onclick: () => { tela.modoLetras = 'uma'; comFoco(desenharLetras); const b = conteudo.querySelector('[data-foco="papel-letra-principal"]'); if (b) b.focus(); } })]));
+      filhos.push(enviarArquivoDeLetra);
+    } else {
+      filhos.push(el('h3', { texto: 'Uma letra por vez' }), el('p', { classe: 'nota', texto: 'Escolha para que serve a letra e toque nela. ' + PARA_QUE_SERVE + ' A de destaque é opcional.' }));
+      filhos.push(el('div', { classe: 'papeis-letra', role: 'group', 'aria-label': 'Para que serve a letra' }, PAPEIS_LETRA.map((p) => el('button', {
+        type: 'button', classe: 'chip', 'aria-pressed': String(tela.papelLetra === p), 'data-foco': 'papel-letra-' + p,
+        texto: p === 'acento' ? 'Destaque (opcional)' : NOME_LETRA[p], onclick: () => { tela.papelLetra = p; comFoco(desenharLetras); },
+      }))));
+      const busca = el('input', { type: 'search', classe: 'busca', placeholder: 'Digite o nome da letra', 'aria-label': 'Digite o nome da letra', value: tela.busca, 'data-foco': 'busca-letra' });
+      busca.addEventListener('input', () => { tela.busca = busca.value; desenharGradeDeLetras(); });
+      filhos.push(busca);
+      filhos.push(el('div', { classe: 'chips', role: 'group', 'aria-label': 'Tipo de letra' }, [''].concat(CLASSES).map((c) => el('button', {
+        type: 'button', classe: 'chip', 'aria-pressed': String(tela.classe === c), 'data-foco': 'classe-' + (c || 'todas'),
+        texto: c ? maiuscula(c) : 'Todas', onclick: () => { tela.classe = c; comFoco(desenharLetras); },
+      }))));
+      partes.gradeLetras = el('div', { classe: 'pares' });
+      filhos.push(partes.gradeLetras);
+      if (tela.papelLetra === 'acento') {
+        filhos.push(el('div', {}, [el('button', { type: 'button', classe: 'botao', 'data-foco': 'sem-destaque', 'aria-pressed': String(!!(tela.letras.acento && tela.letras.acento.nenhuma)), texto: 'Sem letra de destaque', onclick: () => { tela.letras.acento = { nenhuma: true, familia: '', de: 'pessoa' }; tela.sujo = true; atualizar(); } })]));
+      }
+      filhos.push(resumo, enviarArquivoDeLetra);
+      filhos.push(el('p', { classe: 'nota' }, [el('button', { type: 'button', classe: 'botao-link', 'data-foco': 'voltar-pares', texto: 'Voltar para os pares prontos', onclick: () => { tela.modoLetras = 'pares'; comFoco(desenharLetras); } })]));
+    }
+    if (tela.erroLetra) filhos.push(el('p', { classe: 'erro-campo', role: 'status', texto: tela.erroLetra }));
+    encher(alvo, filhos);
+    if (tela.modoLetras === 'uma') desenharGradeDeLetras();
+  }
+  function desenharGradeDeLetras() {
+    const alvo = partes.gradeLetras;
+    if (!alvo) return;
+    const busca = semAcento(tela.busca).trim();
+    const letras = letrasDaFabrica.letras.filter((l) => (!tela.classe || l.classificacao === tela.classe) && (!busca || semAcento(l.familia).includes(busca)));
+    alvo.textContent = '';
+    if (!letras.length) { alvo.appendChild(el('p', { classe: 'nota', texto: 'Nenhuma letra com esse nome. Apague a busca ou troque o tipo.' })); return; }
+    letras.forEach((l, i) => {
+      const atual = tela.letras[tela.papelLetra];
+      const escolhida = !!(atual && !atual.nenhuma && atual.familia === l.familia);
+      const familia = fonteDaPagina(l.endereco);
+      const aa = el('span', { classe: 'letra-aa', texto: 'Aa' });
+      const frase = el('span', { classe: 'letra-frase', texto: FRASE_TITULO });
+      aa.style.fontFamily = pilha(familia, 'system-ui, sans-serif');
+      frase.style.fontFamily = aa.style.fontFamily;
+      alvo.appendChild(el('button', {
+        type: 'button', classe: 'letra', 'aria-pressed': String(escolhida), 'data-foco': 'letra-' + i, 'aria-label': l.familia + (l.classificacao ? ', ' + l.classificacao : '') + ', para a letra ' + DA_LETRA[tela.papelLetra],
+        onclick: () => { tela.letras[tela.papelLetra] = letraDe(l.familia, 'pessoa'); tela.sujo = true; tela.erroLetra = ''; atualizar(); },
+      }, [aa, frase, el('span', { classe: 'letra-nome', texto: (escolhida ? '✓ ' : '') + l.familia }), el('small', { texto: l.classificacao ? maiuscula(l.classificacao) : '' })]));
+    });
+  }
+  // O arquivo de uma letra que a pessoa tem: aparece na tela na hora (lido aqui mesmo) e só é enviado ao guardar.
+  async function escolherArquivoDeLetra(arquivo) {
+    const papel = tela.papelLetra;
+    const vez = tela.vez;
+    const grande = conferirTamanho('fonte', arquivo.size);
+    tela.erroLetra = '';
+    if (grande) { tela.erroLetra = grande; comFoco(desenharLetras); return; }
+    const nome = 'Letra enviada ' + (fontesNaPagina.size + 1);
+    try {
+      const f = new FontFace(nome, await arquivo.arrayBuffer());
+      await f.load();
+      document.fonts.add(f);
+      fontesNaPagina.set('arquivo:' + nome, nome);
+    } catch (e) {
+      if (vez !== tela.vez) return;
+      tela.erroLetra = 'Não consegui abrir esta letra. Use o arquivo da letra que você tem no computador.';
+      comFoco(desenharLetras);
+      return;
+    }
+    if (vez !== tela.vez) return;
+    tela.letras[papel] = { familia: 'Sua letra (' + DA_LETRA[papel] + ')', fonte: nome, arquivoLocal: arquivo, nomeEnviado: null, de: 'pessoa' };
+    tela.modoLetras = 'uma';
+    tela.sujo = true;
+    atualizar();
+  }
+
+  // ---- manual em PDF (decisão D7: mantido; vira pedido ao agente) ----
+  function desenharManual() {
+    const alvo = partes.manual;
+    if (!alvo) return;
+    const entrada = el('input', { type: 'file', accept: 'application/pdf', classe: 'so-leitor', 'data-foco': 'manual-arquivo', onchange: (ev) => { const f = ev.target.files && ev.target.files[0]; ev.target.value = ''; if (f) { tela.manual = { arquivo: f, nome: null }; mensagem('manual', null); comFoco(desenharManual); } } });
+    const filhos = [
+      el('h3', { texto: 'Manual da marca' }),
+      el('p', { classe: 'nota', texto: 'Tem um manual da marca em PDF? Envie, e a Fábrica preenche tudo isso por você. Ela lê o manual no Claude e mostra o que achou antes de mudar a sua marca.' }),
+      el('label', { classe: 'solta' }, [el('b', { texto: tela.manual ? 'Trocar o manual' : 'Escolher o manual' }), el('span', { texto: 'PDF de até 30 MB' }), entrada]),
+    ];
+    if (tela.manual) {
+      const tam = tela.manual.arquivo.size / MB;
+      filhos.push(el('p', { classe: 'nota', texto: 'Manual escolhido (' + (tam < 0.1 ? 'menos de 0,1' : numero(tam)) + ' MB).' }));
+      const botao = el('button', { type: 'button', classe: 'botao principal', texto: 'Enviar o manual', 'data-foco': 'enviar-manual', onclick: () => enviarManual(botao) });
+      filhos.push(el('div', { classe: 'acoes' }, [botao]));
+    }
+    filhos.push(caixaDeMensagem('manual'));
+    encher(alvo, filhos);
+  }
+  async function enviarManual(botao) {
+    const m = tela.manual;
+    if (!m) return;
+    const vez = tela.vez;
+    botao.disabled = true;
+    mensagem('manual', 'Enviando o manual…', 'espera');
+    try {
+      if (!m.nome) {
+        const r = await enviarArquivo('manual', m.arquivo);
+        if (r === null || vez !== tela.vez) return;
+        if (r.erro) { mensagem('manual', r.erro, 'erro'); return; }
+        m.nome = r.nome;
+      }
+      const p = await enviarPedido('ler-manual', { anexos: [m.nome] });
+      if (p === null || vez !== tela.vez) return;
+      if (p.erro) { mensagem('manual', p.erro, 'erro'); return; }
+      tela.manual = null;
+      comFoco(desenharManual);
+      mensagem('manual', p.mensagem, 'certo');
+    } catch (e) {
+      if (vez === tela.vez) mensagem('manual', SEM_SERVIDOR, 'erro');
+    } finally {
+      botao.disabled = false;
+    }
+  }
+
+  // ---- o quadro, a comparação e o "Guardar" ----
+  function podeGuardar() {
+    const faltam = PAPEIS.filter((p) => !tela.cores[p]);
+    if (faltam.length) return { ok: false, motivo: 'Falta escolher: ' + juntos(faltam.map((p) => NOME_PAPEL[p])) + '.' };
+    if (!tela.definida && (!tela.letras.principal || !tela.letras.mono)) return { ok: false, motivo: 'Falta escolher a letra principal e a dos rótulos.' };
+    if (!tela.sujo) return { ok: false, motivo: 'Nada mudou ainda.' };
+    return { ok: true };
+  }
+  const comparar = () => tela.modo === 'marca' && !!coresDe(tela.marcaHoje) && /^estilo:/.test(tela.origem || '');
+  function desenharQuadro() {
+    const alvo = partes.quadro;
+    if (!alvo) return;
+    const pode = podeGuardar();
+    const cores = coresCompletas() ? coresAgora() : null;
+    const letras = { principal: tela.letras.principal, mono: tela.letras.mono };
+    const filhos = [];
+    const botoes = [];
+    if (comparar()) {
+      filhos.push(el('h2', { classe: 'campo-titulo', texto: 'A de hoje e a sua, lado a lado' }));
+      filhos.push(el('p', { classe: 'recebemos' }, [el('b', { texto: 'Recebemos a sua marca.' }), ' Hoje a ' + tela.nome + ' usa as cores e letras ' + tela.doEstilo + '. Quer trocar?']));
+      filhos.push(el('div', { classe: 'lado-a-lado' }, [
+        quadroDaMarca(tela.marcaHoje.cores, tela.marcaHoje.letras, { legenda: 'Hoje · ' + tela.doEstilo }),
+        cores ? quadroDaMarca(cores, letras, { legenda: 'Nova · a sua marca', classe: 'nova' }) : el('p', { classe: 'quadro-falta', texto: 'A sua marca aparece aqui quando as quatro cores estiverem escolhidas.' }),
+      ]));
+      const trocarBotao = el('button', { type: 'button', classe: 'botao principal', texto: 'Trocar pela minha marca', 'data-foco': 'guardar', disabled: !pode.ok, onclick: () => guardarMarca(botoes) });
+      const manter = el('button', { type: 'button', classe: 'botao', texto: 'Manter como está', 'data-foco': 'manter', onclick: () => manterComoEsta() });
+      botoes.push(trocarBotao, manter);
+      filhos.push(el('div', { classe: 'acoes' }, botoes));
+      filhos.push(el('p', { classe: 'nota', texto: COMPARACAO }));
+    } else {
+      filhos.push(el('h2', { classe: 'campo-titulo', texto: 'Assim fica a sua marca' }));
+      filhos.push(cores ? quadroDaMarca(cores, letras) : el('p', { classe: 'quadro-falta', texto: 'O quadro aparece quando as quatro cores estiverem escolhidas.' }));
+      const guardar = el('button', { type: 'button', classe: 'botao principal', texto: 'Guardar a minha marca', 'data-foco': 'guardar', disabled: !pode.ok, onclick: () => guardarMarca(botoes) });
+      botoes.push(guardar);
+      filhos.push(el('div', { classe: 'acoes' }, botoes));
+    }
+    if (cores) filhos.push(contrastes(cores));
+    if (!pode.ok && pode.motivo !== 'Nada mudou ainda.') filhos.push(el('p', { classe: 'nota', texto: pode.motivo }));
+    filhos.push(caixaDeMensagem('marca'));
+    comFoco(() => encher(alvo, filhos));
+  }
+  function manterComoEsta() {
+    tela.resposta = null;
+    tela.sujo = false;
+    soltarItem(tela.logo);
+    tela.logo = null;
+    tela.versao = null;
+    tela.papelAberto = null;
+    tela.ultimo = null;
+    tela.letras = { principal: null, mono: null, acento: null };
+    preencherEditor();
+    mensagem('geral', 'Nada mudou. A ' + tela.nome + ' continua com as cores e letras ' + tela.doEstilo + '.', '');
+    desenhar();
+  }
+
+  // Depois de guardar a marca: no Personalizar, o link volta para o estilo (que já abre na marca, se ela estiver
+  // pronta; o aviso de que as prévias vão demorar vale também ali). Fora dele, com prévias na marca já prontas (`naMarca`), o link vai direto para elas; sem prévias prontas
+  // ainda (a geração roda em segundo plano e pode não ter terminado), um aviso de que elas vão demorar um pouco mais.
+  function textoDepoisDeGuardar(modo, naMarca) {
+    if (modo === 'personalizar') return { texto: naMarca ? MARCA_GUARDADA : PREVIAS_DEMORAM, rotulo: 'Voltar para o estilo' };
+    if (naMarca) return { texto: MARCA_GUARDADA, rotulo: VER_NA_MARCA };
+    return { texto: PREVIAS_DEMORAM, rotulo: 'Ir para a biblioteca de estilos' };
+  }
+
+  async function guardarMarca(botoes) {
+    const pode = podeGuardar();
+    if (!pode.ok) { mensagem('marca', pode.motivo, 'erro'); return; }
+    const vez = tela.vez;
+    botoes.forEach((b) => { b.disabled = true; });
+    mensagem('marca', 'Guardando a sua marca…', 'espera');
+    let pronto = false;
+    try {
+      const corpo = { cores: {} };
+      PAPEIS.forEach((p) => { corpo.cores[p] = tela.cores[p].cor; });
+      if (tela.logo && !tela.logo.erro && !tela.logo.guardado) {
+        if (!tela.logo.nome) {
+          const r = await enviarArquivo('logo', tela.logo.arquivo);
+          if (r === null || vez !== tela.vez) return;
+          if (r.erro) { mensagem('marca', 'O logo não foi guardado: ' + r.erro, 'erro'); return; }
+          tela.logo.nome = r.nome;
+        }
+        corpo.logo = tela.logo.nome;
+      }
+      const fontes = {};
+      for (const p of PAPEIS_LETRA) {
+        const l = tela.letras[p];
+        if (!l || l.de === 'marca') continue;
+        if (l.nenhuma) { if (p === 'acento') fontes[p] = ''; continue; }
+        if (l.arquivoLocal) {
+          if (!l.nomeEnviado) {
+            const r = await enviarArquivo('fonte', l.arquivoLocal);
+            if (r === null || vez !== tela.vez) return;
+            if (r.erro) { mensagem('marca', 'A letra ' + DA_LETRA[p] + ' não foi guardada: ' + r.erro, 'erro'); return; }
+            l.nomeEnviado = r.nome;
+          }
+          fontes[p] = { enviada: l.nomeEnviado };
+        } else if (l.arquivo) fontes[p] = { lista: l.arquivo };
+      }
+      if (Object.keys(fontes).length) corpo.fontes = fontes;
+      corpo.origem = corpo.logo || PAPEIS.some((p) => tela.cores[p].de === 'logo') ? 'logo' : 'pessoa';
+      const r = await seletor.enviar('/api/marca', corpo);
+      if (r === null || vez !== tela.vez) return;
+      if (!r.ok) { mensagem('marca', erroDe(r, 'Não consegui guardar a sua marca. Tente de novo.'), 'erro'); return; }
+      // guardada: o que está na tela passa a ser a marca de hoje
+      PAPEIS.forEach((p) => { tela.cores[p] = { cor: tela.cores[p].cor, de: 'marca' }; });
+      PAPEIS_LETRA.forEach((p) => { if (tela.letras[p]) tela.letras[p] = Object.assign({}, tela.letras[p], { de: 'marca' }); });
+      if (tela.logo) tela.logo.guardado = true;
+      tela.sujo = false;
+      tela.versao = null;
+      tela.definida = true;
+      tela.origem = corpo.origem;
+      tela.sugeridaPedida = null;
+      pronto = true;
+      // Se as prévias na marca já estiverem prontas (pedidas pelo gatilho de uma gravação de antes), o link vai direto
+      // para elas; senão, o aviso diz que elas vão demorar um pouco mais (a geração desta gravação roda em segundo
+      // plano). Sem como conferir agora, fica o aviso (a opção mais conservadora: nunca promete o que ainda não existe).
+      let naMarca = false;
+      try {
+        const b = await seletor.ler('/api/biblioteca');
+        if (vez === tela.vez && b && b.ok) naMarca = objeto(objeto(b.json).marca).naMarca === true;
+      } catch (e) { /* sem isso, fica o aviso de que as prévias vão demorar */ }
+      if (vez !== tela.vez) return;
+      const dep = textoDepoisDeGuardar(tela.modo, naMarca);
+      mensagem('marca', dep.texto, 'certo', () => [
+        el('button', { type: 'button', classe: 'botao', texto: 'Desfazer', 'data-foco': 'desfazer', onclick: (ev) => desfazerMarca(ev.currentTarget) }),
+        el('a', { href: tela.modo === 'personalizar' ? enderecoDoEstilo(tela.estiloAberto) : 'estilos.html?empresa=' + encodeURIComponent(seletor.atual()), texto: dep.rotulo }),
+      ]);
+      seletor.aplicarMarca().catch(() => { /* o painel fica com as cores de antes até recarregar */ });
+    } catch (e) {
+      if (vez === tela.vez) mensagem('marca', SEM_SERVIDOR, 'erro');
+    } finally {
+      botoes.forEach((b) => { b.disabled = false; });
+      if (pronto && vez === tela.vez) {
+        atualizar(); // o botão de guardar fica desligado até a próxima mudança
+        const d = conteudo.querySelector('[data-foco="desfazer"]');
+        if (d) d.focus();
+      }
+    }
+  }
+  async function desfazerMarca(botao) {
+    const vez = tela.vez;
+    botao.disabled = true;
+    try {
+      const r = await seletor.enviar('/api/marca/desfazer', {});
+      if (r === null || vez !== tela.vez) return;
+      if (!r.ok) { mensagem('marca', erroDe(r, 'Não consegui desfazer agora. Tente de novo.'), 'erro'); return; }
+      tela.mensagens.geral = { texto: 'Pronto. A marca voltou a ser a de antes.', tipo: 'certo', acoes: null };
+      tela.sujo = false;
+      await carregarEmpresa('de-novo');
+    } catch (e) {
+      if (vez === tela.vez) mensagem('marca', SEM_SERVIDOR, 'erro');
+    } finally {
+      botao.disabled = false;
+    }
+  }
+
+  // ---- "Ainda não tenho": os três caminhos ----
+  function desenharSemMarca(alvo) {
+    const codigo = seletor.atual();
+    const cam = (icone, titulo, apoio, extra) => [el('span', { classe: 'caminho-icone', 'aria-hidden': 'true', texto: icone }), el('span', {}, [el('b', { texto: titulo }), el('span', { texto: apoio }), extra || null])];
+    // os ids são as âncoras que a tela de Estilos usa (marca.html?empresa=<c>#criar-do-zero e #enviar-referencias)
+    const zero = el('div', { classe: 'caminho-area', id: 'criar-do-zero', hidden: !tela.abertos.zero });
+    const refs = el('div', { classe: 'caminho-area', id: 'enviar-referencias', hidden: !tela.abertos.referencias });
+    partes.zero = zero; partes.referencias = refs;
+    const botaoZero = el('button', { type: 'button', classe: 'caminho', 'aria-expanded': String(tela.abertos.zero), 'aria-controls': 'criar-do-zero', 'data-foco': 'caminho-zero', onclick: () => { tela.abertos.zero = !tela.abertos.zero; botaoZero.setAttribute('aria-expanded', String(tela.abertos.zero)); zero.hidden = !tela.abertos.zero; if (!zero.hidden) { const t = zero.querySelector('textarea'); if (t) t.focus(); } } },
+      cam('✎', 'Criar uma identidade do zero', 'Algumas perguntas sobre o seu negócio e o seu público; a Fábrica propõe paletas e letras, sempre com prévia, e você escolhe.'));
+    const botaoRefs = el('button', { type: 'button', classe: 'caminho', 'aria-expanded': String(tela.abertos.referencias), 'aria-controls': 'enviar-referencias', 'data-foco': 'caminho-referencias', onclick: () => { tela.abertos.referencias = !tela.abertos.referencias; botaoRefs.setAttribute('aria-expanded', String(tela.abertos.referencias)); refs.hidden = !tela.abertos.referencias; } },
+      cam('⇪', 'Enviar referências do que você gosta', 'Imagens ou prints. A Fábrica cria um estilo próprio inspirado nelas, sem copiar.'));
+    alvo.append(
+      el('h2', { texto: 'Como você quer começar?' }),
+      el('div', { classe: 'caminhos' }, [
+        el('a', { classe: 'caminho', href: 'estilos.html?empresa=' + encodeURIComponent(codigo) }, cam('▦', 'Usar um dos nossos modelos', 'Você escolhe na biblioteca, e as cores e letras do modelo viram as da sua marca.', el('em', { texto: 'Mais rápido' }))),
+        botaoZero, zero, botaoRefs, refs,
+      ]),
+    );
+    desenharZero(); desenharReferencias();
+  }
+  function campoDeRecado(rotulo, chave, foco) {
+    const area = el('textarea', { classe: 'recado', maxlength: String(LIMITE_RECADO), 'data-foco': foco, id: 'recado-' + foco });
+    area.value = tela[chave];
+    const conta = el('span', { classe: 'contador', 'aria-live': 'off', texto: area.value.length + ' de ' + LIMITE_RECADO });
+    area.addEventListener('input', () => { tela[chave] = area.value; conta.textContent = area.value.length + ' de ' + LIMITE_RECADO; });
+    return el('div', { style: 'display:grid;gap:6px' }, [el('label', { classe: 'rotulo', for: 'recado-' + foco }, rotulo), area, conta]);
+  }
+  function desenharZero() {
+    const alvo = partes.zero;
+    const botao = el('button', { type: 'button', classe: 'botao principal', texto: 'Pedir a identidade do zero', 'data-foco': 'pedir-zero', onclick: async () => {
+      const vez = tela.vez;
+      botao.disabled = true;
+      mensagem('zero', 'Guardando o pedido…', 'espera');
+      try {
+        const p = await enviarPedido('criar-do-zero', { nota: tela.recadoZero });
+        if (p === null || vez !== tela.vez) return;
+        if (p.erro) { mensagem('zero', p.erro, 'erro'); return; }
+        tela.recadoZero = '';
+        const area = alvo.querySelector('textarea'); if (area) { area.value = ''; area.dispatchEvent(new Event('input')); }
+        mensagem('zero', p.mensagem, 'certo');
+      } catch (e) { if (vez === tela.vez) mensagem('zero', SEM_SERVIDOR, 'erro'); } finally { botao.disabled = false; }
+    } });
+    encher(alvo, [
+      campoDeRecado([el('span', { texto: 'Conte um pouco do seu negócio e do seu público ' }), el('small', { texto: '(opcional)' })], 'recadoZero', 'zero'),
+      el('p', { classe: 'nota', texto: 'No Claude, a Fábrica faz algumas perguntas e mostra paletas e letras lado a lado. Nada muda na sua marca sem você escolher.' }),
+      el('div', { classe: 'acoes' }, [botao]),
+      caixaDeMensagem('zero'),
+    ]);
+  }
+  function desenharReferencias() {
+    const alvo = partes.referencias;
+    if (!alvo) return;
+    const entrada = el('input', { type: 'file', accept: QUALQUER_IMAGEM, multiple: true, classe: 'so-leitor', 'data-foco': 'referencias-arquivo', onchange: (ev) => { const fs = ev.target.files ? Array.from(ev.target.files) : []; ev.target.value = ''; acrescentarReferencias(fs); } });
+    const solta = el('label', { classe: 'solta' }, [el('b', { texto: 'Solte as imagens aqui' }), el('span', { texto: 'ou clique para escolher · até ' + MAXIMO_REFERENCIAS }), entrada]);
+    aceitarSoltar(solta, acrescentarReferencias);
+    const mins = el('ul', { classe: 'miniaturas' }, tela.referencias.map((item, i) => el('li', {}, [
+      miniatura(item, 'Referência ' + (i + 1)),
+      el('button', { type: 'button', classe: 'tirar', texto: '×', 'aria-label': 'Tirar a imagem ' + (i + 1), 'data-foco': 'tirar-' + i, onclick: () => { soltarItem(item); tela.referencias.splice(i, 1); comFoco(desenharReferencias); const d = alvo.querySelector('[data-foco="referencias-arquivo"]'); if (document.activeElement === document.body && d) d.focus(); } }),
+    ])));
+    const botao = el('button', { type: 'button', classe: 'botao principal', texto: 'Enviar referências', 'data-foco': 'enviar-referencias', disabled: !tela.referencias.length, onclick: () => enviarReferencias(botao) });
+    encher(alvo, [
+      el('h3', { classe: 'campo-titulo', texto: 'Mande imagens do que você gosta' }),
+      el('p', { classe: 'nota', texto: 'Fotos, prints, posts que você salvou. A Fábrica cria um estilo próprio inspirado nelas, sem copiar.' }),
+      solta,
+      tela.referencias.length ? mins : null,
+      el('p', { classe: 'nota', texto: tela.referencias.length + ' de ' + MAXIMO_REFERENCIAS + ' imagens' }),
+      campoDeRecado([el('span', { texto: 'Quer contar alguma coisa? ' }), el('small', { texto: '(opcional)' })], 'recadoRef', 'referencias'),
+      el('div', { classe: 'acoes' }, [botao]),
+      caixaDeMensagem('referencias'),
+    ]);
+  }
+  function acrescentarReferencias(arquivos) {
+    const recusas = [];
+    arquivos.forEach((f) => {
+      if (tela.referencias.length >= MAXIMO_REFERENCIAS) { recusas.push('Cabem até ' + MAXIMO_REFERENCIAS + ' imagens; as outras ficaram de fora.'); return; }
+      if (!/^image\//.test(f.type || '')) { recusas.push('Um dos arquivos não é imagem e ficou de fora.'); return; }
+      const grande = conferirTamanho('referencia', f.size);
+      if (grande) { recusas.push('Uma imagem ficou de fora. ' + grande); return; }
+      tela.referencias.push(itemDeArquivo(f));
+    });
+    comFoco(desenharReferencias);
+    mensagem('referencias', [...new Set(recusas)].join(' '), recusas.length ? 'erro' : '');
+  }
+  async function enviarReferencias(botao) {
+    const vez = tela.vez;
+    const itens = tela.referencias.slice();
+    if (!itens.length) return;
+    botao.disabled = true;
+    try {
+      for (let i = 0; i < itens.length; i++) {
+        if (itens[i].nome) continue;
+        mensagem('referencias', 'Enviando a imagem ' + (i + 1) + ' de ' + itens.length + '…', 'espera');
+        const r = await enviarArquivo('referencia', itens[i].arquivo);
+        if (r === null || vez !== tela.vez) return;
+        if (r.erro) { mensagem('referencias', 'A imagem ' + (i + 1) + ' não foi enviada: ' + r.erro, 'erro'); return; }
+        itens[i].nome = r.nome;
+      }
+      const p = await enviarPedido('enviar-referencias', { anexos: itens.map((x) => x.nome), nota: tela.recadoRef });
+      if (p === null || vez !== tela.vez) return;
+      if (p.erro) { mensagem('referencias', p.erro, 'erro'); return; }
+      itens.forEach(soltarItem);
+      tela.referencias = [];
+      tela.recadoRef = '';
+      comFoco(desenharReferencias);
+      mensagem('referencias', p.mensagem, 'certo');
+    } catch (e) {
+      if (vez === tela.vez) mensagem('referencias', SEM_SERVIDOR, 'erro');
+    } finally {
+      botao.disabled = !tela.referencias.length;
+    }
+  }
+
+  // ---- Personalizar ----
+  function desenharPersonalizar(miolo) {
+    const e = tela.estiloAberto;
+    miolo.appendChild(el('section', { classe: 'secao' }, [
+      el('h2', { texto: 'Cores e letras da sua marca' }),
+      el('p', { classe: 'apoio', texto: 'Troque as cores e as letras da ' + tela.nome + '. O estilo ' + e.nome + ' continua o mesmo; só as cores e as letras mudam, e valem para todos os estilos da sua marca. Nada muda até você guardar.' }),
+    ]));
+    partes.ramo = el('div', { classe: 'secao' });
+    miolo.appendChild(partes.ramo);
+    desenharEditor(partes.ramo, { comLogo: false, comManual: false });
+    miolo.appendChild(secaoDetalhes(e));
+    miolo.appendChild(el('p', {}, [el('a', { href: enderecoDoEstilo(e), texto: 'Voltar para o estilo ' + e.nome })]));
+  }
+  // Detalhes de estrutura (decisão D6): viram o pedido "personalizar" com os detalhes marcados; o agente mostra as opções.
+  // Estilo próprio da empresa: o pedido "personalizar" só aceita estilo do catálogo (pedidos.js), então nada é pedido daqui.
+  function secaoDetalhes(estilo) {
+    if (estilo.proprio) {
+      return el('section', { classe: 'secao campo', 'aria-labelledby': 'detalhes-titulo' }, [
+        el('h2', { id: 'detalhes-titulo', classe: 'campo-titulo', texto: 'Detalhes do estilo' }),
+        el('p', { classe: 'nota', texto: 'Os detalhes de um estilo seu são ajustados no Claude: digite /fabrica e conte o que você quer mudar no estilo ' + estilo.nome + '. Por esta tela dá para trocar as cores e as letras da sua marca, acima.' }),
+      ]);
+    }
+    const caixas = DETALHES.map((d) => {
+      const c = el('input', { type: 'checkbox', value: d.valor, 'data-foco': 'detalhe-' + d.valor });
+      c.checked = tela.detalhes.includes(d.valor);
+      c.addEventListener('change', () => { tela.detalhes = DETALHES.map((x) => x.valor).filter((v) => (v === d.valor ? c.checked : tela.detalhes.includes(v))); });
+      return el('label', {}, [c, d.rotulo]);
+    });
+    const botao = el('button', { type: 'button', classe: 'botao principal', texto: 'Pedir estes detalhes', 'data-foco': 'pedir-detalhes', onclick: async () => {
+      if (!tela.detalhes.length && !tela.recadoDetalhes.trim()) { mensagem('detalhes', 'Marque um detalhe ou conte o que você quer mudar.', 'erro'); return; }
+      const vez = tela.vez;
+      botao.disabled = true;
+      mensagem('detalhes', 'Guardando o pedido…', 'espera');
+      try {
+        const p = await enviarPedido('personalizar', { estilo: estilo.id, detalhes: tela.detalhes, nota: tela.recadoDetalhes });
+        if (p === null || vez !== tela.vez) return;
+        if (p.erro) { mensagem('detalhes', p.erro, 'erro'); return; }
+        mensagem('detalhes', p.mensagem, 'certo');
+      } catch (e) { if (vez === tela.vez) mensagem('detalhes', SEM_SERVIDOR, 'erro'); } finally { botao.disabled = false; }
+    } });
+    return el('section', { classe: 'secao campo', 'aria-labelledby': 'detalhes-titulo' }, [
+      el('h2', { id: 'detalhes-titulo', classe: 'campo-titulo', texto: 'Detalhes do estilo' }),
+      el('p', { classe: 'nota', texto: 'Estes detalhes mudam a estrutura do estilo ' + estilo.nome + '. Quem ajusta é a Fábrica, no Claude, mostrando as opções lado a lado para você escolher.' }),
+      el('fieldset', { classe: 'detalhes-lista' }, [el('legend', { classe: 'so-leitor', texto: 'Detalhes que você quer mudar' })].concat(caixas)),
+      campoDeRecado([el('span', { texto: 'O que você quer mudar? ' }), el('small', { texto: '(opcional)' })], 'recadoDetalhes', 'detalhes'),
+      el('div', { classe: 'acoes' }, [botao]),
+      caixaDeMensagem('detalhes'),
+    ]);
+  }
+
+  // A âncora que muda com a página aberta (um link de Estilos na mesma aba): abre a seção, sem perder o que está na tela.
+  window.addEventListener('hashchange', () => {
+    const ancora = ancoraDoEndereco(location.hash);
+    if (!ancora || tela.modo !== 'marca' || !partes.ramo) return;
+    tela.resposta = 'nao';
+    tela.abertos[ancora] = true;
+    desenhar();
+    mostrarAncora(ancora);
+  });
+
+  iniciar();
+})();
+</script>
+</body>
+</html>

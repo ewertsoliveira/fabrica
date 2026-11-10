@@ -1,0 +1,22 @@
+# Estilo de catálogo da primeira rodada aprovada ("Primeira Página", capa de Reels editorial): só capa de Reels, serifa
+# grande e um único elemento (a pessoa recortada ou um objeto). Combina com a Revista (revista-dominical), Luz de Vela ou Gravura no
+# carrossel. As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher.
+id: primeira-pagina
+nome: Primeira Página
+linha: Estilo só de capa de Reels, serifa grande com destaque em itálico azul e um único elemento, a pessoa ou um objeto.
+origem: catalogo
+combina-com: [direito, psicologia, saude, financas, negocios-e-servicos]
+tom: [elegante, sobrio]
+precisa: [foto-de-pessoa, foto-fundo-liso]
+sugestao:
+  cores: { escuro: "#141414", claro: "#EFEBE4", acento: "#2B4BFF", neutro: "#6B665E" }
+  tipografia: { principal: "Inter", mono: "DM Mono", acento: "Fraunces" }
+  google: "family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,400&family=Inter:wght@400;500&family=DM+Mono:wght@400;500"
+formatos:
+  reels: { modelo: primeira-pagina, capa: capa-primeira-pagina, fundos: [claro, escuro, acento] }
+tratamentos: { destaque: italico+cor+peso, foto: recorte, textura: nenhuma, grafismo: nenhum }
+kit:
+  regras:
+    - "Só capa de Reels: combina com Revista, Luz de Vela ou Gravura no carrossel."
+    - "Serifa grande, no máximo 6 palavras, no alto do recorte da grade."
+    - "Uma foto ou um objeto, nunca os dois."

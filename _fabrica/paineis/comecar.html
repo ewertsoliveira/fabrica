@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Começar</title>
+<link rel="icon" href="data:,">
+<!--
+  Tela "Começar" da Fábrica de Conteúdo: os passos 1 e 2 do caminho, na mesma tela (estudo aprovado).
+  1) Para quem a pessoa vai criar (a marca dela ou os clientes) e o nome; 2) o que ela quer criar (vídeo, carrossel,
+  post único ou tudo). As respostas só decidem a ordem do que aparece depois; nada fica bloqueado.
+  Sem empresa nenhuma, "Continuar" cria a primeira pelo seletor (seletor.comecar, que nunca troca a empresa do agente),
+  grava o que a pessoa quer criar (/api/intencao, pelo seletor, com a empresa por último) e leva à tela da marca.
+  Com a empresa já criada, a tela mostra para quem é e só pergunta o que criar. Quem cria para clientes vê o seletor de
+  empresa desde o primeiro cliente e o botão "+ Novo cliente" (decisão 9 A); com o segundo cliente a tela avisa que, no
+  Claude, a Fábrica vai perguntar com qual empresa trabalhar. O trilho dos passos aparece nos passos 1 a 3 (decisão 1 B).
+  Os dados vêm só do servidor local dos painéis (rotas /api/, sempre pelo seletor). As cores são as neutras do painel: a
+  marca ainda não existe neste passo.
+-->
+<style>
+  :root {
+    --escuro: rgb(30, 32, 36);
+    --claro: rgb(246, 244, 239);
+    --acento: rgb(38, 102, 168);
+    --neutro: rgb(132, 128, 120);
+    --sobre-acento: rgb(255, 255, 255);
+    --sobre-escuro: rgb(246, 244, 239);
+    --letra-titulo: ui-serif, serif;
+    --letra-texto: system-ui, sans-serif;
+    --texto: var(--escuro);
+    --texto-2: color-mix(in srgb, var(--escuro) 68%, var(--claro));
+    --linha: color-mix(in srgb, var(--neutro) 40%, var(--claro));
+    --mesa: color-mix(in srgb, var(--escuro) 7%, var(--claro));
+    --cartao: color-mix(in srgb, #fff 55%, var(--claro));
+    --erro: rgb(170, 40, 40);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--claro);
+    color: var(--texto);
+    font: 15px/1.5 var(--letra-texto);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  button, select, input { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+  .so-leitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* ---- topo (igual ao do Laboratório, do Cronograma e dos Estilos) ---- */
+  .topo {
+    background: var(--escuro);
+    color: var(--sobre-escuro);
+    padding: 18px 28px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px 24px;
+  }
+  .topo-titulo { min-width: 0; }
+  .topo h1 { margin: 0; font: 600 clamp(24px, 3.2vw, 34px)/1.1 var(--letra-titulo); letter-spacing: -0.01em; }
+  .topo-empresa { margin: 4px 0 0; font-size: 15px; opacity: 0.82; overflow-wrap: anywhere; }
+  .topo-empresa:empty { display: none; }
+  .topo-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; }
+  .botao-topo {
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--sobre-escuro) 55%, transparent);
+    background: transparent;
+    color: var(--sobre-escuro);
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .botao-topo:hover { background: color-mix(in srgb, var(--sobre-escuro) 12%, transparent); }
+
+  /* seletor de empresa (montado por empresa-seletor.js) */
+  .empresa-seletor {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--sobre-escuro) 12%, transparent);
+    cursor: pointer;
+    max-width: 100%;
+  }
+  .empresa-seletor-rotulo { opacity: 0.8; white-space: nowrap; }
+  .empresa-seletor-lista {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--sobre-escuro);
+    font-weight: 600;
+    padding: 0 18px 0 0;
+    margin-right: -14px;
+    cursor: pointer;
+    max-width: 220px;
+    text-overflow: ellipsis;
+  }
+  .empresa-seletor-lista option { color: var(--escuro); background: var(--claro); }
+  .empresa-seletor-seta { pointer-events: none; }
+
+  /* ---- trilho dos passos (decisão 1 B: só nos passos 1 a 3) ---- */
+  .trilho { background: var(--mesa); border-bottom: 1px solid var(--linha); padding: 14px 28px 12px; }
+  .trilho ol {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 880px;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .trilho li { position: relative; display: grid; justify-items: center; align-content: start; gap: 4px; text-align: center; min-width: 0; }
+  .trilho li + li::before { content: ""; position: absolute; top: 13px; right: 50%; width: 100%; height: 2px; background: var(--linha); z-index: 0; }
+  .trilho li.feito + li::before, .trilho li.atual + li.atual::before { background: var(--escuro); }
+  .t-num {
+    position: relative;
+    z-index: 1;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    font-weight: 700;
+    background: var(--claro);
+    border: 2px solid var(--linha);
+    color: var(--texto-2);
+  }
+  .feito .t-num { background: var(--escuro); border-color: var(--escuro); color: var(--sobre-escuro); }
+  .atual .t-num { background: var(--acento); border-color: var(--acento); color: var(--sobre-acento); }
+  .t-rot { font-size: 12px; line-height: 1.25; color: var(--texto-2); padding: 0 2px; overflow-wrap: anywhere; }
+  .atual .t-rot { color: var(--texto); font-weight: 700; }
+
+  .aviso {
+    margin: 0;
+    padding: 12px 28px;
+    background: color-mix(in srgb, var(--acento) 14%, var(--claro));
+    border-bottom: 1px solid color-mix(in srgb, var(--acento) 35%, var(--claro));
+    font-weight: 500;
+  }
+
+  /* ---- as duas perguntas ---- */
+  main { max-width: 936px; margin: 0 auto; padding: 30px 28px 64px; }
+  .bloco + .bloco { margin-top: 34px; }
+  .pergunta { margin: 0 0 14px; font: 600 clamp(21px, 2.4vw, 26px)/1.2 var(--letra-titulo); }
+  .pergunta + .apoio { margin: -10px 0 14px; color: var(--texto-2); }
+  .tiles { display: grid; gap: 12px; margin: 0; padding: 0; border: 0; min-width: 0; }
+  .tiles.dois { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tiles.quatro { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .tile {
+    position: relative;
+    display: block;
+    min-width: 0;
+    padding: 16px 16px 15px;
+    border: 1.5px solid var(--linha);
+    border-radius: 12px;
+    background: var(--cartao);
+    cursor: pointer;
+    transition: border-color 0.15s, background-color 0.15s;
+  }
+  .tile:hover { border-color: color-mix(in srgb, var(--acento) 55%, var(--linha)); }
+  .tile input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+  .tile:has(input:focus-visible) { outline: 3px solid var(--acento); outline-offset: 2px; }
+  .tile:has(input:checked) { border-color: var(--acento); background: color-mix(in srgb, var(--acento) 12%, var(--claro)); }
+  .tile::after {
+    content: "";
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--linha);
+    background: var(--claro);
+  }
+  .tile:has(input[type="checkbox"])::after { border-radius: 6px; }
+  .tile:has(input:checked)::after {
+    content: "✓";
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    font-weight: 700;
+    border-color: var(--acento);
+    background: var(--acento);
+    color: var(--sobre-acento);
+  }
+  .tile-ico { display: block; font-size: 22px; line-height: 1; margin-bottom: 10px; color: var(--texto-2); }
+  .tile:has(input:checked) .tile-ico { color: var(--acento); }
+  .tile b { display: block; font-size: 16px; line-height: 1.3; padding-right: 26px; }
+  .tile-sub { display: block; margin-top: 3px; font-size: 13.5px; line-height: 1.4; color: var(--texto-2); }
+
+  .campo { display: grid; gap: 6px; margin-top: 18px; max-width: 520px; }
+  .campo label { font-weight: 600; }
+  .campo input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--linha);
+    border-radius: 10px;
+    background: #fff;
+  }
+  .campo input:focus-visible { outline-offset: 0; border-color: var(--acento); }
+
+  .resumo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    margin: 0;
+    padding: 14px 16px;
+    border: 1.5px solid var(--linha);
+    border-radius: 12px;
+    background: var(--cartao);
+  }
+  .resumo-nome { font-weight: 700; overflow-wrap: anywhere; }
+  .resumo-tipo { font-size: 13px; padding: 2px 10px; border-radius: 999px; background: var(--mesa); color: var(--texto-2); }
+
+  .nota {
+    margin: 14px 0 0;
+    padding: 10px 14px;
+    border-left: 3px solid var(--acento);
+    background: color-mix(in srgb, var(--acento) 8%, var(--claro));
+    border-radius: 0 8px 8px 0;
+    max-width: 640px;
+  }
+  .erro { margin: 22px 0 0; color: var(--erro); font-weight: 600; }
+  .rodape-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 30px; }
+  .botao {
+    padding: 11px 24px;
+    border-radius: 999px;
+    border: 1.5px solid var(--escuro);
+    background: transparent;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .botao-forte { background: var(--escuro); color: var(--sobre-escuro); }
+  .botao:disabled { opacity: 0.6; cursor: progress; }
+
+  .vazio { padding: 48px 0; color: var(--texto-2); }
+  .vazio h2 { margin: 0 0 6px; color: var(--texto); font: 600 22px/1.25 var(--letra-titulo); }
+  .vazio.falha h2 { color: var(--erro); }
+
+  @media (max-width: 700px) {
+    .tiles.quatro { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 520px) {
+    .topo { padding: 16px 16px 18px; }
+    .aviso { padding: 12px 16px; }
+    .trilho { padding: 12px 10px 10px; }
+    .t-num { width: 24px; height: 24px; font-size: 12px; }
+    .trilho li + li::before { top: 11px; }
+    .t-rot { font-size: 10.5px; }
+    main { padding: 22px 16px 48px; }
+    .tiles { gap: 10px; }
+    .tile { padding: 13px 12px 12px; }
+    .tile::after { top: 10px; right: 10px; }
+    .tile b { font-size: 15px; }
+    .tile-sub { font-size: 12.5px; }
+    .empresa-seletor-lista { max-width: 180px; }
+    .botao-forte { width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tile { transition: none; }
+  }
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="topo-titulo">
+    <h1>Começar</h1>
+    <p class="topo-empresa" id="nome-empresa"></p>
+  </div>
+  <div class="topo-acoes">
+    <div id="seletor" hidden></div>
+    <button type="button" class="botao-topo" id="novo-cliente" hidden>+ Novo cliente</button>
+  </div>
+</header>
+<nav class="trilho" aria-label="Passos do caminho">
+  <ol>
+    <li id="passo-1" class="atual"><span class="t-num" aria-hidden="true">1</span><span class="t-rot">Para quem é</span><span class="so-leitor" id="passo-1-feito"></span></li>
+    <li class="atual" aria-current="step"><span class="t-num" aria-hidden="true">2</span><span class="t-rot">O que criar</span></li>
+    <li><span class="t-num" aria-hidden="true">3</span><span class="t-rot">Sua marca</span></li>
+    <li><span class="t-num" aria-hidden="true">4</span><span class="t-rot">Biblioteca</span></li>
+    <li><span class="t-num" aria-hidden="true">5</span><span class="t-rot">Estilo inteiro</span></li>
+    <li><span class="t-num" aria-hidden="true">6</span><span class="t-rot">Decidir</span></li>
+  </ol>
+</nav>
+<p class="aviso" id="aviso" role="status" hidden></p>
+
+<main id="conteudo">
+  <div class="vazio" id="carregando"><p>Carregando…</p></div>
+
+  <form id="formulario" novalidate hidden>
+    <section class="bloco" aria-labelledby="titulo-para">
+      <h2 class="pergunta" id="titulo-para">Para quem você vai criar?</h2>
+      <fieldset class="tiles dois" id="escolha-para">
+        <legend class="so-leitor">Para quem você vai criar?</legend>
+        <label class="tile"><input type="radio" name="para" value="minha-marca"><span class="tile-ico" aria-hidden="true">◐</span><b>Minha marca</b><span class="tile-sub">Eu, meu consultório, minha empresa</span></label>
+        <label class="tile"><input type="radio" name="para" value="clientes"><span class="tile-ico" aria-hidden="true">◑◒</span><b>Meus clientes</b><span class="tile-sub">Sou social media ou agência; cada cliente com a sua cara</span></label>
+      </fieldset>
+      <p class="resumo" id="resumo" hidden>
+        <span>Criando para</span>
+        <span class="resumo-nome" id="resumo-nome"></span>
+        <span class="resumo-tipo" id="resumo-tipo" hidden></span>
+      </p>
+      <div class="campo" id="campo-nome" hidden>
+        <label for="nome" id="rotulo-nome">Como se chama a sua marca?</label>
+        <input id="nome" name="nome" type="text" maxlength="80" autocomplete="organization" spellcheck="false">
+      </div>
+      <p class="nota" id="nota-claude" hidden>No Claude, a Fábrica vai perguntar com qual empresa trabalhar.</p>
+    </section>
+
+    <section class="bloco" aria-labelledby="titulo-quer">
+      <h2 class="pergunta" id="titulo-quer">O que você quer criar?</h2>
+      <p class="apoio">Pode marcar mais de um. As respostas só decidem a ordem do que aparece; nada fica bloqueado.</p>
+      <fieldset class="tiles quatro" id="escolha-quer">
+        <legend class="so-leitor">O que você quer criar? Pode marcar mais de um.</legend>
+        <label class="tile"><input type="checkbox" name="quer" value="video"><span class="tile-ico" aria-hidden="true">▶</span><b>Vídeo</b><span class="tile-sub">Reels falado</span></label>
+        <label class="tile"><input type="checkbox" name="quer" value="carrossel"><span class="tile-ico" aria-hidden="true">▤</span><b>Carrossel</b><span class="tile-sub">Várias lâminas</span></label>
+        <label class="tile"><input type="checkbox" name="quer" value="post"><span class="tile-ico" aria-hidden="true">□</span><b>Post único</b><span class="tile-sub">Uma imagem</span></label>
+        <label class="tile"><input type="checkbox" name="quer" value="tudo"><span class="tile-ico" aria-hidden="true">▦</span><b>Tudo</b><span class="tile-sub">Social media completo, com cronograma</span></label>
+      </fieldset>
+    </section>
+
+    <p class="erro" id="erro" role="alert" hidden></p>
+    <div class="rodape-acoes">
+      <button type="submit" class="botao botao-forte" id="continuar">Continuar</button>
+      <button type="button" class="botao" id="voltar" hidden></button>
+    </div>
+  </form>
+</main>
+
+<script src="empresa-seletor.js"></script>
+<script>
+'use strict';
+(function () {
+  const seletor = EmpresaSeletor.criar();
+  const $ = (id) => document.getElementById(id);
+
+  const QUER = ['video', 'carrossel', 'post'];
+  const ORDEM = QUER.concat('tudo');
+  const PARA = ['minha-marca', 'clientes'];
+  const LIMITE_NOME = 80;
+  const TIPO_DO_PARA = { 'minha-marca': 'Minha marca', clientes: 'Meus clientes' };
+  const SEM_SERVIDOR = 'Não consegui falar com o servidor dos painéis. Confira se a janela do servidor continua aberta e tente de novo.';
+  const erroDe = (r, padrao) => (r && r.json && typeof r.json.erro === 'string' && r.json.erro) || padrao || 'O servidor dos painéis não respondeu como esperado. Feche o painel e abra de novo pelo atalho.';
+
+  // O que a tela está fazendo: `modo` é 'novo' (pasta sem empresa), 'empresa' (a empresa do seletor já existe: só falta o
+  // que criar) ou 'novo-cliente' (+ Novo cliente). `para`: para quem a pessoa cria, lido do caminho. `ocupado`: um envio
+  // por vez.
+  // `criada`: o código que /api/comecar devolveu para a empresa que nasceu nesta tela (depois disso, nunca outra).
+  const tela = { modo: 'novo', para: null, ocupado: false, criada: null };
+
+  // ---- as regras do formulário (sem página: os testes rodam estas funções sozinhas) ----
+
+  // "Tudo" marca os três; tirar um dos três tira o "Tudo"; tirar o "Tudo" tira os três. A ordem é sempre a mesma.
+  function marcar(marcados, valor, ligado) {
+    const m = new Set(marcados);
+    if (valor === 'tudo') ORDEM.forEach((q) => { if (ligado) m.add(q); else m.delete(q); });
+    else if (ligado) m.add(valor);
+    else { m.delete(valor); m.delete('tudo'); }
+    return ORDEM.filter((q) => m.has(q));
+  }
+
+  // O que vai para o servidor: os formatos e se é "tudo" (com "tudo", os três).
+  function intencaoDe(marcados) {
+    const tudo = marcados.indexOf('tudo') >= 0;
+    return { quer: tudo ? QUER.slice() : QUER.filter((q) => marcados.indexOf(q) >= 0), tudo: tudo };
+  }
+
+  // O que já estava gravado, de volta nos ladrilhos (só o que a tela conhece).
+  function marcadosDa(intencao) {
+    if (!intencao || typeof intencao !== 'object') return [];
+    if (intencao.tudo === true) return ORDEM.slice();
+    const quer = Array.isArray(intencao.quer) ? intencao.quer : [];
+    return QUER.filter((q) => quer.indexOf(q) >= 0);
+  }
+
+  function rotuloDoNome(para, novoCliente) {
+    if (novoCliente) return 'Como se chama o novo cliente?';
+    return para === 'clientes' ? 'Como se chama o primeiro cliente?' : 'Como se chama a sua marca?';
+  }
+
+  // O primeiro problema do formulário ({ texto, campo }) ou null. O nome só é pedido quando a empresa ainda não existe.
+  function problemaDoFormulario(f) {
+    if (f.precisaNome && PARA.indexOf(f.para) < 0) return { texto: 'Escolha para quem você vai criar: a sua marca ou os seus clientes.', campo: 'para' };
+    if (f.precisaNome && !String(f.nome || '').trim()) return { texto: 'Escreva o nome para continuar.', campo: 'nome' };
+    if (f.precisaNome && Array.from(String(f.nome).trim()).length > LIMITE_NOME) return { texto: 'Use um nome de até ' + LIMITE_NOME + ' letras.', campo: 'nome' };
+    if (!Array.isArray(f.marcados) || !f.marcados.length) return { texto: 'Marque pelo menos uma opção em "O que você quer criar?".', campo: 'quer' };
+    return null;
+  }
+
+  // ---- a página ----
+
+  const caixas = () => Array.from(document.querySelectorAll('input[name="quer"]'));
+  const radios = () => Array.from(document.querySelectorAll('input[name="para"]'));
+  const marcadosNaTela = () => ORDEM.filter((q) => caixas().some((c) => c.value === q && c.checked));
+  function porNaTela(marcados) {
+    caixas().forEach((c) => { c.checked = marcados.indexOf(c.value) >= 0; });
+  }
+  function paraNaTela() {
+    const r = radios().find((x) => x.checked);
+    return r ? r.value : null;
+  }
+
+  function mostrarErro(texto, campo) {
+    const e = $('erro');
+    e.textContent = texto;
+    e.hidden = false;
+    const alvo = campo === 'para' ? radios()[0] : campo === 'nome' ? $('nome') : campo === 'quer' ? caixas()[0] : null;
+    if (alvo) alvo.focus();
+  }
+  function esconderErro() {
+    $('erro').hidden = true;
+    $('erro').textContent = '';
+  }
+  function falhaGeral(texto) {
+    $('formulario').hidden = true;
+    const c = $('carregando');
+    c.textContent = '';
+    c.className = 'vazio falha';
+    const h = document.createElement('h2');
+    h.textContent = 'Não consegui abrir esta tela';
+    const p = document.createElement('p');
+    p.textContent = texto;
+    c.appendChild(h);
+    c.appendChild(p);
+    c.hidden = false;
+  }
+  function mostrarFormulario() {
+    $('carregando').hidden = true;
+    $('formulario').hidden = false;
+  }
+  function desligar(sim) {
+    $('continuar').disabled = sim;
+    $('voltar').disabled = sim;
+    $('novo-cliente').disabled = sim;
+    $('continuar').textContent = sim ? 'Guardando…' : 'Continuar';
+  }
+
+  // O passo 1 já respondido (a empresa existe) aparece como feito no trilho.
+  function trilho(primeiroFeito) {
+    $('passo-1').className = primeiroFeito ? 'feito' : 'atual';
+    $('passo-1').querySelector('.t-num').textContent = primeiroFeito ? '✓' : '1';
+    $('passo-1-feito').textContent = primeiroFeito ? ', respondido' : '';
+  }
+
+  // Pasta sem empresa nenhuma: as duas perguntas inteiras.
+  function abrirNovo() {
+    tela.modo = 'novo';
+    tela.para = null;
+    $('nome-empresa').textContent = '';
+    $('escolha-para').hidden = false;
+    $('resumo').hidden = true;
+    $('campo-nome').hidden = !paraNaTela();
+    $('nota-claude').hidden = true;
+    $('novo-cliente').hidden = true;
+    $('voltar').hidden = true;
+    trilho(false);
+  }
+
+  // A empresa do seletor já existe: para quem é fica resumido; só falta o que criar (com o que já estava gravado).
+  function abrirEmpresa(caminho) {
+    tela.modo = 'empresa';
+    tela.para = PARA.indexOf(caminho.para) >= 0 ? caminho.para : null;
+    seletor.mostrarSempre(tela.para === 'clientes');
+    $('novo-cliente').hidden = tela.para !== 'clientes';
+    $('nome-empresa').textContent = seletor.nome();
+    $('escolha-para').hidden = true;
+    $('campo-nome').hidden = true;
+    $('resumo').hidden = false;
+    $('resumo-nome').textContent = seletor.nome();
+    $('resumo-tipo').textContent = tela.para ? TIPO_DO_PARA[tela.para] : '';
+    $('resumo-tipo').hidden = !tela.para;
+    $('nota-claude').hidden = true;
+    $('voltar').hidden = true;
+    porNaTela(marcadosDa(caminho.intencao));
+    trilho(true);
+  }
+
+  // "+ Novo cliente": só o nome do cliente novo e o que criar para ele. Com ele serão duas ou mais empresas, e o agente
+  // passa a perguntar com qual trabalhar (o painel nunca escolhe por ele).
+  function abrirNovoCliente() {
+    esconderErro();
+    // pedido de propósito: o cliente novo nasce no próximo "Continuar" (a trava contra a empresa repetida vale só para o
+    // mesmo "Continuar" que falhou, nunca para um cliente novo)
+    tela.criada = null;
+    tela.modo = 'novo-cliente';
+    $('nome-empresa').textContent = 'Novo cliente';
+    $('escolha-para').hidden = true;
+    $('resumo').hidden = true;
+    $('campo-nome').hidden = false;
+    $('rotulo-nome').textContent = rotuloDoNome('clientes', true);
+    $('nome').value = '';
+    $('nota-claude').hidden = false;
+    $('voltar').textContent = 'Voltar para ' + seletor.nome();
+    $('voltar').hidden = false;
+    porNaTela([]);
+    trilho(false);
+    $('nome').focus();
+  }
+
+  async function carregarEmpresa(novoCliente) {
+    const codigo = seletor.atual();
+    if (tela.criada && codigo !== tela.criada) tela.criada = null; // a pessoa escolheu outra empresa no seletor
+    esconderErro();
+    let r;
+    try { r = await seletor.ler('/api/caminho'); } catch (e) { falhaGeral(SEM_SERVIDOR); return; }
+    if (r === null || seletor.atual() !== codigo) return; // a pessoa já trocou de empresa
+    if (!r.ok) { falhaGeral(erroDe(r)); return; }
+    abrirEmpresa(r.json);
+    if (novoCliente && tela.para === 'clientes') abrirNovoCliente();
+    mostrarFormulario();
+  }
+
+  // A empresa que nasceu nesta tela é a do seletor? Se a lista não voltou com ela, lê de novo e escolhe; nunca vale a
+  // empresa do endereço no lugar dela.
+  async function naEmpresaCriada() {
+    if (seletor.atual() === tela.criada) return true;
+    try {
+      const s = await seletor.carregar();
+      if (s.empresas.some((e) => e.codigo === tela.criada)) seletor.escolher(tela.criada);
+    } catch (e) { /* fica para o próximo "Continuar" */ }
+    return seletor.atual() === tela.criada;
+  }
+
+  // Continuar: cria a empresa (só quando ela ainda não existe), grava o que a pessoa quer criar e leva à tela da marca.
+  async function continuar(ev) {
+    ev.preventDefault();
+    if (tela.ocupado) return;
+    esconderErro();
+    const marcados = marcadosNaTela();
+    const precisaNome = tela.modo !== 'empresa';
+    const para = tela.modo === 'novo-cliente' ? 'clientes' : tela.modo === 'novo' ? paraNaTela() : tela.para;
+    const nome = $('nome').value.trim();
+    const problema = problemaDoFormulario({ precisaNome, para, nome, marcados });
+    if (problema) { mostrarErro(problema.texto, problema.campo); return; }
+    tela.ocupado = true;
+    desligar(true);
+    try {
+      if (precisaNome && !tela.criada) {
+        const criada = await seletor.comecar({ nome, para });
+        if (!criada.ok) { mostrarErro(erroDe(criada), 'nome'); return; }
+        // Nasceu: daqui em diante vale o código devolvido, e "Continuar" nunca cria outra empresa nesta tela.
+        tela.criada = criada.json.codigo;
+      }
+      // A empresa nova precisa ser a do seletor antes de gravar nela (senão a intenção iria para a do endereço).
+      if (tela.criada && !(await naEmpresaCriada())) { mostrarErro(SEM_SERVIDOR); return; }
+      if (precisaNome) {
+        // A empresa já existe: se a gravação abaixo falhar, a tela fica nela e "Continuar" só tenta de novo o que criar.
+        abrirEmpresa({ para, intencao: intencaoDe(marcados) });
+      }
+      const codigo = seletor.atual();
+      const r = await seletor.enviar('/api/intencao', intencaoDe(marcados));
+      if (r === null) return;
+      if (!r.ok) { mostrarErro(erroDe(r)); return; }
+      location.href = 'marca.html?empresa=' + encodeURIComponent(codigo);
+    } catch (e) {
+      mostrarErro(SEM_SERVIDOR);
+    } finally {
+      tela.ocupado = false;
+      desligar(false);
+    }
+  }
+
+  async function iniciar() {
+    let s;
+    try { s = await seletor.carregar(); } catch (e) { falhaGeral(e.message); return; }
+    seletor.montar({ seletor: $('seletor'), aviso: $('aviso'), aoTrocar: () => { if (!tela.ocupado) carregarEmpresa(false); } });
+    if (!s.atual) {
+      abrirNovo();
+      mostrarFormulario();
+      return;
+    }
+    carregarEmpresa(new URLSearchParams(location.search).get('novo') === 'cliente');
+  }
+
+  radios().forEach((r) => r.addEventListener('change', () => {
+    $('campo-nome').hidden = false;
+    $('rotulo-nome').textContent = rotuloDoNome(paraNaTela(), false);
+  }));
+  caixas().forEach((c) => c.addEventListener('change', () => porNaTela(marcar(marcadosNaTela(), c.value, c.checked))));
+  $('formulario').addEventListener('submit', continuar);
+  $('novo-cliente').addEventListener('click', () => { if (!tela.ocupado) { abrirNovoCliente(); mostrarFormulario(); } });
+  $('voltar').addEventListener('click', () => { if (!tela.ocupado) carregarEmpresa(false); });
+  iniciar();
+})();
+</script>
+</body>
+</html>

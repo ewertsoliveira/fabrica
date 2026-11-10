@@ -1,0 +1,44 @@
+/* Fanzine (primeira rodada, colagem de papel): papel rasgado atrás do visual, mockup preso com fita adesiva vermelha,
+   título em tarjas com o destaque em amarelo, texto datilografado e uma anotação à mão por lâmina. O vermelho da fita e da
+   caneta é material, fixo como o post-it. */
+.lamina.est-fanzine{gap:26px;--tarja:var(--cor-escuro);--tarja-t:var(--cor-claro);--rasgo:color-mix(in srgb,var(--cor-claro) 70%,white);--caneta:#C2321C}
+.est-fanzine.fundo-escuro{--tarja:var(--cor-claro);--tarja-t:var(--cor-escuro);--rasgo:color-mix(in srgb,var(--cor-escuro) 86%,white);--caneta:var(--cor-acento)}
+.est-fanzine.fundo-acento{--rasgo:color-mix(in srgb,var(--cor-acento) 70%,white)}
+.lamina.est-fanzine::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(color-mix(in srgb,var(--t) 8%,transparent) 1.2px,transparent 1.4px);background-size:7px 7px}
+.est-fanzine .titulo{font-family:var(--fonte-principal);font-weight:700;text-transform:uppercase;letter-spacing:.01em;line-height:1.36;font-size:max(var(--piso-titulo),92px)}
+.est-fanzine .titulo .tarja{background:var(--tarja);color:var(--tarja-t);padding:0 .22em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.est-fanzine .titulo .dst{background:var(--cor-acento);color:var(--cor-escuro);padding:0 .1em}
+.est-fanzine.fundo-acento .titulo .dst{background:#E94F37;color:var(--cor-claro)}
+.est-fanzine.papel-capa .titulo{font-size:max(var(--piso-titulo),112px)}
+.est-fanzine .kicker{font:700 var(--piso-micro)/1.2 var(--fonte-mono);letter-spacing:.06em;color:var(--t)}
+.est-fanzine .corpo{font-family:var(--fonte-mono);font-size:var(--piso-corpo);line-height:1.38;color:var(--t)}
+.est-fanzine .nota{font:700 64px/1 var(--fonte-acento);color:var(--caneta);transform:rotate(-6deg);margin:-10px 10px -10px 0}
+.est-fanzine .nota::after{content:""}
+.est-fanzine .rasgo{position:absolute !important;left:-30px;right:-30px;bottom:150px;height:600px;z-index:0 !important;background:var(--rasgo);
+  clip-path:polygon(0 6%,5% 2%,10% 7%,16% 1%,23% 6%,30% 2%,37% 8%,44% 3%,51% 7%,58% 1%,65% 6%,72% 2%,79% 7%,86% 2%,93% 6%,100% 3%,100% 97%,93% 93%,86% 99%,79% 94%,72% 98%,65% 93%,58% 99%,51% 94%,44% 98%,37% 92%,30% 98%,23% 93%,16% 99%,10% 94%,5% 98%,0 93%)}
+.est-fanzine.l-miolo-fanzine-acima .rasgo{top:110px;bottom:auto}
+.est-fanzine .vis-mockup{overflow:visible;padding:40px 0 24px}
+.est-fanzine .vis-mockup.inclinado > *{transform:rotate(-2.5deg)}
+.est-fanzine.l-miolo-fanzine-acima .vis-mockup.inclinado > *{transform:rotate(2deg)}
+.est-fanzine .vis-mockup .mk{border-radius:6px}
+.est-fanzine .vis-mockup .mk.mk-sombra{box-shadow:8px 10px 0 rgba(0,0,0,.16)}
+.est-fanzine .vis-mockup::before{content:"";position:absolute;top:14px;left:50%;width:190px;height:54px;background:rgba(233,79,55,.8);transform:translateX(-50%) rotate(5deg);z-index:3}
+.est-fanzine .vis-foto{overflow:visible;border-radius:0}
+.est-fanzine .vis-foto img{object-fit:contain}
+.est-fanzine.papel-capa .vis-foto{flex:0 1 420px}
+.est-fanzine .nav-barra{border-radius:0}
+.est-fanzine .nav-barra i{border-radius:0;background:var(--t)}
+.est-fanzine .nav-contador{background:none;padding:0;font:600 var(--piso-micro) var(--fonte-mono)}
+.est-fanzine .nav-arraste{opacity:1;font:700 var(--piso-micro) var(--fonte-mono)}
+.est-fanzine .logo-marca{left:var(--pad)}
+.est-fanzine.l-fecho-cartao-visual{--cartao-f:var(--cor-claro);--cartao-t:var(--cor-escuro);--raio-cartao:2px;--raio-botao:0;--cartao-sombra:10px 12px 0 rgba(0,0,0,.25)}
+.est-fanzine.l-fecho-cartao-visual .cartao .titulo{font-family:var(--fonte-principal);font-size:max(var(--piso-titulo),74px);line-height:1.1}
+.est-fanzine.l-fecho-cartao-visual .titulo .dst{background:linear-gradient(transparent 10%,var(--cor-acento) 10%,var(--cor-acento) 96%,transparent 96%);color:var(--cor-escuro)}
+.est-fanzine.l-fecho-cartao-visual .botao{border:5px solid var(--cor-escuro)}
+.est-fanzine.l-fecho-cartao-visual .vis-mockup::before{display:none}
+.est-fanzine.l-fecho-cartao-visual .vis-mockup{padding:6px 0 12px}
+.est-fanzine.l-fecho-cartao-visual .vis-mockup.inclinado > *{transform:none}
+.est-fanzine.l-fecho-cartao-visual{padding-top:90px}
+.est-fanzine.l-fecho-cartao-visual .cartao{gap:8px;padding-top:22px;padding-bottom:24px}
+.est-fanzine.l-fecho-cartao-visual .cartao .titulo{line-height:1.08}
+.est-fanzine.l-fecho-cartao-visual .botao{padding:18px 48px}

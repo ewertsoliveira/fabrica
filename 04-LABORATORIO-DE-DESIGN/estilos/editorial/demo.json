@@ -1,0 +1,75 @@
+[
+  {
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-blazer.jpg",
+    "posicao_foto": "50% 25%",
+    "kicker": "Finanças sem susto",
+    "titulo": "O imposto *não é* surpresa",
+    "subtitulo": "Ele nasce em cada venda. Só aparece depois."
+  },
+  {
+    "titulo": "Começa *na venda*",
+    "visual": {
+      "tipo": "circulo",
+      "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/xicara.jpg",
+      "posicao": "50% 45%"
+    },
+    "corpo": "Cada venda já traz **a parte do imposto**. Ela só não sai da conta na hora, mas já não é sua."
+  },
+  {
+    "titulo": "3 contas que *pedem reserva*",
+    "visual": {
+      "tipo": "cartoes",
+      "itens": [
+        {
+          "nome": "Imposto",
+          "descricao": "Separado no dia da venda"
+        },
+        {
+          "nome": "Férias",
+          "descricao": "Um pouco por mês"
+        },
+        {
+          "nome": "Décimo terceiro",
+          "descricao": "Começa em janeiro"
+        }
+      ]
+    },
+    "corpo": "Reserva não é sobra: **é dinheiro que já tem dono**. Separar cedo evita corrida no dia de pagar."
+  },
+  {
+    "titulo": "Separe *no mesmo dia*",
+    "visual": {
+      "tipo": "numero",
+      "valor": "1",
+      "rotulo": "dia útil, no máximo"
+    },
+    "corpo": "Deixar para o fim do mês **mistura o que é seu com o que não é**, e a conta nunca fecha direito."
+  },
+  {
+    "titulo": "Uma conta *só para isso*",
+    "visual": {
+      "tipo": "circulo",
+      "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/pastas.jpg",
+      "posicao": "50% 50%"
+    },
+    "corpo": "Uma conta separada **tira o dinheiro da vista** e da tentação de usar em outra coisa no mês."
+  },
+  {
+    "titulo": "Cada empresa tem *o seu ritmo*",
+    "visual": {
+      "tipo": "arco",
+      "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-blazer.jpg",
+      "posicao": "50% 22%"
+    },
+    "corpo": "Na conversa, a gente acha **a sua** rotina de reserva, no ritmo do caixa da sua empresa."
+  },
+  {
+    "titulo": "Salve para o *próximo mês*",
+    "visual": {
+      "tipo": "circulo",
+      "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/xicara.jpg",
+      "posicao": "50% 45%"
+    },
+    "corpo": "Salve este carrossel e **volte a ele** no dia de pagar o imposto, com a conta separada à mão."
+  }
+]

@@ -1,0 +1,68 @@
+[
+  {
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-verde.jpg",
+    "posicao_foto": "50% 22%",
+    "palavra": "nutri",
+    "kicker": "Nutricionista",
+    "titulo": "Comer bem *sem terrorismo*",
+    "subtitulo": "Atendimento online e presencial, com um plano que respeita a sua rotina."
+  },
+  {
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/prato-salmao.jpg",
+    "retrato": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-sentada.jpg",
+    "palavra": "plano",
+    "ilustracao": "trigo",
+    "kicker": "Como eu trabalho",
+    "titulo": "Um plano que *cabe na rotina*",
+    "corpo": "Primeiro eu entendo a sua rotina. Depois monto um cardápio que cabe no seu horário e reviso a cada 30 dias.",
+    "visual": {
+      "tipo": "mockup",
+      "componente": "checklist",
+      "dados": {
+        "titulo": "Meu acompanhamento",
+        "itens": [
+          {
+            "texto": "Conversa sobre a rotina",
+            "feito": true
+          },
+          {
+            "texto": "Cardápio no seu horário",
+            "feito": true
+          },
+          {
+            "texto": "Revisão a cada 30 dias",
+            "feito": false
+          }
+        ]
+      }
+    }
+  },
+  {
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/xicara.jpg",
+    "retrato": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-sentada.jpg",
+    "palavra": "agenda",
+    "kicker": "Consultas",
+    "titulo": "Como *agendar*",
+    "subtitulo": "A primeira consulta pode ser online ou presencial. Ela dura uma hora e já sai com o seu primeiro plano.",
+    "botao": "Chame no direct",
+    "visual": {
+      "tipo": "mockup",
+      "componente": "conversa",
+      "dados": {
+        "contato": "Lia Exemplo",
+        "usuario": "lia.exemplo",
+        "estado": "online",
+        "mensagens": [
+          {
+            "de": "ele",
+            "texto": "Tem horário para a primeira consulta?"
+          },
+          {
+            "de": "eu",
+            "texto": "Tenho dia 14, às 14:00. Online ou presencial?"
+          }
+        ]
+      }
+    }
+  }
+]

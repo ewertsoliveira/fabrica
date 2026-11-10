@@ -1,0 +1,105 @@
+# Credenciais e segredos
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*credentials*.json
+*secrets*.json
+.netrc
+.npmrc
+
+# Dependências
+node_modules/
+
+# Arquivos temporários e de sistema
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Mídia pesada (vídeos e áudio)
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.mp3
+*.wav
+
+# Imagens e arquivos de design pesados
+*.psd
+*.ai
+*.tiff
+*.heic
+*.raw
+
+# Pacotes e compactados grandes
+*.zip
+*.dmg
+*.iso
+
+# Gerados na hora (catálogo dos blocos de motion e temporários)
+08-FERRAMENTAS/tesseract/blocos-motion/catalogo/
+08-FERRAMENTAS/tesseract/blocos-motion/catalogo.html
+08-FERRAMENTAS/tesseract/blocos-motion/.work/
+
+# Gerados na hora (texturas, prévias e saídas dos modelos de edição)
+08-FERRAMENTAS/tesseract/modelos/texturas/
+08-FERRAMENTAS/tesseract/modelos/previews/
+08-FERRAMENTAS/tesseract/modelos/amostra/saida/
+08-FERRAMENTAS/tesseract/modelos/amostra/.cache/
+
+# Sessões de navegador (cookies de login) e conteúdo de terceiros extraído pelas investigações
+_fabrica/_sessoes/
+linhas/*/_investigacoes/
+empresas/*/investigacoes/
+# Originais pesados das fotos (pessoas reais) na pasta de cada empresa, como 06-MARCA-E-FOTOS/originais/ na pasta antiga
+empresas/*/originais/
+
+# Prévias visuais geradas (paletas, tipografias, quadros de marca)
+_fabrica/_visual/
+
+# Arquivos temporários e backups da atualização
+_fabrica/_atualizacao/
+_fabrica/_backup/
+
+# Prévia gerada da biblioteca de mockups (depende da marca de cada empresa)
+08-FERRAMENTAS/mockups/previa.html
+# Vídeos de prévia da biblioteca que ainda não foram liberados (podem mostrar uma pessoa real; só "liberado": true vai para previas/)
+04-LABORATORIO-DE-DESIGN/biblioteca/previas-locais/
+# Prévia gerada do catálogo de estilos
+04-LABORATORIO-DE-DESIGN/estilos/catalogo.html
+04-LABORATORIO-DE-DESIGN/estilos/kit.html
+
+# Originais pesados das fotos da empresa (os recortes ficam em 06-MARCA-E-FOTOS/fotos/)
+06-MARCA-E-FOTOS/originais/
+
+# Registro do servidor local dos painéis (porta e processo em uso; muda a cada abertura)
+.servidor.json
+
+# Pasta temporária do envio ao cliente (apagada ao fim de cada envio)
+empresas/*/.envio-tmp-*/
+
+# Trava da organização da pasta (existe só enquanto ela roda, ou se ela ficou pela metade), a tomada dela e os
+# arquivos temporários das cópias (só existem durante a gravação, ou se ela foi interrompida)
+empresas/.migracao.lock
+empresas/.migracao.lock.tomada
+empresas/.migracao.lock.*
+*.migracao-tmp
+
+# Prévias dos estilos na marca de cada empresa (se refazem quando a marca muda e podem mostrar uma pessoa) e o registro de
+# quem está fazendo as prévias de vídeo
+empresas/*/previas/
+empresas/.fila-previas*.json
+# "Como ficaria": a peça de um estilo com uma cor sugerida (feita sob demanda, refeita quando a marca muda)
+empresas/*/cores-sugeridas/
+# Pasta de preparo das prévias base (as imagens novas antes de entrarem; apagada no fim ou na rodada seguinte)
+04-LABORATORIO-DE-DESIGN/biblioteca/previas/*/.novo-*/
+
+# Página de revisão da biblioteca (pode mostrar vídeo que ainda não foi liberado; gerada por revisao.js)
+04-LABORATORIO-DE-DESIGN/biblioteca/revisao.html
+# Arquivos de trabalho do vídeo de demonstração da biblioteca (a fala e os tempos da pessoa; ficam só no computador dela)
+08-FERRAMENTAS/tesseract/modelos/amostra/palavras-demonstracao.json
+08-FERRAMENTAS/tesseract/modelos/amostra/pedido-demonstracao.json
+08-FERRAMENTAS/tesseract/modelos/amostra/transcricao.json

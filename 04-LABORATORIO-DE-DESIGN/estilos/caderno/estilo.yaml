@@ -1,0 +1,39 @@
+# Estilo de catálogo vindo do modelo de Reels "Caderno": folha pautada, pincelada preta, laço à mão e pessoa no círculo riscado.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: caderno
+nome: Caderno
+linha: Folha pautada, rótulo em pincelada preta, título com laço desenhado à mão, mockups como papel solto e anotação em caneta azul.
+origem: catalogo
+combina-com: [educacao, nutricao, psicologia, saude]
+tom: [acolhedor, divertido]
+precisa: [foto-de-pessoa]
+sugestao:
+  cores: { escuro: "#1C2133", claro: "#F5F3EC", acento: "#2C5BD4", neutro: "#5A6072" }
+  tipografia: { principal: "Inter", mono: "Caveat", acento: "Caveat" }
+  google: "family=Inter:wght@400;600;900&family=Caveat:wght@600;700"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-caderno]
+    miolo: [miolo-caderno-abaixo, miolo-caderno-acima]
+    fecho: [fecho-caderno]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [claro]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-caderno, metodo: miolo-caderno-abaixo, contratar: fecho-caderno }
+  reels: { modelo: caderno, capa: capa-caderno }
+tratamentos: { destaque: cor, foto: circulo-riscado, textura: caderno, grafismo: laco-a-mao }
+kit:
+  regras:
+    - "Folha pautada em toda lâmina."
+    - "Rótulo na pincelada preta; anotação em caneta azul."
+    - "O laço à mão envolve só a palavra do destaque."
+  movimento:
+    - video: "laço desenhado à mão em volta da palavra"
+      peca: "laço fixo em volta do destaque"
+    - video: "letra manuscrita sobre pincelada"
+      peca: "rótulo em pincelada"
+    - video: "pessoa que entra num círculo riscado"
+      peca: "retrato no círculo riscado do fecho"

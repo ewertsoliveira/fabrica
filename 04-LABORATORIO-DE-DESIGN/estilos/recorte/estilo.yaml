@@ -1,0 +1,41 @@
+# Estilo de catálogo vindo do modelo de Reels "Recorte": título datilografado em fitas, papel colado e jornal.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: recorte
+nome: Recorte
+linha: Título datilografado em fitas pretas e claras, texto em recorte de papel, mockups colados com fita sobre jornal e papel azul rasgado.
+origem: catalogo
+combina-com: [educacao, moda, gastronomia, negocios-e-servicos]
+tom: [divertido, ousado]
+precisa: [foto-de-pessoa]
+sugestao:
+  cores: { escuro: "#1E1E21", claro: "#F2EFE6", acento: "#2F64D6", neutro: "#6B6B71" }
+  tipografia: { principal: "Inter", mono: "Courier Prime", acento: "" }
+  google: "family=Inter:wght@400;500;700&family=Courier+Prime:wght@700"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-recorte]
+    miolo: [miolo-recorte-abaixo, miolo-recorte-acima]
+    fecho: [fecho-recorte]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [claro, escuro]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-recorte, metodo: miolo-recorte-abaixo, contratar: fecho-recorte, fundos: [claro, escuro, escuro] }
+  reels: { modelo: recorte, capa: capa-recorte }
+tratamentos: { destaque: cor, foto: colada, textura: jornal, grafismo: fita }
+kit:
+  regras:
+    - "Título sempre em fitas: preta para o texto, clara para o destaque."
+    - "Texto de apoio em recorte de papel claro, levemente girado."
+    - "Mockup colado com fita sobre o jornal; nunca solto no fundo."
+  movimento:
+    - video: "papel azul que rasga ao entrar"
+      peca: "papel azul rasgado no alto da capa"
+    - video: "título datilografado letra a letra"
+      peca: "título em fitas datilografadas"
+    - video: "parte ainda não falada em cinza"
+      peca: "rótulo em pílula com a segunda parte apagada"
+    - video: "foto que entra girando e cola"
+      peca: "mockup colado com fita, levemente girado"

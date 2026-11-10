@@ -1,0 +1,20 @@
+{
+  "rodada": "2026-10-10",
+  "observacao": "Primeira rodada: sem série histórica anterior, então não há crescimento de estrelas para comparar. Valores lidos direto do GitHub em 2026-10-10 e aceitos como reportados.",
+  "repositorios": [
+    { "nome": "coreyhaines31/marketingskills", "estrelas": 53997, "criado": "2026-01-15", "ultimo_push": "2026-10-08", "licenca": "mit", "lido_a_fundo": false },
+    { "nome": "miqdadbadjuber/anti-slop", "estrelas": 5710, "criado": "2026-08-07", "ultimo_push": "2026-10-04", "licenca": "mit", "lido_a_fundo": true },
+    { "nome": "Jakeschincariol/instagram-agent-skill", "estrelas": 777, "criado": "2026-09-13", "ultimo_push": "2026-09-13", "licenca": "mit", "lido_a_fundo": true },
+    { "nome": "Jakeschincariol/youtube-agent-skill", "estrelas": 959, "criado": "2026-09-16", "ultimo_push": "2026-09-16", "licenca": "mit", "lido_a_fundo": false },
+    { "nome": "nateherkai/hyperframes-student-kit", "estrelas": 1278, "criado": "2026-04-18", "ultimo_push": "2026-09-28", "licenca": "other", "lido_a_fundo": true },
+    { "nome": "bitjaru/styleseed", "estrelas": 974, "criado": "2026-04-07", "ultimo_push": "2026-10-09", "licenca": "mit", "lido_a_fundo": true },
+    { "nome": "plugin87/ux-ui-agent-skills", "estrelas": 1567, "criado": "2026-03-16", "ultimo_push": "2026-10-10", "licenca": "mit", "lido_a_fundo": true },
+    { "nome": "nextlevelbuilder/ui-ux-pro-max-skill", "estrelas": 134371, "criado": "2025-11-30", "ultimo_push": "2026-10-09", "licenca": "mit", "lido_a_fundo": false },
+    { "nome": "nexu-io/open-design", "estrelas": 100319, "criado": "2026-04-28", "ultimo_push": "2026-10-10", "licenca": "apache-2.0", "lido_a_fundo": false },
+    { "nome": "VoltAgent/awesome-design-md", "estrelas": 120117, "criado": "2026-03-31", "ultimo_push": "2026-10-05", "licenca": "mit", "lido_a_fundo": false },
+    { "nome": "heygen-com/hyperframes", "estrelas": 60086, "criado": "2026-03-10", "ultimo_push": "2026-10-10", "licenca": "apache-2.0", "lido_a_fundo": false },
+    { "nome": "calesthio/OpenMontage", "estrelas": 65986, "criado": "2026-03-29", "ultimo_push": "2026-10-03", "licenca": "agpl-3.0", "lido_a_fundo": false },
+    { "nome": "hypit-ai/hypit", "estrelas": 20725, "criado": "2026-07-29", "ultimo_push": "2026-10-09", "licenca": "other", "lido_a_fundo": false },
+    { "nome": "iart-ai/motion-skills", "estrelas": 762, "criado": "2026-06-22", "ultimo_push": "2026-09-30", "licenca": "mit", "lido_a_fundo": false }
+  ]
+}

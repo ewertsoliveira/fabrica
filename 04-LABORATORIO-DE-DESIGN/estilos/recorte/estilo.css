@@ -1,0 +1,40 @@
+/* Recorte, do modelo de Reels de mesmo nome: título datilografado em fitas pretas (o destaque na fita clara), rótulo em
+   pílula, texto em recorte de papel, mockup colado com fita sobre jornal e o papel azul rasgado no alto do fecho. */
+.lamina.est-recorte{gap:22px}
+.est-recorte.fundo-claro{--f:color-mix(in srgb,var(--cor-claro) 88%,var(--cor-neutro))}
+.est-recorte .jornal{position:absolute !important;inset:-140px -180px;z-index:0 !important;background:textura(papel-jornal) center/cover;transform:rotate(-4deg)}
+.est-recorte.fundo-escuro .jornal{opacity:.1}
+.est-recorte .kicker{align-self:flex-start;background:var(--cor-claro);color:var(--cor-escuro);border-radius:999px;padding:10px 28px;font:700 var(--piso-micro)/1.2 var(--fonte-principal);letter-spacing:.02em;text-transform:none;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.est-recorte .titulo{font-family:var(--fonte-mono);font-weight:700;font-size:max(var(--piso-titulo),72px);line-height:1.6;letter-spacing:.08em;text-transform:uppercase}
+.est-recorte .titulo .fita{padding:.16em .42em;-webkit-box-decoration-break:clone;box-decoration-break:clone;background:textura(fita-escura) center/100% 100%;color:var(--cor-claro)}
+.est-recorte .titulo .dst{padding:.16em .42em;margin:0 -.2em;-webkit-box-decoration-break:clone;box-decoration-break:clone;background:textura(fita-clara) center/100% 100%;color:var(--cor-escuro)}
+.est-recorte .corpo{align-self:flex-start;background:var(--cor-claro);color:var(--cor-escuro);padding:16px 26px;box-shadow:6px 10px 22px rgba(0,0,0,.22);transform:rotate(-.6deg);font-weight:500}
+.est-recorte .corpo b{color:var(--cor-escuro)}
+.est-recorte .nota{font:700 36px/1.2 var(--fonte-principal);background:var(--cor-claro);color:var(--cor-escuro);padding:8px 24px;border-radius:999px;box-shadow:0 4px 12px rgba(0,0,0,.2);transform:rotate(-3deg)}
+.est-recorte .nota::after{content:""}
+.est-recorte .vis-mockup{overflow:visible;padding:10px 0}
+.est-recorte .vis-mockup::before{content:"";position:absolute;top:0;left:38%;width:240px;height:64px;z-index:3;background:textura(fita-clara) center/100% 100%;transform:rotate(4deg)}
+.est-recorte .vis-mockup .mk.mk-sombra{box-shadow:8px 14px 26px rgba(0,0,0,.3)}
+.est-recorte .nav-contador{background:var(--cor-claro);color:var(--cor-escuro);font:700 var(--piso-micro) var(--fonte-mono)}
+.est-recorte .nav-arraste{opacity:1;font:700 var(--piso-micro) var(--fonte-mono);background:var(--cor-claro);color:var(--cor-escuro);padding:2px 14px}
+.est-recorte .nav-barra{background:color-mix(in srgb,var(--cor-escuro) 25%,transparent)}
+.est-recorte .nav-barra i{background:var(--cor-escuro)}
+.est-recorte.fundo-escuro .nav-barra{background:color-mix(in srgb,var(--cor-claro) 25%,transparent)}
+.est-recorte.fundo-escuro .nav-barra i{background:var(--cor-claro)}
+.est-recorte .logo-marca{background:var(--cor-claro);padding:4px 10px}
+.est-recorte.l-capa-recorte{justify-content:flex-start}
+.est-recorte.l-capa-recorte .cv{position:absolute !important;left:0;right:0;top:430px;bottom:120px;z-index:0 !important}
+.est-recorte.l-capa-recorte .cv img{width:100%;height:100%;object-fit:cover}
+.est-recorte.l-capa-recorte .cv .veu{position:absolute;inset:0;background:linear-gradient(transparent 70%,rgba(0,0,0,.25))}
+.est-recorte .azul{position:absolute !important;left:0;top:-40px;width:1080px;z-index:1 !important}
+.est-recorte.l-capa-recorte .corpo{margin-top:auto;max-width:720px}
+.est-recorte.l-fecho-recorte .vis{margin:0 -20px}
+.est-recorte.l-fecho-recorte .botao{align-self:center;padding:24px 56px;border-radius:80px;background:var(--cor-claro);color:var(--cor-escuro);font-size:var(--piso-corpo);font-weight:800;box-shadow:0 6px 16px rgba(0,0,0,.3)}
+.est-recorte.l-fecho-recorte .conta{position:absolute !important;left:var(--pad);bottom:calc(var(--seg-base) - 40px);font:700 var(--piso-micro) var(--fonte-mono);background:var(--cor-claro);color:var(--cor-escuro);padding:2px 12px}
+.est-recorte.l-fecho-recorte{gap:14px}
+.est-recorte.l-fecho-recorte .kicker{padding:6px 24px}
+.est-recorte.l-fecho-recorte .titulo{letter-spacing:.02em}
+.est-recorte.l-fecho-recorte .botao{padding:18px 50px}
+.est-recorte.l-fecho-recorte .corpo{background:none;box-shadow:none;padding:0;transform:none;color:var(--cor-claro)}
+.est-recorte.l-fecho-recorte .vis-mockup{padding:4px 0 0}
+.est-recorte.l-fecho-recorte .vis-mockup::before{left:54%}

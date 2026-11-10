@@ -1,0 +1,33 @@
+# Estilo de catálogo: fundos que se alternam, mockup de interface inclinado, três vozes (título pesado, rótulo mono e
+# nota manuscrita) e fechamento em cartão. As cores e fontes abaixo são só a sugestão de demonstração; na produção,
+# valem as do marca.yaml da empresa.
+id: contraste
+nome: Contraste
+linha: Fundos escuro, claro e de acento em sequência, mockup inclinado, rótulo mono, nota manuscrita e fechamento em cartão.
+origem: catalogo
+combina-com: [tecnologia, negocios-e-servicos, financas, educacao]
+tom: [tecnico, vibrante]
+precisa: [funciona-sem-foto]
+sugestao:
+  cores: { escuro: "#16171A", claro: "#F2F1EC", acento: "#4A68E8", neutro: "#8A8A90" }
+  tipografia: { principal: "Inter Tight", mono: "JetBrains Mono", acento: "Caveat" }
+  google: "family=Inter+Tight:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa]
+    miolo: [conteudo-visual-abaixo, lista-numerada, formula, conteudo-visual-acima, comparativo-fluxo, grade-2-colunas, citacao]
+    fecho: [fecho-cartao]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: false, arraste: false, contador: false }
+    fundos: [escuro, claro, acento]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa, metodo: lista-numerada, contratar: fecho-cartao }
+  reels: { modelo: contraste, capa: capa }
+tratamentos: { destaque: cor, foto: recorte, textura: grao, grafismo: faixa-diagonal }
+kit:
+  regras:
+    - "Fundos escuro, claro e de acento em sequência."
+    - "Três vozes: título pesado, rótulo mono e nota manuscrita."
+    - "Mockup inclinado; fechamento em cartão."

@@ -1,0 +1,32 @@
+{
+  "combina-com": {
+    "saude": "Saúde",
+    "nutricao": "Nutrição",
+    "psicologia": "Psicologia",
+    "estetica-e-beleza": "Estética e beleza",
+    "direito": "Direito",
+    "financas": "Finanças",
+    "educacao": "Educação",
+    "arquitetura-e-casa": "Arquitetura e casa",
+    "tecnologia": "Tecnologia",
+    "gastronomia": "Gastronomia",
+    "moda": "Moda",
+    "bem-estar": "Bem-estar",
+    "negocios-e-servicos": "Negócios e serviços"
+  },
+  "tom": {
+    "sobrio": "Sóbrio",
+    "elegante": "Elegante",
+    "acolhedor": "Acolhedor",
+    "vibrante": "Vibrante",
+    "divertido": "Divertido",
+    "tecnico": "Técnico",
+    "ousado": "Ousado"
+  },
+  "precisa": {
+    "funciona-sem-foto": "Carrossel funciona sem foto",
+    "foto-de-pessoa": "Foto de pessoa",
+    "foto-fundo-liso": "Foto com fundo liso",
+    "fotos-do-assunto": "Fotos do assunto"
+  }
+}

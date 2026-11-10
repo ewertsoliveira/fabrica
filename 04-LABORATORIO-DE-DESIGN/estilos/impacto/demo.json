@@ -1,0 +1,153 @@
+[
+  {
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-verde.jpg",
+    "posicao_foto": "50% 22%",
+    "kicker": "Nutrição · café da manhã",
+    "titulo": "3 erros no *café da manhã*",
+    "subtitulo": "Eles travam o emagrecimento e trazem a fome de volta antes do almoço."
+  },
+  {
+    "layout": "miolo-impacto-abaixo",
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/ovos.jpg",
+    "kicker": "1 de 3 · proteína",
+    "titulo": "Pular a *proteína*",
+    "corpo": "Sem proteína, a fome volta em duas horas e o almoço vira compensação. Por isso o café curto não segura.",
+    "nota": "acontece com você?",
+    "visual": {
+      "tipo": "mockup",
+      "componente": "notificacao",
+      "dados": {
+        "app": "Mensagens",
+        "titulo": "Bia",
+        "texto": "Já deu fome de novo. Só mais um café?",
+        "hora": "10:12",
+        "relogio": "10:12",
+        "data": "14 de outubro"
+      }
+    }
+  },
+  {
+    "layout": "miolo-impacto-acima",
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/iogurte.jpg",
+    "kicker": "2 de 3 · rótulo",
+    "titulo": "Confiar no *“fit”*",
+    "corpo": "Barrinha e iogurte de pacote costumam ter mais açúcar do que parecem. O rótulo mostra, se você souber onde olhar.",
+    "visual": {
+      "tipo": "mockup",
+      "componente": "planilha",
+      "dados": {
+        "nome": "Rótulo da barrinha",
+        "colunas": [
+          "Porção de 40 g",
+          "Quantidade"
+        ],
+        "linhas": [
+          [
+            "Valor energético",
+            "168 kcal"
+          ],
+          [
+            "Carboidratos",
+            "29 g"
+          ],
+          [
+            "Açúcares totais",
+            "14 g"
+          ]
+        ],
+        "destaque": [
+          2,
+          1
+        ]
+      }
+    }
+  },
+  {
+    "layout": "miolo-impacto-abaixo",
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/xicara.jpg",
+    "kicker": "3 de 3 · pão",
+    "titulo": "Café *só de pão*",
+    "corpo": "Pão com geleia sobe o açúcar no sangue rápido e cai rápido. Com ovo ou queijo, a curva fica mais estável.",
+    "nota": "troca simples",
+    "visual": {
+      "tipo": "mockup",
+      "componente": "cartaoApp",
+      "dados": {
+        "rotulo": "Açúcar no sangue (ilustração)",
+        "valor": "Pico às 9:00",
+        "variacao": "mais estável com ovo",
+        "descricao": "",
+        "barras": [
+          20,
+          45,
+          95,
+          40,
+          25,
+          30
+        ],
+        "meses": [
+          "7:00",
+          "8:00",
+          "9:00",
+          "10:00",
+          "11:00",
+          "12:00"
+        ]
+      }
+    }
+  },
+  {
+    "layout": "miolo-impacto-acima",
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/prato-salmao.jpg",
+    "kicker": "Na prática",
+    "titulo": "Monte o *seu prato*",
+    "corpo": "Uma proteína, uma fruta inteira e uma fonte de fibra. Três itens e o seu café já segura até o almoço.",
+    "visual": {
+      "tipo": "mockup",
+      "componente": "checklist",
+      "dados": {
+        "titulo": "Meu café da manhã",
+        "itens": [
+          {
+            "texto": "Uma proteína: ovo, queijo ou iogurte",
+            "feito": true
+          },
+          {
+            "texto": "Uma fruta inteira, em vez do suco",
+            "feito": true
+          },
+          {
+            "texto": "Uma fibra: aveia ou pão integral",
+            "feito": false
+          }
+        ]
+      }
+    }
+  },
+  {
+    "layout": "fecho-visual",
+    "kicker": "Sua vez",
+    "titulo": "Quer um plano para a *sua rotina*?",
+    "subtitulo": "Eu monto o seu café da manhã a partir do horário em que você acorda.",
+    "botao": "Chame no direct",
+    "visual": {
+      "tipo": "mockup",
+      "componente": "conversa",
+      "dados": {
+        "contato": "Lia Exemplo",
+        "usuario": "lia.exemplo",
+        "estado": "online",
+        "mensagens": [
+          {
+            "de": "ele",
+            "texto": "Quero um plano para a minha rotina."
+          },
+          {
+            "de": "eu",
+            "texto": "Claro. A que horas você acorda?"
+          }
+        ]
+      }
+    }
+  }
+]

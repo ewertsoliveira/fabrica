@@ -1,0 +1,40 @@
+/* Adesivo, do modelo de Reels de mesmo nome: título na faixa rosa com contorno preto, adesivos em volta dos mockups, a
+   pessoa no arco sobre o xadrez rosa, papel quadriculado e o selo estourado como anotação. */
+.lamina.est-adesivo{gap:28px}
+.est-adesivo .grade{position:absolute !important;inset:0;z-index:0 !important;background:textura(papel-grade) center top/cover}
+.est-adesivo.fundo-acento .grade{display:none}
+.est-adesivo .xadrez{position:absolute !important;inset:0;z-index:0 !important;background:textura(xadrez-rosa) center top/cover}
+.est-adesivo .kicker{align-self:flex-start;background:var(--cor-claro);color:var(--cor-escuro);border:4px solid var(--cor-escuro);border-radius:999px;padding:8px 26px;font:700 var(--piso-micro)/1.2 var(--fonte-principal);letter-spacing:.06em}
+.est-adesivo .titulo{font-weight:900;text-transform:uppercase;letter-spacing:-.02em;line-height:1.38;font-size:max(var(--piso-titulo),80px)}
+.est-adesivo .titulo .faixa{background:var(--cor-acento);color:var(--cor-escuro);border:6px solid var(--cor-escuro);padding:0 .2em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.est-adesivo.fundo-acento .titulo .faixa{background:var(--cor-claro)}
+.est-adesivo .titulo .dst{font-style:italic;color:inherit}
+.est-adesivo .corpo{font-weight:500;color:var(--cor-escuro)}
+.est-adesivo .vis-mockup{overflow:visible}
+.est-adesivo .vis-mockup.inclinado > *{transform:rotate(-2deg)}
+.est-adesivo .vis-mockup .mk.mk-sombra{box-shadow:0 0 0 5px var(--cor-escuro),14px 14px 0 5px var(--cor-escuro)}
+.est-adesivo .vis-mockup::before{content:"";position:absolute;z-index:4;left:-56px;top:-34px;width:120px;height:120px;background:textura(adesivo-estrela) center/contain no-repeat;transform:rotate(-10deg)}
+.est-adesivo .vis-mockup::after{content:"";position:absolute;z-index:4;right:-40px;bottom:-40px;width:100px;height:160px;background:textura(adesivo-raio) center/contain no-repeat;transform:rotate(14deg)}
+.est-adesivo.l-miolo-adesivo-acima .vis-mockup::before{background-image:textura(adesivo-flor);left:auto;right:-50px}
+.est-adesivo.l-miolo-adesivo-acima .vis-mockup::after{background-image:textura(adesivo-seta);right:auto;left:-50px;width:130px;height:130px}
+.est-adesivo .nota{align-self:flex-end;width:260px;height:260px;display:grid;place-items:center;text-align:center;white-space:normal;padding:46px;margin:-70px -40px -150px 0;background:textura(adesivo-explosao) center/contain no-repeat;font:900 32px/1.05 var(--fonte-principal);text-transform:uppercase;color:var(--cor-escuro);transform:rotate(-8deg);z-index:5 !important}
+.est-adesivo .nota::after{content:""}
+.est-adesivo .nav-contador{background:var(--cor-claro);color:var(--cor-escuro);border:4px solid var(--cor-escuro);font:700 var(--piso-micro) var(--fonte-principal)}
+.est-adesivo .nav-arraste{opacity:1;font:700 var(--piso-micro) var(--fonte-principal);color:var(--cor-escuro)}
+.est-adesivo .nav-barra{background:color-mix(in srgb,var(--cor-escuro) 18%,transparent)}
+.est-adesivo .nav-barra i{background:var(--cor-escuro)}
+.est-adesivo.l-capa-adesivo{justify-content:flex-start}
+.est-adesivo.l-capa-adesivo .titulo{font-size:max(var(--piso-titulo),84px)}
+.est-adesivo.l-capa-adesivo .cv{flex:1;min-height:0;align-self:center;aspect-ratio:.8;border:8px solid var(--cor-escuro);border-bottom:0;border-radius:999px 999px 0 0;overflow:hidden;margin-bottom:-28px}
+.est-adesivo.l-capa-adesivo .cv img{width:100%;height:100%;object-fit:cover}
+.est-adesivo.l-capa-adesivo .cv .veu{position:absolute;inset:0;background:linear-gradient(transparent 75%,rgba(0,0,0,.12))}
+.est-adesivo .ad{position:absolute !important;z-index:4 !important;pointer-events:none}
+.est-adesivo .ad1{left:110px;top:560px;width:140px;transform:rotate(-8deg)}
+.est-adesivo .ad2{left:850px;top:600px;width:110px;transform:rotate(14deg)}
+.est-adesivo .ad3{left:840px;top:880px;width:130px}
+.est-adesivo .ad4{left:110px;top:860px;width:140px;transform:rotate(6deg)}
+.est-adesivo.l-capa-adesivo .corpo{background:var(--cor-claro);border:5px solid var(--cor-escuro);border-radius:30px;padding:22px 30px;box-shadow:10px 10px 0 var(--cor-escuro);position:relative;z-index:5 !important}
+.est-adesivo.l-fecho-visual .titulo{font-size:max(var(--piso-titulo),72px);line-height:1.3}
+.est-adesivo.l-miolo-adesivo-abaixo .vis-mockup::after,.est-adesivo.l-fecho-visual .vis-mockup::after{top:38%;bottom:auto;right:-46px}
+.est-adesivo.l-fecho-visual{gap:20px}
+.est-adesivo.l-fecho-visual .vis-mockup{padding:8px 0 0}

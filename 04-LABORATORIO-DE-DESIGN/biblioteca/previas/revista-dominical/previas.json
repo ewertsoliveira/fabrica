@@ -1,0 +1,24 @@
+{
+  "estilo": "revista-dominical",
+  "gerado": "2026-11-09T01:48:57.036Z",
+  "cores": "sugestao",
+  "capa": "carrossel-01.webp",
+  "carrossel": [
+    "carrossel-01.webp",
+    "carrossel-02.webp",
+    "carrossel-03.webp",
+    "carrossel-04.webp",
+    "carrossel-05.webp",
+    "carrossel-06.webp"
+  ],
+  "fixados": {
+    "apresentacao": "fixado-apresentacao.webp",
+    "metodo": "fixado-metodo.webp",
+    "contratar": "fixado-contratar.webp"
+  },
+  "reelsCapa": "reels-capa.webp",
+  "video": "video.webm",
+  "videoCapa": "video-capa.webp",
+  "bytes": 1586903,
+  "bytesImagens": 892920
+}

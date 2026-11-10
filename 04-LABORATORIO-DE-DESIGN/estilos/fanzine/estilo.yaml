@@ -1,0 +1,33 @@
+# Estilo de catálogo da primeira rodada aprovada ("Fanzine", colagem de papel): papel rasgado, fita adesiva, títulos em tarja e anotação à mão.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+# O vermelho da fita adesiva e da anotação à mão é o material do objeto (fica fixo, como o amarelo do post-it).
+id: fanzine
+nome: Fanzine
+linha: Papel rasgado, mockups presos com fita vermelha, título em tarjas com o destaque em amarelo, texto datilografado e anotação à mão.
+origem: catalogo
+combina-com: [moda, gastronomia, educacao]
+tom: [divertido, ousado]
+precisa: [funciona-sem-foto]
+sugestao:
+  cores: { escuro: "#171615", claro: "#EAE2D2", acento: "#FFD23F", neutro: "#5C564B" }
+  tipografia: { principal: "Oswald", mono: "Courier Prime", acento: "Caveat" }
+  google: "family=Oswald:wght@600;700&family=Courier+Prime:wght@400;700&family=Caveat:wght@700"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-fanzine]
+    miolo: [miolo-fanzine-abaixo, miolo-fanzine-acima]
+    fecho: [fecho-cartao-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [claro, escuro, claro, escuro, claro, acento]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-fanzine, metodo: miolo-fanzine-abaixo, contratar: fecho-cartao-visual }
+  reels: { modelo: fanzine, capa: capa-fanzine }
+tratamentos: { destaque: cor, foto: sem-foto, textura: pontilhado, grafismo: fita-adesiva }
+kit:
+  regras:
+    - "Título em tarjas, como etiqueta recortada."
+    - "Uma anotação manuscrita por lâmina, no máximo."
+    - "Mockup levemente girado e preso com fita."

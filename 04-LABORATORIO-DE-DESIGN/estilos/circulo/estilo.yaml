@@ -1,0 +1,39 @@
+# Estilo de catálogo vindo do modelo de Reels "Círculo": condensada atrás da pessoa, pílula serifada e foto que entra por um círculo.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: circulo
+nome: Círculo
+linha: Condensada atrás da pessoa, rótulo em pílula serifada, destaque em itálico, a foto da lâmina entrando por um círculo com anel e anéis no fundo.
+origem: catalogo
+combina-com: [saude, direito, financas, educacao, negocios-e-servicos]
+tom: [sobrio, elegante]
+precisa: [foto-de-pessoa, foto-fundo-liso, fotos-do-assunto]
+sugestao:
+  cores: { escuro: "#14213A", claro: "#F1F3F4", acento: "#1F4F99", neutro: "#55607A" }
+  tipografia: { principal: "Instrument Serif", mono: "Instrument Serif", acento: "Bebas Neue" }
+  google: "family=Bebas+Neue&family=Instrument+Serif:ital@0;1"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-circulo]
+    miolo: [miolo-circulo-abaixo, miolo-circulo-acima]
+    fecho: [fecho-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [acento, claro]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-circulo, metodo: miolo-circulo-abaixo, contratar: fecho-visual }
+  reels: { modelo: circulo, capa: capa-circulo }
+tratamentos: { destaque: italico+fonte, foto: circulo, textura: aneis, grafismo: circulo-com-anel }
+kit:
+  regras:
+    - "Condensada atrás da pessoa na capa, inteira acima da cabeça."
+    - "A foto da lâmina entra num círculo com anel, no canto."
+    - "Rótulo em pílula serifada; destaque em itálico."
+  movimento:
+    - video: "foto que entra por um círculo"
+      peca: "foto num círculo com anel no canto"
+    - video: "anéis que se expandem"
+      peca: "anéis fixos no fundo"
+    - video: "palavra que sobe atrás da pessoa"
+      peca: "palavra atrás do recorte na capa"

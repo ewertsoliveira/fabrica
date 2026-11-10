@@ -1,0 +1,39 @@
+# Estilo de catálogo vindo do modelo de Reels "Neon": fundo escuro, moldura neon atrás da pessoa e destaque manuscrito que brilha.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: neon
+nome: Neon
+linha: Fundo escuro, moldura neon que passa atrás da pessoa, destaque manuscrito brilhante e mockups com contorno neon.
+origem: catalogo
+combina-com: [tecnologia, estetica-e-beleza, moda, negocios-e-servicos]
+tom: [ousado, vibrante]
+precisa: [foto-de-pessoa, foto-fundo-liso]
+sugestao:
+  cores: { escuro: "#091216", claro: "#E9FDFF", acento: "#5CE6F2", neutro: "#4D5A5E" }
+  tipografia: { principal: "Inter", mono: "Inter", acento: "Kaushan Script" }
+  google: "family=Inter:wght@400;600;800;900&family=Kaushan+Script"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-neon]
+    miolo: [miolo-neon-abaixo, miolo-neon-acima]
+    fecho: [fecho-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [escuro]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-neon, metodo: miolo-neon-abaixo, contratar: fecho-visual }
+  reels: { modelo: neon, capa: capa-neon }
+tratamentos: { destaque: cor+fonte, foto: recorte, textura: brilho, grafismo: moldura-neon }
+kit:
+  regras:
+    - "Um só néon (o acento) por peça: moldura, contorno e brilho do destaque."
+    - "Destaque sempre na letra manuscrita, com brilho."
+    - "Na capa, a moldura passa atrás da pessoa e aparece por cima da cabeça."
+  movimento:
+    - video: "moldura neon que acende atrás da pessoa"
+      peca: "moldura fixa entre a foto e o recorte"
+    - video: "palavra manuscrita que brilha"
+      peca: "destaque manuscrito com brilho"
+    - video: "palavra repetida que se desfoca"
+      peca: "palavra da lâmina desfocada atrás do mockup"

@@ -1,0 +1,104 @@
+# Linha de Produção: Reels falado
+#
+# Do vídeo falado (cru ou já editado) ao Reels pronto no modelo da empresa: entrada com camada de produção e modelo,
+# preparo do material por script, plano único com quatro lentes, estrutura aprovada por prancha de quadros,
+# export único em pedaços paralelos, revisão (script + olhar) e aprovação final.
+#
+# Valores da empresa (cores, fontes, conta, vocabulário) vêm do marca.yaml da empresa ativa (caminho `marca` em
+# `node _fabrica/core/empresa.js caminhos`); nada aqui os repete. Os `saida:` abaixo continuam relativos à linha:
+# o runner os traduz para a pasta de saídas da empresa ativa.
+# Ferramentas: 08-FERRAMENTAS/tesseract/ (ver o LEIA-ME de lá).
+
+linha: reels
+nome: "Reels falado"
+idioma: pt-BR
+formato: instagram-reels
+
+# Regras de execução, para o runner:
+# - Camada de produção e modelo de edição são perguntados SEMPRE no passo 1 (dados/camadas-de-producao.md).
+# - O estilo de vídeo da empresa ativa (caminho `estiloDeVideo` de `empresa.js caminhos`) é perguntado uma vez, ANTES da camada e do modelo,
+#   pela entrevista de dados/entrevista-de-estilo.md; existindo o arquivo, o passo 1 só o lê.
+# - O passo 2 não tem estação: execução inline do runner, rodando preparar-material.js. Para e pergunta se houver ambiguidade.
+# - O passo 3 grava um único plano.md (quatro lentes no mesmo documento).
+# - O modelo forte planeja e arquiteta; o leve executa. O passo 6 abre uma estação NOVA em modelo leve (lê estrutura.md),
+#   em qualquer camada; os ajustes pós-revisão continuam essa estação por SendMessage.
+# - Modelo nos passos 3 e 4: leve em Expresso e Padrão; o mais forte só em Vitrine.
+# - O passo 4, em Padrão e Vitrine, também exporta a AMOSTRA de ~10 s; o passo 5 só vale com a amostra mostrada.
+# - Export do passo 6 em pelo menos 3 pedaços (--pedacos 3; nunca 2).
+# - Contexto enxuto: dados/briefing.md no lugar de ler a empresa inteira em cada passo.
+# - Passo de capa: NÃO exportado ainda (depende do Laboratório de Design). Ver LEIA-ME.md.
+
+checkpoints: [1, 5, 8]
+
+passos:
+  - passo: 1
+    id: entrada
+    nome: "Entrada do vídeo"
+    tipo: checkpoint
+    arquivo: passos/01-entrada.md
+    saida: saida/entrada.md
+
+  - passo: 2
+    id: preparo
+    nome: "Preparar material (script)"
+    tipo: script
+    execucao: inline
+    arquivo: passos/02-preparo.md
+    entrada: saida/entrada.md
+    saida: saida/material.md
+
+  - passo: 3
+    id: plano
+    nome: "Plano de edição (gancho, modelo, gráficos, chamada final)"
+    tipo: estacao
+    estacao: gancho
+    lentes: [modelo-e-transicao, graficos, chamada-final]
+    execucao: subagente
+    arquivo: passos/03-plano.md
+    entrada: saida/material.md
+    saida: saida/plano.md
+
+  - passo: 4
+    id: estrutura
+    nome: "Montar estrutura e gerar prancha"
+    tipo: estacao
+    estacao: edicao
+    execucao: subagente
+    arquivo: passos/04-estrutura.md
+    entrada: saida/plano.md
+    saida: saida/estrutura.md
+
+  - passo: 5
+    id: aprovar-plano
+    nome: "Aprovar plano e estrutura"
+    tipo: checkpoint
+    arquivo: passos/05-aprovar-plano.md
+    saida: saida/plano-aprovado.md
+
+  - passo: 6
+    id: montar-exportar
+    nome: "Exportar, mixar e entregar"
+    tipo: estacao
+    estacao: edicao
+    execucao: subagente
+    arquivo: passos/06-montar-exportar.md
+    entrada: saida/plano-aprovado.md
+    saida: saida/entrega.md
+
+  - passo: 7
+    id: revisao
+    nome: "Revisão"
+    tipo: estacao
+    estacao: revisao
+    execucao: inline
+    arquivo: passos/07-revisao.md
+    entrada: saida/entrega.md
+    saida: saida/revisao.md
+    ao_reprovar: 6
+
+  - passo: 8
+    id: aprovacao-final
+    nome: "Aprovação final"
+    tipo: checkpoint
+    arquivo: passos/08-aprovacao-final.md
+    saida: saida/aprovacao-final.md

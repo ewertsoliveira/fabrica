@@ -1,0 +1,59 @@
+/* Papelaria. Tudo preso a .est-papelaria; cores e fontes por papel. O branco do papel, o amarelo do post-it, o cinza
+   do clipe e o creme da fita são cores do material do objeto, não da marca. */
+.est-papelaria{gap:46px;font-family:var(--fonte-mono)}
+.est-papelaria .titulo{font:400 max(var(--piso-titulo),124px)/.9 var(--fonte-principal);letter-spacing:-.025em}
+.est-papelaria .titulo .dst{font-style:italic}
+.est-papelaria .corpo{font-family:var(--fonte-mono);font-size:var(--piso-corpo);line-height:1.3;color:var(--t)}
+.est-papelaria .corpo b{font-weight:800}
+.est-papelaria .kicker{font-family:var(--fonte-mono);font-weight:600;letter-spacing:.14em}
+.est-papelaria .conta{position:absolute !important;left:0;right:0;bottom:calc(var(--seg-base) - 80px);text-align:center;font:500 var(--piso-micro) var(--fonte-mono)}
+.est-papelaria .ob{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+
+/* post-it com clipe sobre um disco */
+.est-papelaria .postit .disco{position:absolute;width:500px;height:500px;border-radius:50%;background:var(--cor-escuro);right:60px;top:50%;transform:translateY(-50%)}
+.est-papelaria.fundo-escuro .postit .disco{background:var(--cor-acento)}
+.est-papelaria .nota-papel{position:relative;width:620px;padding:100px 56px 60px;background:#E8E26A;transform:rotate(-4deg);box-shadow:0 26px 40px rgba(0,0,0,.25)}
+.est-papelaria .nota-papel p{margin:0;font:800 56px/1.08 var(--fonte-mono);color:#1B2440;letter-spacing:-.01em}
+.est-papelaria .nota-papel b{color:#B94A16}
+.est-papelaria .clipe{position:absolute;width:86px;left:50%;top:-56px;transform:translateX(-50%)}
+
+/* cartão sobreposto */
+.est-papelaria .cartao .atras{position:absolute;width:680px;height:440px;border-radius:30px;background:var(--cor-escuro);transform:rotate(7deg) translate(30px,10px)}
+.est-papelaria.fundo-escuro .cartao .atras{background:var(--cor-acento)}
+.est-papelaria .cartao .frente{position:relative;width:680px;padding:60px 56px;border-radius:30px;background:#fff;color:var(--cor-escuro);box-shadow:0 20px 40px rgba(0,0,0,.18);transform:rotate(-2deg)}
+.est-papelaria .cartao .ct{margin:0;font:400 80px/.98 var(--fonte-principal);color:var(--cor-acento)}
+.est-papelaria .cartao .cb{margin:28px 0 0;padding-top:24px;border-top:3px solid var(--cor-escuro);font:600 var(--piso-corpo)/1.2 var(--fonte-mono)}
+
+/* foto colada com fita */
+.est-papelaria .foto .moldura{width:640px;height:600px;padding:18px;background:#fff;transform:rotate(3deg);box-shadow:0 24px 40px rgba(0,0,0,.28)}
+.est-papelaria .foto img{width:100%;height:100%;object-fit:cover;display:block}
+.est-papelaria .fita{position:absolute;width:190px;height:56px;background:rgba(240,232,210,.85);z-index:2}
+.est-papelaria .fita.f1{left:200px;top:6px;transform:rotate(-14deg)}
+.est-papelaria .fita.f2{right:190px;bottom:4px;transform:rotate(-10deg)}
+
+/* folha de caderno com furos */
+.est-papelaria .folha{align-items:stretch}
+.est-papelaria .folha .furos{position:absolute;left:0;top:30px;bottom:30px;width:40px;background:radial-gradient(circle,var(--f) 11px,transparent 12px) 0 0/40px 70px;z-index:2}
+.est-papelaria .folha ul{position:relative;margin:0;padding:40px 60px 40px 90px;width:100%;list-style:none;background:#fff repeating-linear-gradient(transparent 0 100px,#C9D3E6 100px 102px);border-radius:6px;box-shadow:0 20px 34px rgba(0,0,0,.15);transform:rotate(-1.5deg)}
+.est-papelaria .folha li{font:400 58px/102px var(--fonte-principal);color:var(--cor-escuro)}
+.est-papelaria .folha li::before{content:"→ ";color:var(--cor-acento)}
+.est-papelaria .folha li b{font-weight:400;font-style:italic;color:var(--cor-acento)}
+
+/* etiqueta */
+.est-papelaria .etiqueta p{position:relative;margin:0;width:800px;padding:64px 70px 64px 150px;background:var(--cor-claro);color:var(--cor-escuro);font:600 var(--piso-corpo)/1.22 var(--fonte-mono);border-radius:20px 120px 120px 20px;transform:rotate(-3deg);box-shadow:0 20px 40px rgba(0,0,0,.3)}
+.est-papelaria .etiqueta p::before{content:"";position:absolute;left:56px;top:50%;width:46px;height:46px;margin-top:-23px;border-radius:50%;background:var(--cor-escuro);box-shadow:0 0 0 10px var(--cor-acento)}
+.est-papelaria .etiqueta b{font-weight:800;color:var(--cor-acento)}
+
+/* capa com foto inteira e véu claro à esquerda */
+.est-papelaria.l-capa-foto{padding:0}
+.est-papelaria .cv{position:absolute !important;inset:0;z-index:0 !important}
+.est-papelaria .cv img{width:100%;height:100%;object-fit:cover;display:block}
+.est-papelaria .veu{position:absolute;inset:0;background:linear-gradient(90deg,color-mix(in srgb,var(--cor-claro) 95%,transparent) 0,color-mix(in srgb,var(--cor-claro) 90%,transparent) 48%,transparent 74%)}
+.est-papelaria .veu-escuro{background:linear-gradient(180deg,transparent 30%,color-mix(in srgb,var(--cor-escuro) 94%,transparent) 72%)}
+.est-papelaria .capa-txt{position:absolute !important;left:var(--pad);top:0;bottom:0;width:620px;display:flex;flex-direction:column;justify-content:center;gap:34px;color:var(--cor-escuro)}
+.est-papelaria .capa-txt .kicker,.est-papelaria .capa-txt .corpo{color:var(--cor-escuro)}
+.est-papelaria .capa-txt .titulo{font-size:max(var(--piso-titulo),136px)}
+.est-papelaria .capa-txt .titulo .dst{color:color-mix(in srgb,var(--cor-acento) 78%,var(--cor-escuro))}
+.est-papelaria .capa-txt.sobre-escuro{right:var(--pad);width:auto;justify-content:flex-end;padding-bottom:calc(var(--seg-base) + 30px);color:var(--cor-claro)}
+.est-papelaria .capa-txt.sobre-escuro .kicker,.est-papelaria .capa-txt.sobre-escuro .corpo{color:var(--cor-claro)}
+.est-papelaria.l-capa-foto .conta{color:var(--cor-escuro)}

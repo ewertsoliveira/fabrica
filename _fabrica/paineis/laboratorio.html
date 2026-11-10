@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratório de Design</title>
+<link rel="icon" href="data:,">
+<!--
+  Tela do Laboratório de Design da Fábrica de Conteúdo. Mostra as peças de UMA empresa (a escolhida no seletor),
+  com a prévia de cada uma, o estado da aprovação e os botões "Aprovar design" e "Desfazer aprovação".
+  Todos os dados vêm do servidor local dos painéis (rotas /api/, sempre com a empresa); nenhum arquivo de dados é
+  lido por caminho. As cores e as letras são as da marca da empresa escolhida (ou as de exemplo).
+-->
+<style>
+  :root {
+    --escuro: rgb(30, 32, 36);
+    --claro: rgb(246, 244, 239);
+    --acento: rgb(38, 102, 168);
+    --neutro: rgb(132, 128, 120);
+    --sobre-acento: rgb(255, 255, 255);
+    --sobre-escuro: rgb(246, 244, 239);
+    --letra-titulo: ui-serif, serif;
+    --letra-texto: system-ui, sans-serif;
+    --letra-mono: ui-monospace, monospace;
+    --texto: var(--escuro);
+    --texto-2: color-mix(in srgb, var(--escuro) 68%, var(--claro));
+    --linha: color-mix(in srgb, var(--neutro) 40%, var(--claro));
+    --fundo-2: color-mix(in srgb, var(--neutro) 10%, var(--claro));
+    --mesa: color-mix(in srgb, var(--escuro) 7%, var(--claro));
+    --erro: rgb(170, 40, 40);
+    --raio: 10px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--claro);
+    color: var(--texto);
+    font: 15px/1.5 var(--letra-texto);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  button, select { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+
+  /* ---- topo ---- */
+  .topo {
+    background: var(--escuro);
+    color: var(--sobre-escuro);
+    padding: 18px 28px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px 24px;
+  }
+  .topo-titulo { min-width: 0; }
+  .topo h1 {
+    margin: 0;
+    font: 600 clamp(24px, 3.2vw, 34px)/1.1 var(--letra-titulo);
+    letter-spacing: -0.01em;
+  }
+  .topo-empresa {
+    margin: 4px 0 0;
+    font-size: 15px;
+    opacity: 0.82;
+    overflow-wrap: anywhere;
+  }
+  .topo-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+  .topo-acoes a { color: var(--sobre-escuro); text-underline-offset: 3px; }
+  .topo-acoes a.link-discreto { font-size: 13px; opacity: 0.75; }
+  .nota-exemplo {
+    font-size: 13px;
+    padding: 3px 10px;
+    border: 1px solid color-mix(in srgb, var(--sobre-escuro) 45%, transparent);
+    border-radius: 999px;
+  }
+
+  /* seletor de empresa (montado por empresa-seletor.js) */
+  .empresa-seletor {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--sobre-escuro) 12%, transparent);
+    cursor: pointer;
+    max-width: 100%;
+  }
+  .empresa-seletor-rotulo { opacity: 0.8; white-space: nowrap; }
+  .empresa-seletor-lista {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--sobre-escuro);
+    font-weight: 600;
+    padding: 0 18px 0 0;
+    margin-right: -14px;
+    cursor: pointer;
+    max-width: 220px;
+    text-overflow: ellipsis;
+  }
+  .empresa-seletor-lista option { color: var(--escuro); background: var(--claro); }
+  .empresa-seletor-seta { pointer-events: none; }
+
+  .aviso {
+    margin: 0;
+    padding: 12px 28px;
+    background: color-mix(in srgb, var(--acento) 14%, var(--claro));
+    border-bottom: 1px solid color-mix(in srgb, var(--acento) 35%, var(--claro));
+    font-weight: 500;
+  }
+
+  /* ---- cartão "Seu estilo" (montado por cartao-estilo.js): capa pequena, nome e "Trocar a cara da marca" ---- */
+  .cartao-estilo {
+    margin: 16px 28px 0;
+    padding: 12px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 16px;
+    background: var(--fundo-2);
+    border: 1px solid var(--linha);
+    border-radius: 14px;
+  }
+  .cartao-estilo-capa {
+    flex: none;
+    width: 52px; height: 65px;
+    border-radius: 6px;
+    object-fit: cover;
+    background: var(--mesa);
+    border: 1px solid var(--linha);
+  }
+  .cartao-estilo-sem-capa { display: grid; place-items: center; font: 600 22px/1 var(--letra-titulo); color: var(--texto-2); }
+  .cartao-estilo-sem-capa:empty { background: transparent; border-style: dashed; }
+  .cartao-estilo-texto { flex: 1 1 220px; min-width: 0; }
+  .cartao-estilo-rotulo { margin: 0; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--texto-2); }
+  .cartao-estilo-nome { margin: 1px 0 0; font: 600 19px/1.2 var(--letra-titulo); overflow-wrap: anywhere; }
+  .cartao-estilo-linha { margin: 2px 0 0; font-size: 13px; color: var(--texto-2); overflow-wrap: anywhere; }
+  .cartao-estilo .botao { flex: none; }
+  .feita-no-estilo { margin: 4px 0 0; color: var(--texto-2); font-size: 14px; }
+
+  /* ---- corpo ---- */
+  .bancada {
+    display: grid;
+    grid-template-columns: minmax(250px, 320px) minmax(0, 1fr);
+    min-height: calc(100vh - 96px);
+  }
+  .lista {
+    border-right: 1px solid var(--linha);
+    padding: 20px 16px 28px;
+    min-width: 0;
+  }
+  .lista-cabeca {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    padding: 0 8px 12px;
+  }
+  .lista-cabeca h2 { margin: 0; font: 600 18px/1.2 var(--letra-titulo); }
+  .contagem { font-size: 13px; color: var(--texto-2); white-space: nowrap; }
+  .pecas { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .peca {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    text-align: left;
+    padding: 10px 8px;
+    border: 0;
+    border-radius: var(--raio);
+    background: transparent;
+    cursor: pointer;
+  }
+  .peca:hover { background: var(--fundo-2); }
+  .peca[aria-current="true"] { background: var(--mesa); box-shadow: inset 3px 0 0 var(--acento); }
+  .peca-marca {
+    width: 44px; height: 54px;
+    border-radius: 6px;
+    background: var(--fundo-2);
+    border: 1px solid var(--linha);
+    display: grid; place-items: center;
+    font: 600 17px/1 var(--letra-titulo);
+    color: var(--texto-2);
+    position: relative;
+  }
+  .peca.aprovada .peca-marca { background: var(--escuro); color: var(--sobre-escuro); border-color: var(--escuro); }
+  .peca.aprovada .peca-marca::after {
+    content: "✓";
+    position: absolute; right: -6px; bottom: -6px;
+    width: 20px; height: 20px; border-radius: 50%;
+    display: grid; place-items: center;
+    font: 700 12px/1 var(--letra-texto);
+    background: var(--acento); color: var(--sobre-acento);
+    border: 2px solid var(--claro);
+  }
+  .peca-nome { display: block; font-weight: 600; overflow-wrap: anywhere; }
+  .peca-info { display: block; font-size: 13px; color: var(--texto-2); }
+
+  .palco { min-width: 0; padding: 22px 28px 40px; }
+  .palco-cabeca {
+    display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between;
+    gap: 12px 20px; margin-bottom: 16px;
+  }
+  .palco-cabeca h2 { margin: 0; font: 600 clamp(22px, 2.6vw, 28px)/1.15 var(--letra-titulo); overflow-wrap: anywhere; }
+  .estado { margin: 6px 0 0; color: var(--texto-2); font-size: 14px; }
+  .estado strong { color: var(--texto); }
+  .acoes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .botao {
+    border: 1px solid var(--linha);
+    background: var(--claro);
+    color: var(--texto);
+    border-radius: 999px;
+    padding: 9px 18px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .botao:hover { background: var(--fundo-2); }
+  .botao-principal { background: var(--acento); border-color: var(--acento); color: var(--sobre-acento); }
+  .botao-principal:hover { background: color-mix(in srgb, var(--acento) 86%, var(--escuro)); }
+  .botao[disabled] { opacity: 0.55; cursor: progress; }
+
+  .mesa {
+    background: var(--mesa);
+    border-radius: 14px;
+    padding: 14px;
+  }
+  .mesa iframe {
+    display: block;
+    width: 100%;
+    height: min(78vh, 900px);
+    border: 0;
+    border-radius: 8px;
+    background: var(--claro);
+  }
+  .detalhes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px 32px;
+    margin-top: 22px;
+  }
+  .detalhes h3 { margin: 0 0 6px; font: 600 16px/1.3 var(--letra-titulo); }
+  .detalhes p { margin: 0 0 6px; max-width: 70ch; overflow-wrap: anywhere; }
+  .legenda {
+    white-space: pre-wrap;
+    background: var(--fundo-2);
+    border-radius: var(--raio);
+    padding: 12px 14px;
+    margin: 0 0 8px;
+    max-width: 70ch;
+    overflow-wrap: anywhere;
+  }
+  .discreto { color: var(--texto-2); font-size: 14px; }
+  .caminho { font-family: var(--letra-mono); font-size: 13px; overflow-wrap: anywhere; }
+
+  /* ---- vazio e erro ---- */
+  .vazio {
+    max-width: 560px;
+    margin: 12vh auto;
+    padding: 0 24px;
+    text-align: center;
+  }
+  .vazio h2 { font: 600 clamp(22px, 3vw, 28px)/1.2 var(--letra-titulo); margin: 0 0 10px; }
+  .vazio p { margin: 0 0 8px; color: var(--texto-2); }
+  .vazio.erro h2 { color: var(--erro); }
+
+  /* ---- janela de aprovação ---- */
+  dialog {
+    border: 0;
+    border-radius: 14px;
+    padding: 0;
+    width: min(760px, calc(100vw - 24px));
+    max-height: calc(100vh - 24px);
+    background: var(--claro);
+    color: var(--texto);
+    box-shadow: 0 20px 60px color-mix(in srgb, var(--escuro) 35%, transparent);
+  }
+  dialog::backdrop { background: color-mix(in srgb, var(--escuro) 60%, transparent); }
+  .janela { padding: 22px 24px 20px; }
+  .janela h2 { margin: 0 0 4px; font: 600 22px/1.2 var(--letra-titulo); }
+  .janela label.campo { display: block; font-weight: 600; margin: 16px 0 6px; }
+  .janela select {
+    width: 100%; padding: 8px 10px; border-radius: 8px;
+    border: 1px solid var(--linha); background: var(--claro);
+  }
+  .artes { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0 4px; }
+  .arte { width: 128px; display: grid; gap: 4px; font-size: 12px; cursor: pointer; }
+  .arte img { width: 100%; border-radius: 6px; border: 3px solid transparent; background: var(--fundo-2); }
+  .arte input:checked + img { border-color: var(--acento); }
+  .arte span { overflow-wrap: anywhere; }
+  .artes.inteiro input { display: none; }
+  .janela-rodape {
+    display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px;
+    margin-top: 12px; padding: 10px 0 2px;
+    position: sticky; bottom: 0; background: var(--claro);
+  }
+  .janela-erro { color: var(--erro); font-weight: 600; margin: 12px 0 0; }
+
+  .recado {
+    position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
+    max-width: min(520px, calc(100vw - 32px));
+    background: var(--escuro); color: var(--sobre-escuro);
+    padding: 12px 18px; border-radius: 12px;
+    box-shadow: 0 10px 30px color-mix(in srgb, var(--escuro) 30%, transparent);
+    z-index: 10;
+  }
+
+  @media (max-width: 760px) {
+    .topo { padding: 16px 16px 18px; }
+    .aviso { padding: 12px 16px; }
+    .cartao-estilo { margin: 12px 16px 0; }
+    .cartao-estilo .botao { width: 100%; justify-content: center; }
+    .bancada { grid-template-columns: minmax(0, 1fr); }
+    .lista { border-right: 0; border-bottom: 1px solid var(--linha); padding: 16px 8px; }
+    .palco { padding: 18px 16px 32px; }
+    .mesa { padding: 8px; }
+    .mesa iframe { height: 70vh; }
+    .empresa-seletor-lista { max-width: 180px; }
+    .janela { padding: 18px 16px 12px; }
+    .artes { gap: 10px; }
+    .arte { width: calc((100% - 20px) / 3); }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .recado { animation: surgir 0.2s ease-out; }
+    @keyframes surgir { from { opacity: 0; transform: translate(-50%, 8px); } }
+  }
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="topo-titulo">
+    <h1>Laboratório de Design</h1>
+    <p class="topo-empresa" id="nome-empresa"></p>
+  </div>
+  <div class="topo-acoes">
+    <span class="nota-exemplo" id="nota-exemplo" hidden>Usando as cores de exemplo</span>
+    <a id="link-cronograma" href="cronograma.html" hidden>Abrir o Cronograma</a>
+    <a id="link-estilos" href="estilos.html" hidden>Abrir os Estilos</a>
+    <a id="link-comecar" href="comecar.html" class="link-discreto" hidden>Começar o caminho</a>
+    <a id="link-novo-cliente" href="comecar.html?novo=cliente" class="link-discreto" hidden>+ Novo cliente</a>
+    <div id="seletor" hidden></div>
+  </div>
+</header>
+<p class="aviso" id="aviso" role="status" hidden></p>
+<section class="cartao-estilo" id="cartao-estilo" aria-label="Seu estilo" hidden></section>
+
+<main id="conteudo" aria-live="polite">
+  <div class="vazio"><p>Carregando…</p></div>
+</main>
+
+<dialog id="janela" aria-labelledby="janela-titulo"></dialog>
+<div class="recado" id="recado" role="status" hidden></div>
+
+<script src="empresa-seletor.js"></script>
+<script src="cartao-estilo.js"></script>
+<script>
+'use strict';
+(function () {
+  const seletor = EmpresaSeletor.criar();
+  const $ = (id) => document.getElementById(id);
+  const conteudo = $('conteudo');
+  const janela = $('janela');
+
+  const TIPOS = { capa: 'Capa', carrossel: 'Carrossel', post: 'Post', card: 'Card', thumb: 'Miniatura de vídeo', video: 'Vídeo', outro: 'Peça' };
+  const LETRA_TIPO = { capa: 'Ca', carrossel: 'Cr', post: 'Po', card: 'Cd', thumb: 'Mi', video: 'Vi', outro: 'Pe' };
+  const PLATAFORMAS = { insta: 'Instagram', yt: 'YouTube', linkedin: 'LinkedIn', blog: 'Blog' };
+  const MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  const PASTA_TIPO = { carrossel: 'Carrossel', capa: 'Reels', thumb: 'Video', video: 'Video' };
+
+  // O que a tela mostra da empresa escolhida. `escolhida` guarda a peça aberta em cada empresa.
+  const tela = { dados: null, escolhida: {}, ocupado: false };
+
+  // ---- utilidades ----
+  function el(tag, props, filhos) {
+    const e = document.createElement(tag);
+    Object.entries(props || {}).forEach(([k, v]) => {
+      if (v === undefined || v === null || v === false) return;
+      if (k === 'texto') e.textContent = v;
+      else if (k === 'classe') e.className = v;
+      else if (k.indexOf('on') === 0) e.addEventListener(k.slice(2), v);
+      else e.setAttribute(k, v === true ? '' : v);
+    });
+    (filhos || []).forEach((f) => { if (f) e.appendChild(typeof f === 'string' ? document.createTextNode(f) : f); });
+    return e;
+  }
+  function trocar(...filhos) { conteudo.textContent = ''; filhos.forEach((f) => conteudo.appendChild(f)); }
+  let tempoRecado = null;
+  function recado(texto) {
+    const r = $('recado');
+    r.textContent = texto;
+    r.hidden = false;
+    clearTimeout(tempoRecado);
+    tempoRecado = setTimeout(() => { r.hidden = true; }, 7000);
+  }
+  function dataBr(iso) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || ''));
+    return m ? m[3] + '/' + m[2] + '/' + m[1] : '';
+  }
+  function quando(iso) {
+    const d = new Date(iso);
+    if (isNaN(d)) return '';
+    return d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+  const enderecoDe = (rel) => '/' + String(rel).split(/[\\/]+/).filter(Boolean).map(encodeURIComponent).join('/');
+  const erroDe = (r, padrao) => (r && r.json && r.json.erro) || padrao || 'O servidor dos painéis não respondeu como esperado. Feche o painel e abra de novo pelo atalho.';
+
+  function vazio(titulo, ...linhas) {
+    return el('div', { classe: 'vazio' }, [el('h2', { texto: titulo })].concat(linhas.map((l) => el('p', { texto: l }))));
+  }
+  function erro(titulo, texto) {
+    const v = vazio(titulo, texto);
+    v.classList.add('erro');
+    return v;
+  }
+
+  // ---- empresa ----
+  async function iniciar() {
+    let s;
+    try {
+      s = await seletor.carregar();
+    } catch (e) {
+      trocar(erro('Não consegui abrir o Laboratório', e.message));
+      return;
+    }
+    seletor.montar({ seletor: $('seletor'), aviso: $('aviso'), aoTrocar: carregarEmpresa });
+    if (!s.atual) {
+      $('nome-empresa').textContent = '';
+      $('cartao-estilo').hidden = true;
+      trocar(vazio('Nenhuma empresa configurada ainda',
+        'O Laboratório mostra as peças de uma empresa. Peça ao agente, na conversa com o Claude, para configurar a sua empresa.',
+        'Depois disso, as peças que ele criar aparecem aqui para você aprovar.'));
+      return;
+    }
+    carregarEmpresa();
+  }
+
+  async function carregarEmpresa() {
+    if (janela.open) janela.close();
+    $('recado').hidden = true; // o recado era da empresa anterior
+    tela.dados = null;
+    const codigo = seletor.atual();
+    $('nome-empresa').textContent = seletor.nome();
+    $('link-cronograma').hidden = true;
+    // A biblioteca de estilos vale para toda empresa: o link aparece sempre, com a empresa do painel.
+    $('link-estilos').href = 'estilos.html?empresa=' + encodeURIComponent(codigo);
+    $('link-estilos').hidden = false;
+    mostrarComecar(codigo);
+    // "Trocar a cara da marca": o cartão do estilo da empresa, fixo no alto (lido à parte, sem segurar as peças)
+    CartaoEstilo.mostrar($('cartao-estilo'), seletor);
+    trocar(el('div', { classe: 'vazio' }, [el('p', { texto: 'Carregando as peças de ' + seletor.nome() + '…' })]));
+    let marca, dados, paineis;
+    try {
+      [marca, dados, paineis] = await Promise.all([seletor.aplicarMarca(), seletor.ler('/api/dados'), seletor.ler('/api/paineis')]);
+    } catch (e) {
+      if (seletor.atual() === codigo) trocar(erro('Não consegui falar com o servidor dos painéis', 'Confira se a janela do servidor continua aberta e recarregue a página.'));
+      return;
+    }
+    if (marca === null || dados === null || paineis === null) return; // a pessoa já trocou de empresa
+    $('nota-exemplo').hidden = !marca.exemplo;
+    if (marca.nome) $('nome-empresa').textContent = marca.nome;
+    if (paineis.ok && paineis.json.cronograma) {
+      $('link-cronograma').href = 'cronograma.html?empresa=' + encodeURIComponent(codigo);
+      $('link-cronograma').hidden = false;
+    }
+    if (!dados.ok) {
+      trocar(erro('Não consegui ler as peças desta empresa', erroDe(dados)));
+      return;
+    }
+    tela.dados = {
+      pecas: Array.isArray(dados.json.pecas) ? dados.json.pecas.filter((p) => p && typeof p.id === 'string') : [],
+      aprovacoes: dados.json.aprovacoes && typeof dados.json.aprovacoes === 'object' ? dados.json.aprovacoes : {},
+      posts: Array.isArray(dados.json.posts) ? dados.json.posts.filter((p) => p && typeof p.id === 'string') : [],
+      publicacoes: typeof dados.json.publicacoes === 'string' ? dados.json.publicacoes : '',
+    };
+    desenhar();
+  }
+
+  // "Começar o caminho" (etapa 8): um link discreto, só enquanto a empresa ainda não disse o que quer criar (a pasta antiga
+  // e as empresas que o agente criou abrem aqui como sempre). Lido pelo seletor; resposta de outra empresa não muda nada.
+  // "+ Novo cliente" (liberação), da mesma leitura: só na pasta de agência ("Meus clientes"), leva ao Começar no modo
+  // cliente novo, com a empresa do painel, e o seletor aparece desde o primeiro cliente (decisão 9 A). "Minha marca": nada muda.
+  async function mostrarComecar(codigo) {
+    $('link-comecar').hidden = true;
+    $('link-novo-cliente').hidden = true;
+    let r = null;
+    try { r = await seletor.ler('/api/caminho'); } catch (e) { return; }
+    if (r === null || !r.ok || seletor.atual() !== codigo) return;
+    if (r.json.passo === 'o-que') {
+      $('link-comecar').href = 'comecar.html?empresa=' + encodeURIComponent(codigo);
+      $('link-comecar').hidden = false;
+    }
+    if (r.json.para === 'clientes') {
+      seletor.mostrarSempre(true);
+      $('link-novo-cliente').href = 'comecar.html?empresa=' + encodeURIComponent(codigo) + '&novo=cliente';
+      $('link-novo-cliente').hidden = false;
+    }
+  }
+
+  // Lê de novo só os dados (depois de aprovar ou desfazer), sem recarregar a prévia se a peça é a mesma.
+  async function recarregarDados() {
+    const r = await seletor.ler('/api/dados');
+    if (r === null || !r.ok || !tela.dados) return;
+    tela.dados.pecas = Array.isArray(r.json.pecas) ? r.json.pecas.filter((p) => p && typeof p.id === 'string') : [];
+    tela.dados.aprovacoes = r.json.aprovacoes && typeof r.json.aprovacoes === 'object' ? r.json.aprovacoes : {};
+    tela.dados.posts = Array.isArray(r.json.posts) ? r.json.posts.filter((p) => p && typeof p.id === 'string') : [];
+    desenhar(true);
+  }
+
+  // ---- desenho ----
+  function pecaAberta() {
+    const { pecas } = tela.dados;
+    const id = tela.escolhida[seletor.atual()];
+    return pecas.find((p) => p.id === id) || pecas[0];
+  }
+
+  function desenhar(manterPrevia) {
+    const { pecas, aprovacoes } = tela.dados;
+    if (!pecas.length) {
+      trocar(vazio('Nenhuma peça por aqui ainda',
+        'Quando o agente terminar uma peça de ' + seletor.nome() + ', ela aparece nesta tela com a prévia, para você aprovar ou pedir ajustes.'));
+      return;
+    }
+    const aberta = pecaAberta();
+    const antiga = manterPrevia ? conteudo.querySelector('iframe') : null;
+    const aprovadas = pecas.filter((p) => aprovacoes[p.id]).length;
+    const lista = el('nav', { classe: 'lista', 'aria-label': 'Peças' }, [
+      el('div', { classe: 'lista-cabeca' }, [
+        el('h2', { texto: 'Peças' }),
+        el('span', { classe: 'contagem', texto: aprovadas + ' de ' + pecas.length + (pecas.length === 1 ? ' aprovada' : ' aprovadas') }),
+      ]),
+      el('ul', { classe: 'pecas' }, pecas.map((p) => el('li', {}, [
+        el('button', {
+          classe: 'peca' + (aprovacoes[p.id] ? ' aprovada' : ''), type: 'button',
+          'aria-current': p.id === aberta.id ? 'true' : 'false',
+          onclick: () => { tela.escolhida[seletor.atual()] = p.id; desenhar(); },
+        }, [
+          el('span', { classe: 'peca-marca', 'aria-hidden': 'true', texto: LETRA_TIPO[p.tipo] || 'Pe' }),
+          el('span', {}, [
+            el('span', { classe: 'peca-nome', texto: p.name || p.id }),
+            el('span', { classe: 'peca-info', texto: (TIPOS[p.tipo] || 'Peça') + ', ' + (aprovacoes[p.id] ? 'aprovada' : 'aguardando aprovação') }),
+          ]),
+        ]),
+      ]))),
+    ]);
+    const palco = desenharPalco(aberta, antiga && antiga.dataset.peca === aberta.id ? antiga : null);
+    trocar(el('div', { classe: 'bancada' }, [lista, palco]));
+  }
+
+  function desenharPalco(p, previaPronta) {
+    const reg = tela.dados.aprovacoes[p.id];
+    const post = tela.dados.posts.find((x) => x.id === (reg && reg.postId ? reg.postId : p.postId));
+    const ehVideo = p.tipo === 'video' || !!p.video;
+    const acoes = el('div', { classe: 'acoes' }, [
+      ehVideo ? null : el('button', { classe: 'botao botao-principal', type: 'button', id: 'aprovar', texto: reg ? 'Aprovar de novo' : 'Aprovar design', onclick: () => abrirAprovacao(p) }),
+      reg ? el('button', { classe: 'botao', type: 'button', texto: 'Desfazer aprovação', onclick: () => confirmarDesfazer(p) }) : null,
+      el('a', { classe: 'botao', href: enderecoDe(p.path), target: '_blank', rel: 'noopener', texto: 'Abrir em outra aba' }),
+    ]);
+    const estado = reg
+      ? el('p', { classe: 'estado' }, [el('strong', { texto: 'Aprovada' }), ' em ' + quando(reg.aprovadoEm) + '.'])
+      : el('p', { classe: 'estado', texto: ehVideo ? 'Peça em vídeo: a aprovação é feita na conversa com o agente.' : 'Aguardando a sua aprovação.' });
+    // O estilo com que a peça foi feita (guardado nela ao registrar); peça antiga, sem estilo, não mostra nada.
+    const nomeDoEstilo = p.estilo && typeof p.estilo === 'object' && typeof p.estilo.nome === 'string'
+      ? p.estilo.nome.replace(/\s+/g, ' ').trim().slice(0, 80) : '';
+    const feita = nomeDoEstilo ? el('p', { classe: 'feita-no-estilo', texto: 'Feita no estilo ' + nomeDoEstilo }) : null;
+    const previa = previaPronta || el('iframe', { src: enderecoDe(p.path), title: 'Prévia de ' + (p.name || p.id), 'data-peca': p.id, loading: 'eager' });
+
+    const detalhes = el('div', { classe: 'detalhes' }, [
+      el('section', {}, [
+        el('h3', { texto: 'Sobre a peça' }),
+        el('p', { texto: p.desc || 'Sem descrição.' }),
+        el('p', { classe: 'discreto', texto: TIPOS[p.tipo] || 'Peça' }),
+      ]),
+      el('section', {}, [
+        el('h3', { texto: 'Post do cronograma' }),
+        post
+          ? el('p', { texto: (dataBr(post.date) ? dataBr(post.date) + ', ' : '') + (PLATAFORMAS[post.platform] || post.platform) + ': ' + post.title })
+          : el('p', { classe: 'discreto', texto: 'Ainda sem post ligado. Na aprovação você escolhe o post.' }),
+        reg ? el('p', { classe: 'discreto' }, ['Imagens guardadas em ', el('span', { classe: 'caminho', texto: reg.pasta })]) : null,
+      ]),
+      post && post.caption ? el('section', {}, [
+        el('h3', { texto: 'Legenda' }),
+        el('p', { classe: 'legenda', texto: post.caption }),
+        el('button', { classe: 'botao', type: 'button', texto: 'Copiar legenda', onclick: () => copiar(post.caption) }),
+      ]) : null,
+    ]);
+    return el('section', { classe: 'palco', 'aria-label': 'Peça aberta' }, [
+      el('div', { classe: 'palco-cabeca' }, [
+        el('div', {}, [el('h2', { texto: p.name || p.id }), feita, estado]),
+        acoes,
+      ]),
+      el('div', { classe: 'mesa' }, [previa]),
+      detalhes,
+    ]);
+  }
+
+  async function copiar(texto) {
+    try { await navigator.clipboard.writeText(texto); recado('Legenda copiada.'); } catch (e) { recado('Não consegui copiar. Selecione a legenda e copie à mão.'); }
+  }
+
+  // ---- imagens da prévia ----
+  // As artes saem da própria prévia aberta na tela (mesmo endereço, então dá para ler): as imagens grandes, na
+  // ordem em que aparecem, sem repetir. Se a prévia não tiver imagens prontas, ela pode responder ao pedido
+  // REQUEST_DOWNLOAD_ZIP / REQUEST_SCREENSHOT com mensagens SCREENSHOT_DATA.
+  function imagensDaPrevia(frame) {
+    let doc = null;
+    try { doc = frame.contentDocument; } catch (e) { doc = null; }
+    const vistas = new Set();
+    const fotos = [];
+    if (doc) {
+      Array.from(doc.images).forEach((img) => {
+        if (!img.complete || img.naturalWidth < 300 || vistas.has(img.currentSrc || img.src)) return;
+        vistas.add(img.currentSrc || img.src);
+        const src = img.currentSrc || img.src;
+        if (/^data:image\/png;base64,/.test(src)) { fotos.push(src); return; }
+        try {
+          const c = document.createElement('canvas');
+          c.width = img.naturalWidth; c.height = img.naturalHeight;
+          c.getContext('2d').drawImage(img, 0, 0);
+          fotos.push(c.toDataURL('image/png'));
+        } catch (e) { /* imagem que não pode ser lida: fica de fora */ }
+      });
+    }
+    if (fotos.length) return Promise.resolve(fotos);
+    return pedirAPrevia(frame);
+  }
+
+  function pedirAPrevia(frame) {
+    return new Promise((resolve, reject) => {
+      const fotos = []; let esperado = null;
+      const fim = (falha) => {
+        window.removeEventListener('message', ouvir); clearTimeout(limite);
+        if (falha) reject(new Error(falha)); else resolve(fotos.map((f) => f.data));
+      };
+      const limite = setTimeout(() => fim(fotos.length ? null : 'Não encontrei as imagens desta prévia. Peça ao agente para gerar as imagens da peça e registrar de novo.'), 8000);
+      function ouvir(e) {
+        if (e.source !== frame.contentWindow || e.origin !== location.origin || !e.data) return;
+        if (e.data.type === 'ZIP_EXPECTED_COUNT') esperado = Number(e.data.count) || null;
+        if (e.data.type === 'SCREENSHOT_DATA' && /^data:image\/png;base64,/.test(e.data.data || '')) {
+          fotos.push(e.data);
+          if (fotos.length >= (esperado || 1)) { fotos.sort((a, b) => String(a.src || '').localeCompare(String(b.src || ''))); fim(null); }
+        }
+      }
+      window.addEventListener('message', ouvir);
+      try {
+        frame.contentWindow.postMessage('REQUEST_DOWNLOAD_ZIP', location.origin);
+        setTimeout(() => { if (!fotos.length && esperado === null) frame.contentWindow.postMessage('REQUEST_SCREENSHOT', location.origin); }, 2500);
+      } catch (e) { fim('Não consegui ler a prévia desta peça.'); }
+    });
+  }
+
+  function nomesDosArquivos(p, n) {
+    const proprio = Array.isArray(p.nomesArquivos) ? p.nomesArquivos : [];
+    const base = { capa: 'Capa', card: 'Card', thumb: 'Miniatura', post: 'Post' }[p.tipo] || 'Arte';
+    return Array.from({ length: n }, (_, i) => {
+      if (typeof proprio[i] === 'string' && /^[\w\-. ]+\.png$/i.test(proprio[i])) return proprio[i];
+      if (p.tipo === 'carrossel') return 'Slide_' + String(i + 1).padStart(2, '0') + '.png';
+      return i === 0 ? base + '.png' : base + '_' + (i + 1) + '.png';
+    });
+  }
+
+  // Pasta da publicação montada a partir do post: <publicações da empresa>/<rede>/<ano>/<mês>/<dia> - <tipo> - <título>.
+  function pastaDoPost(p, post) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(post.date || '');
+    if (!m || !tela.dados.publicacoes) return '';
+    const titulo = String(post.title || '').replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, ' ').trim().slice(0, 55).replace(/[. ]+$/, '');
+    return [tela.dados.publicacoes, PLATAFORMAS[post.platform] || 'Instagram', m[1], m[2] + '-' + MESES[Number(m[2]) - 1],
+      m[3] + ' - ' + (PASTA_TIPO[p.tipo] || 'Post') + ' - ' + (titulo || 'Sem título')].join('/');
+  }
+
+  // ---- aprovar ----
+  async function abrirAprovacao(p) {
+    if (tela.ocupado) return;
+    const codigo = seletor.atual();
+    const frame = conteudo.querySelector('iframe');
+    const botao = $('aprovar');
+    if (!frame) return;
+    tela.ocupado = true;
+    const antes = botao.textContent;
+    botao.disabled = true; botao.textContent = 'Preparando as imagens…';
+    let fotos;
+    try { fotos = await imagensDaPrevia(frame); } catch (e) { recado(e.message); return; } finally {
+      tela.ocupado = false; botao.disabled = false; botao.textContent = antes;
+    }
+    if (seletor.atual() !== codigo) return; // trocou de empresa no meio
+    const carrossel = p.tipo === 'carrossel';
+    const nomes = nomesDosArquivos(p, fotos.length);
+    const posts = tela.dados.posts.slice().sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    const ligado = posts.find((x) => x.id === p.postId);
+
+    const msgErro = el('p', { classe: 'janela-erro', role: 'alert', hidden: true });
+    const destino = el('span', { classe: 'caminho' });
+    const escolhaPost = posts.length ? el('select', { id: 'ap-post' }, [
+      ligado ? null : el('option', { value: '', texto: 'Escolha o post…' }),
+    ].concat(posts.map((x) => el('option', { value: x.id, selected: ligado && x.id === ligado.id, texto: (dataBr(x.date) ? dataBr(x.date) + ', ' : '') + x.title })))) : null;
+    const postEscolhido = () => (escolhaPost ? posts.find((x) => x.id === escolhaPost.value) : null);
+    const pastaFinal = () => {
+      const x = postEscolhido();
+      if (p.pasta && (!x || !ligado || x === ligado)) return p.pasta;
+      return x ? pastaDoPost(p, x) : '';
+    };
+    const mostrarDestino = () => {
+      const pasta = pastaFinal();
+      destino.textContent = pasta || 'a pasta do post que você escolher';
+      destino.className = pasta ? 'caminho' : '';
+    };
+    if (escolhaPost) escolhaPost.addEventListener('change', mostrarDestino);
+    const marcas = fotos.map((f, i) => el('input', { type: 'checkbox', checked: true, disabled: carrossel, 'aria-label': nomes[i] }));
+    const confirmar = el('button', { classe: 'botao botao-principal', type: 'button', texto: 'Aprovar e guardar as imagens' });
+
+    janela.textContent = '';
+    janela.appendChild(el('div', { classe: 'janela' }, [
+      el('h2', { id: 'janela-titulo', texto: 'Aprovar design' }),
+      el('p', { classe: 'discreto', texto: (p.name || p.id) + ', de ' + seletor.nome() }),
+      escolhaPost ? el('label', { classe: 'campo', for: 'ap-post', texto: 'Post do cronograma' }) : null,
+      escolhaPost || (p.pasta ? null : el('p', { classe: 'janela-erro', texto: 'Esta peça ainda não tem um post no cronograma nem uma pasta de destino. Peça ao agente para ligar a peça a um post.' })),
+      el('p', { classe: 'campo', texto: carrossel ? 'O carrossel vai inteiro, na ordem das lâminas.' : 'Marque as artes aprovadas. As outras continuam só aqui no Laboratório.' }),
+      el('div', { classe: carrossel ? 'artes inteiro' : 'artes' }, fotos.map((f, i) => el('label', { classe: 'arte' }, [marcas[i], el('img', { src: f, alt: '' }), el('span', { texto: nomes[i] })]))),
+      el('p', { classe: 'discreto' }, ['As imagens vão para ', destino, '. Se já houver uma versão lá, ela fica guardada.']),
+      msgErro,
+      el('div', { classe: 'janela-rodape' }, [
+        el('button', { classe: 'botao', type: 'button', texto: 'Cancelar', onclick: () => janela.close() }),
+        confirmar,
+      ]),
+    ]));
+    mostrarDestino();
+    confirmar.addEventListener('click', async () => {
+      const mostrar = (t) => { msgErro.textContent = t; msgErro.hidden = false; };
+      const post = postEscolhido();
+      const pasta = pastaFinal();
+      const escolhidas = fotos.map((_, i) => i).filter((i) => marcas[i].checked);
+      if (!pasta) return mostrar('Escolha o post do cronograma.');
+      if (!escolhidas.length) return mostrar('Marque pelo menos uma arte.');
+      const finais = escolhidas.length === fotos.length ? nomes : nomesDosArquivos(p, escolhidas.length);
+      const corpo = {
+        id: p.id, nome: p.name || p.id, postId: post ? post.id : (p.postId || null), pasta: pasta,
+        legenda: post && post.caption ? post.caption : '',
+        itens: escolhidas.map((i, k) => ({ arquivo: escolhidas.length === fotos.length ? nomes[i] : finais[k], dataUrl: fotos[i] })),
+      };
+      confirmar.disabled = true; confirmar.textContent = 'Guardando…';
+      let r;
+      try { r = await seletor.enviar('/api/aprovar', corpo); } catch (e) { r = undefined; }
+      if (r === null) return; // a pessoa trocou de empresa: a janela já foi fechada
+      confirmar.disabled = false; confirmar.textContent = 'Aprovar e guardar as imagens';
+      if (!r || !r.ok) return mostrar('Não deu certo: ' + erroDe(r));
+      janela.close();
+      recado('Design aprovado. As imagens já estão na pasta da publicação.');
+      recarregarDados();
+    });
+    janela.showModal();
+  }
+
+  // ---- desfazer ----
+  function confirmarDesfazer(p) {
+    const msgErro = el('p', { classe: 'janela-erro', role: 'alert', hidden: true });
+    const sim = el('button', { classe: 'botao botao-principal', type: 'button', texto: 'Desfazer aprovação' });
+    janela.textContent = '';
+    janela.appendChild(el('div', { classe: 'janela' }, [
+      el('h2', { id: 'janela-titulo', texto: 'Desfazer a aprovação?' }),
+      el('p', { texto: 'As imagens de "' + (p.name || p.id) + '" saem da pasta da publicação e a versão anterior volta, se houver. Nada é apagado: o que sai fica guardado numa pasta de versões.' }),
+      msgErro,
+      el('div', { classe: 'janela-rodape' }, [
+        el('button', { classe: 'botao', type: 'button', texto: 'Cancelar', onclick: () => janela.close() }),
+        sim,
+      ]),
+    ]));
+    sim.addEventListener('click', async () => {
+      sim.disabled = true;
+      let r;
+      try { r = await seletor.enviar('/api/desfazer', { id: p.id }); } catch (e) { r = undefined; }
+      if (r === null) return;
+      sim.disabled = false;
+      if (!r || !r.ok) { msgErro.textContent = 'Não deu certo: ' + erroDe(r); msgErro.hidden = false; return; }
+      janela.close();
+      recado('Aprovação desfeita.');
+      recarregarDados();
+    });
+    janela.showModal();
+  }
+
+  iniciar();
+})();
+</script>
+</body>
+</html>

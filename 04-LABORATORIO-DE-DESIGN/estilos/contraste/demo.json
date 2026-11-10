@@ -1,0 +1,122 @@
+[
+  {
+    "fundo": "escuro",
+    "kicker": "exercício de 1 hora",
+    "titulo": "O caixa fecha no azul, mas o *dinheiro some*?",
+    "subtitulo": "Três contas invisíveis comem a margem.",
+    "nota": "faça hoje",
+    "visual": {
+      "tipo": "mockup",
+      "componente": "checklist",
+      "dados": {
+        "itens": [
+          {
+            "texto": "Conferir as contas fixas",
+            "feito": true
+          },
+          {
+            "texto": "Separar a reserva de impostos",
+            "feito": true
+          },
+          {
+            "texto": "Revisar as assinaturas",
+            "feito": false
+          }
+        ]
+      }
+    }
+  },
+  {
+    "fundo": "claro",
+    "kicker": "por que acontece",
+    "titulo": "O saldo do banco *não é* o seu lucro",
+    "corpo": "Imposto, férias e décimo terceiro já estão gastos, mesmo parados na conta, esperando a data de pagar.",
+    "visual": {
+      "tipo": "mockup",
+      "componente": "cartaoApp",
+      "dados": {
+        "rotulo": "Saldo na conta",
+        "valor": "R$ 12.400",
+        "variacao": "+18%",
+        "descricao": "mas quanto disso já tem dono?"
+      }
+    }
+  },
+  {
+    "fundo": "acento",
+    "numeral": "3",
+    "kicker": "1 de 3 · o que sai sem aviso",
+    "titulo": "As contas invisíveis",
+    "itens": [
+      {
+        "titulo": "Assinaturas paradas",
+        "texto": "Somadas no ano, pesam mais do que parece."
+      },
+      {
+        "titulo": "Taxas do cartão",
+        "texto": "Uma parte de cada venda fica no caminho."
+      },
+      {
+        "titulo": "Imposto do mês seguinte",
+        "texto": "Vence depois, mas nasce hoje."
+      }
+    ]
+  },
+  {
+    "fundo": "escuro",
+    "layout": "conteudo-visual-abaixo",
+    "kicker": "a conta certa",
+    "titulo": "O que sobra *de verdade*",
+    "corpo": "Entradas menos saídas fixas e menos a reserva de impostos. O que sobra é o que você pode usar.",
+    "visual": {
+      "tipo": "mockup",
+      "componente": "documento",
+      "dados": {
+        "nome": "Fechamento do mês",
+        "titulo": "Conta do mês",
+        "paragrafos": [
+          "Entradas de 18.400 e saídas de 17.100.",
+          "O que sobra: 1.300 para usar."
+        ],
+        "destaque": 1,
+        "comentario": "",
+        "autor": "Lia"
+      }
+    }
+  },
+  {
+    "fundo": "claro",
+    "kicker": "na prática",
+    "titulo": "Uma hora por mês *resolve*",
+    "corpo": "Escolha um dia fixo no mês, baixe o extrato e abra a planilha. Em uma hora, o resto vira hábito.",
+    "visual": {
+      "tipo": "mockup",
+      "componente": "antesDepois",
+      "dados": {}
+    }
+  },
+  {
+    "fundo": "escuro",
+    "layout": "conteudo-visual-abaixo",
+    "kicker": "o ritual",
+    "titulo": "Primeiro dia útil do *mês*",
+    "corpo": "Baixe o extrato, separe a reserva de impostos e corte uma assinatura parada. Uma hora basta.",
+    "visual": {
+      "tipo": "mockup",
+      "componente": "notificacao",
+      "dados": {
+        "app": "Lembretes",
+        "titulo": "Fechamento do mês",
+        "texto": "Baixar o extrato e separar a reserva de impostos",
+        "hora": "agora"
+      }
+    }
+  },
+  {
+    "fundo": "acento",
+    "kicker": "sua vez",
+    "titulo": "Quanto do seu saldo *já tem dono*?",
+    "subtitulo": "Na primeira conversa, a gente separa juntos.",
+    "botao": "Chame no direct"
+  }
+]

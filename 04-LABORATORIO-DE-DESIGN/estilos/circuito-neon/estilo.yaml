@@ -1,0 +1,32 @@
+# Estilo de catálogo da primeira rodada aprovada ("Circuito Néon", escuro técnico): grade técnica, colchetes, dados e um acento néon.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: circuito-neon
+nome: Circuito Néon
+linha: Grade técnica no fundo, colchetes nos cantos do visual e na chamada, grotesca técnica e um único acento néon no destaque sublinhado.
+origem: catalogo
+combina-com: [tecnologia, financas, negocios-e-servicos]
+tom: [tecnico, ousado]
+precisa: [funciona-sem-foto]
+sugestao:
+  cores: { escuro: "#0A0F14", claro: "#E9F0F1", acento: "#3CFFB0", neutro: "#4D6168" }
+  tipografia: { principal: "Inter", mono: "JetBrains Mono", acento: "Space Grotesk" }
+  google: "family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500;700"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-circuito-neon]
+    miolo: [miolo-circuito-neon-abaixo, miolo-circuito-neon-acima]
+    fecho: [fecho-cartao-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [escuro, claro, escuro, claro, escuro, acento]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-circuito-neon, metodo: miolo-circuito-neon-abaixo, contratar: fecho-cartao-visual }
+  reels: { modelo: circuito-neon, capa: capa-circuito-neon }
+tratamentos: { destaque: cor, foto: sem-foto, textura: grade, grafismo: colchete }
+kit:
+  regras:
+    - "Grade técnica no fundo e colchetes nos cantos do visual."
+    - "Néon só no destaque e nos dados."
+    - "Mockup claro com contorno néon, nunca escuro sobre escuro. Bom para tecnologia e finanças."

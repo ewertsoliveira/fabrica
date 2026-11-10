@@ -1,0 +1,14 @@
+{
+  "titulo": "Vídeo de demonstração da biblioteca",
+  "liberado": false,
+  "video": "../../assets-fonte/videos/demonstracao.mp4",
+  "palavras": "palavras-demonstracao.json",
+  "trecho": { "ini": 0, "fim": 15.0 },
+  "chamada": { "texto": "Semana em ordem", "palavra": "ordem", "ini": 0.2, "fim": 3.0 },
+  "destaques": ["planejo"],
+  "broll": [
+    { "img": "../../../../04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/xicara.jpg", "ini": 5.0, "fim": 9.8, "fundo": "#F1F3F4" }
+  ],
+  "palavraTela": { "texto": "ORGANIZE", "ini": 14.0, "fim": 15.0 },
+  "usarMarca": false
+}

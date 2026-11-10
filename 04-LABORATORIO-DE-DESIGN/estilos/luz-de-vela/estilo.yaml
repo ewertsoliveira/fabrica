@@ -1,0 +1,32 @@
+# Estilo de catálogo da primeira rodada aprovada ("Luz de Vela", escuro com luz dourada): fundo escuro com um foco de luz dourada, serifa clássica, clima de autoridade.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: luz-de-vela
+nome: Luz de Vela
+linha: Fundo escuro com um foco de luz dourada, serifa clássica com destaque em itálico dourado e mockup claro com fio dourado.
+origem: catalogo
+combina-com: [direito, psicologia, saude, financas]
+tom: [elegante, sobrio]
+precisa: [funciona-sem-foto]
+sugestao:
+  cores: { escuro: "#0B0A09", claro: "#F3EBDD", acento: "#E2B455", neutro: "#A39684" }
+  tipografia: { principal: "Inter", mono: "DM Mono", acento: "Cormorant Garamond" }
+  google: "family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-luz-de-vela]
+    miolo: [miolo-luz-de-vela-abaixo, miolo-luz-de-vela-acima]
+    fecho: [fecho-cartao-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [escuro, claro, escuro, claro, escuro, acento]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-luz-de-vela, metodo: miolo-luz-de-vela-abaixo, contratar: fecho-cartao-visual }
+  reels: { modelo: luz-de-vela, capa: capa-luz-de-vela }
+tratamentos: { destaque: italico+cor, foto: sem-foto, textura: luz, grafismo: fio-dourado }
+kit:
+  regras:
+    - "Um único foco de luz por lâmina, cortado pela borda."
+    - "Serifa clássica no título; dourado só no destaque e no botão."
+    - "Mockup sempre claro, com fio dourado. Bom para advocacia, psicologia e medicina."

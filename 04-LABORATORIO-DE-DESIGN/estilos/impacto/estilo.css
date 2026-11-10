@@ -1,0 +1,26 @@
+/* Impacto, do modelo de Reels de mesmo nome: caixa alta condensada em ciano, destaque branco com a falha cromática
+   dos cortes, o mockup sobre a tela cinza do B-roll e a grade em perspectiva. */
+.est-impacto .titulo{font-family:var(--fonte-acento);font-weight:400;text-transform:uppercase;letter-spacing:.01em;line-height:.92;font-size:max(var(--piso-titulo),128px);color:var(--cor-acento)}
+.est-impacto .titulo .dst{color:var(--cor-claro);text-shadow:-6px 0 rgba(255,30,80,.85),6px 0 color-mix(in srgb,var(--cor-acento) 85%,transparent)}
+.est-impacto .kicker{font:400 46px/1 var(--fonte-mono);letter-spacing:.08em;color:var(--cor-claro)}
+.est-impacto .vis-mockup{overflow:visible;padding:44px 0;align-items:center}
+.est-impacto .vis-mockup.inclinado > *{transform:none}
+.est-impacto .vis-mockup .mk.mk-sombra{box-shadow:0 0 0 22px var(--cor-neutro),0 40px 70px rgba(0,0,0,.5)}
+.est-impacto .grade{position:absolute !important;left:-300px;right:-300px;bottom:-160px;height:760px;z-index:0 !important;background-image:linear-gradient(color-mix(in srgb,var(--cor-acento) 38%,transparent) 2px,transparent 2px),linear-gradient(90deg,color-mix(in srgb,var(--cor-acento) 38%,transparent) 2px,transparent 2px);background-size:90px 90px;transform:perspective(700px) rotateX(62deg);transform-origin:center bottom}
+.est-impacto .nav-contador,.est-impacto .nav-arraste{font:400 42px var(--fonte-mono);letter-spacing:.06em;opacity:1}
+.est-impacto .nav-contador{background:none;color:var(--cor-claro)}
+.est-impacto .nav-barra i{background:var(--cor-acento)}
+.est-impacto .nav-arraste{color:var(--cor-acento)}
+.est-impacto.l-capa-impacto{justify-content:flex-end}
+.est-impacto.l-capa-impacto .titulo{font-size:max(var(--piso-titulo),156px)}
+.est-impacto .cv{position:absolute !important;inset:0;z-index:0 !important}
+.est-impacto .cv img{width:100%;height:100%;object-fit:cover;filter:brightness(.94)}
+.est-impacto .cv .veu{position:absolute;inset:0;background:linear-gradient(transparent 49%,color-mix(in srgb,var(--cor-escuro) 86%,transparent) 62%,color-mix(in srgb,var(--cor-escuro) 95%,transparent) 75%)}
+.lamina.est-impacto{gap:28px}
+.est-impacto.papel-miolo .titulo{font-size:max(var(--piso-titulo),116px)}
+.est-impacto.papel-capa .nav-contador{background:color-mix(in srgb,var(--cor-escuro) 75%,transparent);padding:10px 18px}
+.est-impacto.l-fecho-visual .vis-mockup{padding:22px 0}
+.est-impacto.l-fecho-visual .titulo{font-size:max(var(--piso-titulo),92px)}
+.est-impacto.l-fecho-visual .kicker{font-size:38px}
+.est-impacto.l-fecho-visual .vis-mockup{align-items:flex-start;padding:14px 0}
+.est-impacto.l-fecho-visual .vis-mockup .mk.mk-sombra{box-shadow:0 0 0 14px var(--cor-neutro),0 30px 60px rgba(0,0,0,.5)}

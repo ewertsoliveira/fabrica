@@ -1,0 +1,37 @@
+/* Círculo, do modelo de Reels de mesmo nome: condensada atrás da pessoa, rótulo em pílula serifada, destaque em itálico,
+   a foto da lâmina entrando por um círculo de borda fina no canto e anéis no fundo azul. */
+.lamina.est-circulo{gap:28px;--anel:color-mix(in srgb,var(--t) 80%,transparent)}
+.est-circulo.fundo-claro{--anel:var(--cor-acento)}
+.est-circulo .titulo{font-family:var(--fonte-acento);font-weight:400;text-transform:uppercase;letter-spacing:.005em;line-height:.94;font-size:max(var(--piso-titulo),124px)}
+.est-circulo.fundo-claro .titulo{color:var(--cor-acento)}
+.est-circulo .titulo .dst{font-family:var(--fonte-principal);font-style:italic;text-transform:none;letter-spacing:-.01em;color:inherit}
+.est-circulo .kicker{align-self:flex-start;border:2px solid var(--anel);border-radius:999px;padding:6px 30px 10px;font:400 40px/1.2 var(--fonte-mono);letter-spacing:0;text-transform:none;color:var(--t)}
+.est-circulo .corpo{font-size:max(var(--piso-corpo),48px);line-height:1.3}
+.est-circulo .nota{font:italic 400 58px/1 var(--fonte-principal);color:var(--t)}
+.est-circulo.fundo-claro .nota{color:var(--cor-acento)}
+.est-circulo .nota::after{content:""}
+.est-circulo .vis-mockup{overflow:visible}
+.est-circulo .vis-mockup.inclinado > *{transform:none}
+.est-circulo .vis-mockup .mk.mk-sombra{box-shadow:0 26px 50px rgba(0,0,0,.25)}
+.est-circulo .bola{position:absolute !important;right:-110px;top:-120px;width:330px;height:330px;z-index:3 !important;border-radius:50%;background-size:cover;background-position:center;box-shadow:0 0 0 14px var(--f),0 0 0 16px var(--anel)}
+.est-circulo .anel{position:absolute !important;z-index:0 !important;border:2px solid var(--anel);border-radius:50%;pointer-events:none}
+.est-circulo .a1{width:360px;height:360px;left:-170px;bottom:120px}
+.est-circulo .a2{width:260px;height:260px;left:-90px;top:460px}
+.est-circulo .nav-contador{top:auto;right:auto;left:var(--pad);bottom:calc(var(--seg-base) - 96px);padding:0;background:none;font:400 38px var(--fonte-principal);color:var(--t)}
+.est-circulo .nav-barra{left:calc(var(--pad) + 90px)}
+.est-circulo .nav-barra i{background:var(--t)}
+.est-circulo.fundo-claro .nav-barra i{background:var(--cor-acento)}
+.est-circulo .nav-arraste{font:400 38px var(--fonte-principal);opacity:1}
+.est-circulo.papel-capa .cv{position:absolute !important;inset:0;z-index:0 !important}
+.est-circulo.papel-capa .cv img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.est-circulo.papel-capa{justify-content:flex-end}
+.est-circulo.papel-capa .titulo{font-size:max(var(--piso-titulo),120px);color:var(--cor-claro)}
+.est-circulo .palavra{position:absolute;left:0;right:0;top:110px;text-align:center;font:400 420px/1 var(--fonte-acento);text-transform:uppercase;white-space:nowrap;color:var(--cor-claro)}
+.est-circulo.papel-capa .cv .veu{position:absolute;inset:0;background:linear-gradient(transparent 52%,color-mix(in srgb,var(--cor-acento) 86%,transparent) 62%,color-mix(in srgb,var(--cor-acento) 95%,transparent) 73%)}
+.est-circulo.papel-capa .nav-contador{color:var(--cor-claro)}
+.est-circulo.l-fecho-visual .titulo{font-size:max(var(--piso-titulo),96px)}
+.est-circulo.l-fecho-visual{gap:22px}
+.est-circulo.l-fecho-visual .corpo{font-size:var(--piso-corpo)}
+.est-circulo.l-fecho-visual .vis-mockup{padding:6px 0 0}
+.est-circulo.papel-capa .cv img{top:260px;height:100%;-webkit-mask-image:linear-gradient(transparent,#000 180px);mask-image:linear-gradient(transparent,#000 180px)}
+.est-circulo.papel-capa .kicker{background:color-mix(in srgb,var(--cor-acento) 82%,transparent)}

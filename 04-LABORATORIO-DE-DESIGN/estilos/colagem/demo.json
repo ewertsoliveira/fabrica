@@ -1,0 +1,90 @@
+[
+  {
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-xicara.jpg",
+    "posicao_foto": "50% 20%",
+    "kicker": "Consultoria",
+    "titulo": "Fechamento do mês *sem drama*",
+    "etiquetas": [
+      "5 passos",
+      "uma hora só"
+    ],
+    "visual": {
+      "tipo": "adesivo",
+      "nome": "sol"
+    }
+  },
+  {
+    "fundo": "escuro",
+    "visual": {
+      "tipo": "adesivo",
+      "nome": "estrela"
+    },
+    "titulo": "Junte os *extratos*",
+    "etiqueta": "tudo num lugar só",
+    "lista": [
+      "Conta da empresa",
+      "Cartão de crédito",
+      "Maquininha",
+      "Dinheiro em caixa"
+    ],
+    "corpo": "Antes de abrir a planilha, **reúna tudo o que entrou e saiu** no mês, em todas as contas e meios de pagamento."
+  },
+  {
+    "fundo": "acento",
+    "visual": {
+      "tipo": "adesivo",
+      "nome": "flor"
+    },
+    "titulo": "Separe o *fixo*",
+    "etiqueta": "o que se repete",
+    "corpo": "Aluguel, salários e sistemas: **o que vence todo mês** vem primeiro, porque ele define o seu piso."
+  },
+  {
+    "fundo": "escuro",
+    "visual": {
+      "tipo": "adesivo",
+      "nome": "raio"
+    },
+    "titulo": "Confira as *notas*",
+    "etiqueta": "uma a uma",
+    "corpo": "Venda sem nota e nota sem venda **viram problema depois**. Confira uma a uma antes de fechar o mês.",
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/pastas.jpg",
+    "posicao_foto": "50% 50%"
+  },
+  {
+    "fundo": "acento",
+    "visual": {
+      "tipo": "adesivo",
+      "nome": "coracao"
+    },
+    "titulo": "Guarde o *imposto*",
+    "etiquetas": [
+      "Separe",
+      "Guarde",
+      "Esqueça"
+    ],
+    "corpo": "Ele vence no mês seguinte, mas **nasce na venda de hoje**. Separe a parte dele no mesmo dia."
+  },
+  {
+    "fundo": "escuro",
+    "visual": {
+      "tipo": "adesivo",
+      "nome": "check"
+    },
+    "titulo": "Anote *uma* meta",
+    "etiqueta": "só uma",
+    "corpo": "Uma meta clara e mensurável para o próximo mês **vale mais que dez desejos** soltos na cabeça."
+  },
+  {
+    "fundo": "acento",
+    "visual": {
+      "tipo": "adesivo",
+      "nome": "estrela"
+    },
+    "titulo": "Quer o meu *roteiro*?",
+    "etiqueta": "uma palavra só",
+    "corpo": "Comente **ROTEIRO** que eu respondo com o passo a passo completo do fechamento, do extrato ao imposto.",
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-xicara.jpg",
+    "posicao_foto": "50% 25%"
+  }
+]

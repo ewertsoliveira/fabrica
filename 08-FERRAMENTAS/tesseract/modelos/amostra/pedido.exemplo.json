@@ -1,0 +1,13 @@
+{
+  "titulo": "Amostra dos modelos",
+  "video": "../../assets-fonte/videos/SEU-VIDEO.mp4",
+  "palavras": "palavras.json",
+  "trecho": { "ini": 0, "fim": 14.0 },
+  "chamada": { "texto": "Sua chamada de abertura", "palavra": "Chamada", "ini": 0.2, "fim": 3.9 },
+  "destaques": ["palavra1", "palavra2"],
+  "broll": [
+    { "img": "../../assets-fonte/mockups/SUA-IMAGEM.png", "ini": 6.8, "fim": 8.9, "fundo": "#F1F3F4" }
+  ],
+  "palavraTela": { "texto": "PALAVRA", "ini": 12.2, "fim": 14.0 },
+  "usarMarca": false
+}

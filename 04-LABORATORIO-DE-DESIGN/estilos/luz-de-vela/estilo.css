@@ -1,0 +1,26 @@
+/* Luz de Vela (primeira rodada, escuro com luz dourada): um foco de luz dourada cortado pela borda, serifa clássica com
+   destaque em itálico dourado, fio dourado acima da chamada e mockup claro com fio dourado. */
+.lamina.est-luz-de-vela{gap:28px;--ouro:color-mix(in srgb,var(--cor-acento) 48%,var(--cor-escuro))}
+.est-luz-de-vela.fundo-escuro{--ouro:var(--cor-acento)}
+.lamina.est-luz-de-vela::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(70% 50% at 92% 4%,color-mix(in srgb,var(--cor-acento) 42%,transparent),transparent 70%)}
+.lamina.est-luz-de-vela.fundo-claro::before{background:radial-gradient(70% 50% at 4% 100%,color-mix(in srgb,var(--cor-acento) 30%,transparent),transparent 70%)}
+.lamina.est-luz-de-vela.fundo-acento::before{display:none}
+.est-luz-de-vela .titulo{font-family:var(--fonte-acento);font-weight:600;letter-spacing:-.01em;line-height:.98;font-size:max(var(--piso-titulo),116px)}
+.est-luz-de-vela .titulo .dst{font-style:italic;color:var(--ouro)}
+.est-luz-de-vela.papel-capa .titulo{font-size:max(var(--piso-titulo),148px)}
+.est-luz-de-vela .kicker{font:400 var(--piso-micro)/1.2 var(--fonte-mono);letter-spacing:.32em;color:var(--ouro)}
+.est-luz-de-vela .fio{position:relative;display:block;width:120px;height:2px;margin-bottom:-14px;background:var(--ouro)}
+.est-luz-de-vela .vis-mockup{overflow:visible}
+.est-luz-de-vela .vis-mockup.inclinado > *{transform:none}
+.est-luz-de-vela .vis-mockup .mk{border-radius:14px}
+.est-luz-de-vela .vis-mockup .mk.mk-sombra{box-shadow:0 0 0 2px var(--cor-acento),0 40px 90px rgba(0,0,0,.6)}
+.est-luz-de-vela.fundo-claro .vis-mockup .mk.mk-sombra{box-shadow:0 0 0 2px color-mix(in srgb,var(--cor-acento) 80%,var(--cor-claro)),0 30px 60px rgba(60,40,10,.15)}
+.est-luz-de-vela .vis-foto{overflow:visible;border-radius:0}
+.est-luz-de-vela .vis-foto img{object-fit:contain}
+.est-luz-de-vela .nav-barra i{background:var(--ouro)}
+.est-luz-de-vela .nav-contador{background:none;padding:0;font:600 var(--piso-micro) var(--fonte-acento)}
+.est-luz-de-vela .nav-arraste{opacity:1;font:700 var(--piso-micro) var(--fonte-acento)}
+.est-luz-de-vela .nav-contador{font-size:42px}
+.est-luz-de-vela.l-fecho-cartao-visual{--cartao-f:var(--cor-escuro);--cartao-t:var(--cor-claro);--raio-cartao:18px;--cartao-sombra:0 40px 90px rgba(0,0,0,.45)}
+.est-luz-de-vela.l-fecho-cartao-visual .cartao .titulo .dst{color:var(--cor-acento)}
+.est-luz-de-vela.l-fecho-cartao-visual .kicker{color:var(--cor-acento)}

@@ -1,0 +1,4 @@
+{{#kicker}}<p class="kicker">{{kicker}}</p>{{/kicker}}
+<h1 class="titulo">{{titulo}}</h1>
+{{#fotoSrc}}<div class="vis pessoa">{{#recorteSrc}}<img src="{{recorteSrc}}" alt="" style="object-position:{{posicao_foto}}">{{/recorteSrc}}{{^recorteSrc}}<img class="foto" src="{{fotoSrc}}" alt="" style="object-position:{{posicao_foto}}">{{/recorteSrc}}</div>{{/fotoSrc}}
+{{^fotoSrc}}{{{visual}}}{{/fotoSrc}}

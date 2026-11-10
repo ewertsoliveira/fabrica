@@ -1,0 +1,2675 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estilos</title>
+<link rel="icon" href="data:,">
+<!--
+  Tela da biblioteca de estilos da Fábrica de Conteúdo. Mostra, para UMA empresa (a escolhida no seletor), todos os
+  estilos prontos em cartões leves: a capa, o nome, uma frase, com o que o estilo combina e o selo "Modelo base".
+  O interruptor "Na minha marca" acende quando a empresa já tem prévias feitas com a marca de hoje: os cartões mostram
+  a capa e as lâminas na marca dela, com o selo "Na sua marca"; o vídeo na marca, quando já ficou pronto (senão toca o
+  vídeo base, e o selo diz "Modelo base" enquanto ele toca). Logo abaixo do interruptor fica o andamento ("Suas prévias
+  de vídeo: 9 de 27"), com "Pausar" e "Continuar"; ele é consultado de 5 em 5 segundos só enquanto há trabalho e a
+  página está à vista. Os dados vêm só do servidor local dos painéis (rotas /api/, sempre com a empresa). Vídeo só toca
+  ao passar o mouse ou tocar no botão do cartão, e um de cada vez.
+  O detalhe de um estilo abre no contêiner #detalhe (pelo cartão ou pelo endereço #estilo=<id>): as prévias em abas,
+  o que o estilo pede, as cores e letras e os pedidos ao agente.
+  O caminho (etapa 8): no alto, a faixa "Seus pedidos ao Claude" com o andamento de cada pedido (esperando, sendo feito,
+  pronto, com o resumo do agente como texto); sem marca, o aviso oferece "Criar do zero" e "Enviar referências" (Sua
+  marca); "Seus estilos" (os estilos próprios da empresa) vêm antes do catálogo; o estilo escolhido leva o selo "Seu
+  estilo". "Usar este estilo" escolhe na hora (sem marca, a confirmação mostra a marca que nasce do estilo) e mostra
+  "Pronto" com "Desfazer"; "Personalizar" e "Usar esta cor" levam a Sua marca (marca.html), que só grava quando a pessoa
+  guarda. Esta tela grava só: a escolha do estilo e o desfazer dela (/api/estilo, /api/estilo/desfazer), os pedidos ao
+  agente (/api/pedido), as imagens do estilo novo (/api/arquivo) e as ações das prévias na marca (/api/previas-marca),
+  sempre com a empresa escolhida; nunca a marca direto.
+-->
+<style>
+  :root {
+    --escuro: rgb(30, 32, 36);
+    --claro: rgb(246, 244, 239);
+    --acento: rgb(38, 102, 168);
+    --neutro: rgb(132, 128, 120);
+    --sobre-acento: rgb(255, 255, 255);
+    --sobre-escuro: rgb(246, 244, 239);
+    --letra-titulo: ui-serif, serif;
+    --letra-texto: system-ui, sans-serif;
+    --letra-mono: ui-monospace, monospace;
+    --texto: var(--escuro);
+    --texto-2: color-mix(in srgb, var(--escuro) 68%, var(--claro));
+    --linha: color-mix(in srgb, var(--neutro) 40%, var(--claro));
+    --fundo-2: color-mix(in srgb, var(--neutro) 10%, var(--claro));
+    --mesa: color-mix(in srgb, var(--escuro) 7%, var(--claro));
+    --erro: rgb(170, 40, 40);
+    --raio: 10px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--claro);
+    color: var(--texto);
+    font: 15px/1.5 var(--letra-texto);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  button, select, input, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+
+  /* ---- topo (igual ao do Laboratório e do Cronograma) ---- */
+  .topo {
+    background: var(--escuro);
+    color: var(--sobre-escuro);
+    padding: 18px 28px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px 24px;
+  }
+  .topo-titulo { min-width: 0; }
+  .topo h1 {
+    margin: 0;
+    font: 600 clamp(24px, 3.2vw, 34px)/1.1 var(--letra-titulo);
+    letter-spacing: -0.01em;
+  }
+  .topo-empresa {
+    margin: 4px 0 0;
+    font-size: 15px;
+    opacity: 0.82;
+    overflow-wrap: anywhere;
+  }
+  .topo-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+  .topo-acoes a { color: var(--sobre-escuro); text-underline-offset: 3px; }
+  .nota-exemplo {
+    font-size: 13px;
+    padding: 3px 10px;
+    border: 1px solid color-mix(in srgb, var(--sobre-escuro) 45%, transparent);
+    border-radius: 999px;
+  }
+
+  /* seletor de empresa (montado por empresa-seletor.js) */
+  .empresa-seletor {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--sobre-escuro) 12%, transparent);
+    cursor: pointer;
+    max-width: 100%;
+  }
+  .empresa-seletor-rotulo { opacity: 0.8; white-space: nowrap; }
+  .empresa-seletor-lista {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--sobre-escuro);
+    font-weight: 600;
+    padding: 0 18px 0 0;
+    margin-right: -14px;
+    cursor: pointer;
+    max-width: 220px;
+    text-overflow: ellipsis;
+  }
+  .empresa-seletor-lista option { color: var(--escuro); background: var(--claro); }
+  .empresa-seletor-seta { pointer-events: none; }
+
+  .aviso {
+    margin: 0;
+    padding: 12px 28px;
+    background: color-mix(in srgb, var(--acento) 14%, var(--claro));
+    border-bottom: 1px solid color-mix(in srgb, var(--acento) 35%, var(--claro));
+    font-weight: 500;
+  }
+
+  /* ---- aviso de modelo base e interruptor ---- */
+  .base {
+    margin: 22px 28px 0;
+    padding: 16px 20px;
+    border-radius: 14px;
+    background: var(--mesa);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px 28px;
+  }
+  .base-texto { min-width: 0; flex: 1 1 340px; }
+  .base-texto p { margin: 0; max-width: 72ch; }
+  .base-aviso { font: 600 17px/1.4 var(--letra-titulo); }
+  .base-sem-marca { margin-top: 6px !important; font-size: 14px; color: var(--texto-2); }
+  .base-vista { display: grid; gap: 6px; justify-items: start; flex: 0 1 auto; }
+  .interruptor {
+    display: inline-flex;
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--claro);
+    border: 1px solid var(--linha);
+    max-width: 100%;
+  }
+  .interruptor button {
+    border: 0;
+    background: transparent;
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .interruptor button[aria-checked="true"] { background: var(--escuro); color: var(--sobre-escuro); }
+  .interruptor button[disabled] { opacity: 0.42; cursor: not-allowed; }
+  .interruptor-nota { margin: 0; font-size: 13px; color: var(--texto-2); }
+
+  /* ---- busca e filtros ---- */
+  .barra { margin: 18px 28px 0; display: grid; gap: 12px; }
+  .busca {
+    width: min(440px, 100%);
+    padding: 10px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--linha);
+    background: var(--claro);
+  }
+  .busca::placeholder { color: var(--texto-2); }
+  .grupo { display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
+  .grupo-titulo {
+    flex: 0 0 108px;
+    padding-top: 7px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--texto-2);
+  }
+  .grupo-opcoes { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+  .chip {
+    border: 1px solid var(--linha);
+    background: var(--claro);
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 14px;
+    line-height: 1.3;
+    cursor: pointer;
+  }
+  .chip:hover { background: var(--fundo-2); }
+  .chip[aria-pressed="true"] { background: var(--escuro); border-color: var(--escuro); color: var(--sobre-escuro); }
+  .resumo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--linha);
+  }
+  .contagem { margin: 0; font-size: 14px; color: var(--texto-2); }
+  .contagem strong { color: var(--texto); }
+  .botao {
+    border: 1px solid var(--linha);
+    background: var(--claro);
+    color: var(--texto);
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .botao:hover { background: var(--fundo-2); }
+  .botao[disabled] { opacity: 0.45; cursor: default; }
+
+  /* ---- grade de cartões ---- */
+  .estante { padding: 22px 28px 56px; }
+  .grade {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+    gap: 28px 22px;
+  }
+  .cartao { position: relative; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .cartao-midia {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--fundo-estilo, var(--mesa));
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--escuro) 14%, transparent);
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .cartao:hover .cartao-midia { box-shadow: 0 10px 28px color-mix(in srgb, var(--escuro) 22%, transparent); }
+  .cartao-midia img, .cartao-midia video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .cartao-video { opacity: 0; transition: opacity 0.2s; background: var(--fundo-estilo, var(--mesa)); }
+  .cartao.tocando .cartao-video { opacity: 1; }
+  .selo {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 2;
+    pointer-events: none;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    background: color-mix(in srgb, var(--claro) 92%, transparent);
+    color: var(--escuro);
+    box-shadow: 0 1px 4px color-mix(in srgb, var(--escuro) 20%, transparent);
+  }
+  .cartao-play {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    z-index: 3;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 0;
+    padding: 0;
+    background: color-mix(in srgb, var(--escuro) 80%, transparent);
+    color: var(--sobre-escuro);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+  .cartao-play:hover { background: var(--escuro); }
+  /* com mouse o cartão toca ao passar por cima e para ao sair: o botão só aparece no foco do teclado (no toque e com
+     pouco movimento ele fica sempre à vista) */
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .cartao-play { opacity: 0; pointer-events: none; }
+    .cartao-play:focus-visible { opacity: 1; }
+  }
+  .icone-tocar {
+    width: 0; height: 0; margin-left: 4px;
+    border-left: 13px solid currentColor;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+  }
+  .icone-parar { display: none; width: 14px; height: 15px; border-left: 4px solid currentColor; border-right: 4px solid currentColor; }
+  .cartao-play[aria-pressed="true"] .icone-tocar { display: none; }
+  .cartao-play[aria-pressed="true"] .icone-parar { display: block; }
+  .cartao-texto { display: grid; gap: 4px; min-width: 0; }
+  .cartao h2 { margin: 0; font: 600 19px/1.2 var(--letra-titulo); }
+  .cartao-abrir {
+    border: 0;
+    background: none;
+    padding: 0;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+  }
+  .cartao-abrir:focus-visible { outline: 0; }
+  /* o cartão inteiro abre o detalhe: a área do botão cobre o cartão (o botão do vídeo fica por cima) */
+  .cartao-abrir::after { content: ""; position: absolute; inset: -6px; z-index: 1; border-radius: 16px; }
+  .cartao-abrir:focus-visible::after { outline: 3px solid var(--acento); outline-offset: 0; }
+  .cartao-linha {
+    margin: 0;
+    font-size: 14px;
+    color: var(--texto-2);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .cartao-marcas { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .cartao-marcas li {
+    font-size: 12px;
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: var(--fundo-2);
+    border: 1px solid var(--linha);
+    color: var(--texto-2);
+  }
+
+  /* ---- vazio e erro ---- */
+  .vazio {
+    max-width: 560px;
+    margin: 12vh auto;
+    padding: 0 24px;
+    text-align: center;
+  }
+  .vazio h2 { font: 600 clamp(22px, 3vw, 28px)/1.2 var(--letra-titulo); margin: 0 0 10px; }
+  .vazio p { margin: 0 0 8px; color: var(--texto-2); }
+  .vazio.erro h2 { color: var(--erro); }
+  .sem-resultado { margin: 6vh auto; }
+  .sem-resultado p { color: var(--texto); font-size: 17px; }
+
+  /* ---- detalhe de um estilo ---- */
+  .detalhe { padding: 14px 28px 64px; }
+  .detalhe-barra { margin-bottom: 14px; }
+  .voltar {
+    border: 0;
+    background: none;
+    padding: 6px 2px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+  .voltar:hover { color: var(--acento); }
+  .detalhe-corpo {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: 28px 48px;
+    align-items: start;
+  }
+  .detalhe-previas { position: sticky; top: 16px; min-width: 0; }
+  .abas {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--linha);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .abas::-webkit-scrollbar { display: none; }
+  /* abas que não cabem (celular): uma sombra e uma seta na borda dizem que há mais para o lado */
+  .abas-caixa { position: relative; }
+  .abas-caixa.tem-mais::after {
+    content: "›";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 1px;
+    width: 40px;
+    display: grid;
+    place-items: center end;
+    padding-right: 4px;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--texto-2);
+    pointer-events: none;
+    background: linear-gradient(to right, transparent, var(--claro) 60%);
+  }
+  .aba {
+    flex: 0 0 auto;
+    border: 0;
+    background: none;
+    padding: 9px 14px 10px;
+    margin-bottom: -1px;
+    border-bottom: 3px solid transparent;
+    font-weight: 600;
+    color: var(--texto-2);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .aba:hover { color: var(--texto); }
+  .aba[aria-selected="true"] { color: var(--texto); border-bottom-color: var(--acento); }
+  .aba:focus-visible { outline-offset: -3px; }
+  .aba-painel {
+    margin-top: 16px;
+    padding: 20px;
+    border-radius: 16px;
+    background: var(--mesa);
+    display: grid;
+    justify-items: center;
+    min-width: 0;
+  }
+  .sem-previa { margin: 0; padding: 18px 20px; border-radius: 14px; background: var(--mesa); color: var(--texto-2); }
+  /* estilo sem nenhuma prévia: o nome e "Prévia em preparo" no lugar do quadro, nunca um retângulo escuro vazio */
+  .quadro-sem-previa {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 6px;
+    padding: 16px;
+    text-align: center;
+    background: var(--mesa);
+    color: var(--texto-2);
+    overflow-wrap: anywhere;
+  }
+  .quadro-sem-previa strong { color: var(--texto); font-size: 16px; }
+  .quadro-sem-previa span { font-size: 13px; }
+  .cartao-midia > .quadro-sem-previa { position: absolute; inset: 0; }
+  .detalhe-previas > .quadro-sem-previa { width: min(100%, 360px); aspect-ratio: 4 / 5; border-radius: 12px; box-sizing: border-box; }
+
+  /* carrossel: uma lâmina por vez; a altura cabe na tela */
+  .slider { width: min(100%, max(240px, calc((100vh - 320px) * 0.8)), 520px); }
+  .slider-janela {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    aspect-ratio: 4 / 5;
+    background: var(--fundo-estilo, var(--escuro));
+    touch-action: pan-y;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .slider-janela.arrastando { cursor: grabbing; }
+  .slider-trilho { display: flex; height: 100%; transition: transform 0.32s ease; }
+  .slider-janela.arrastando .slider-trilho { transition: none; }
+  .slide { flex: 0 0 100%; height: 100%; }
+  .slide img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
+  .slider-controles { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 12px; }
+  .slider-seta {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--linha);
+    background: var(--claro);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    padding: 0 0 3px;
+  }
+  .slider-seta:hover { background: var(--fundo-2); }
+  .slider-seta[disabled] { opacity: 0.35; cursor: default; }
+  .slider-contador { margin: 0; min-width: 64px; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  /* vídeo e capa de Reels: em pé (9:16), inteiros */
+  .quadro-alto {
+    position: relative;
+    width: min(100%, max(220px, calc((100vh - 270px) * 9 / 16)), 405px);
+    aspect-ratio: 9 / 16;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--fundo-estilo, var(--escuro));
+  }
+  .quadro-alto video, .quadro-alto img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  /* o play fica embaixo, longe do rosto de quem aparece na capa do vídeo */
+  .detalhe-play {
+    position: absolute;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 22px 12px 18px;
+    border: 0;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--escuro) 84%, transparent);
+    color: var(--sobre-escuro);
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 6px 22px color-mix(in srgb, var(--escuro) 30%, transparent);
+  }
+  .detalhe-play:hover { background: var(--escuro); }
+
+  /* posts fixados: os três do topo do perfil, lado a lado */
+  .fixados-texto { margin: 0 0 12px; font-size: 14px; color: var(--texto-2); justify-self: start; }
+  .fixados {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 560px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .fixados figure { margin: 0; }
+  .fixados img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; border-radius: 4px; background: var(--fundo-estilo, var(--escuro)); }
+  .fixados figcaption { margin-top: 6px; font-size: 12.5px; text-align: center; color: var(--texto-2); }
+
+  /* coluna da direita */
+  .detalhe-info { min-width: 0; display: grid; gap: 24px; }
+  .detalhe-cabeca { display: grid; gap: 8px; justify-items: start; }
+  .detalhe-selo {
+    margin: 0;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--fundo-2);
+    border: 1px solid var(--linha);
+  }
+  .detalhe-nome {
+    margin: 0;
+    font: 600 clamp(30px, 4vw, 46px)/1.05 var(--letra-titulo);
+    letter-spacing: -0.015em;
+    overflow-wrap: anywhere;
+  }
+  /* o título recebe o foco ao abrir (para o leitor de tela e o teclado começarem ali), mas não é clicável: sem contorno */
+  .detalhe-nome:focus { outline: 0; }
+  .detalhe-linha { margin: 0; font-size: 17px; color: var(--texto-2); max-width: 52ch; }
+  .detalhe-campos {
+    margin: 0;
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 10px 16px;
+    align-items: baseline;
+  }
+  .detalhe-campos dt, .rotulo-pequeno {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--texto-2);
+  }
+  .detalhe-campos dd { margin: 0; min-width: 0; }
+  .marcas { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .marcas li { font-size: 13px; padding: 3px 10px; border-radius: 999px; background: var(--fundo-2); border: 1px solid var(--linha); }
+  .acoes { display: flex; flex-wrap: wrap; gap: 10px; }
+  .botao-forte { background: var(--escuro); border-color: var(--escuro); color: var(--sobre-escuro); }
+  .botao-forte:hover { background: color-mix(in srgb, var(--escuro) 84%, var(--claro)); }
+  .pedido-area { margin-top: 12px; padding: 16px; border-radius: 12px; background: var(--mesa); display: grid; gap: 10px; }
+  .pedido-area p { margin: 0; }
+  .recado-rotulo { font-weight: 600; font-size: 14px; }
+  .recado {
+    width: 100%;
+    min-height: 96px;
+    resize: vertical;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--linha);
+    background: var(--claro);
+  }
+  .recado-conta { font-size: 12.5px; color: var(--texto-2); text-align: right; }
+  .pedido-botoes { display: flex; flex-wrap: wrap; gap: 10px; }
+  .pedido-aviso { margin: 12px 0 0; font-size: 14px; }
+  .pedido-aviso:empty { display: none; }
+  .pedido-aviso:focus { outline: 0; }
+  .pedido-aviso.ok {
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--acento) 14%, var(--claro));
+    border: 1px solid color-mix(in srgb, var(--acento) 35%, var(--claro));
+    font-size: 15px;
+  }
+  .pedido-aviso.erro { color: var(--erro); font-weight: 600; }
+  .secao { padding-top: 20px; border-top: 1px solid var(--linha); }
+  .secao h3 { margin: 0 0 12px; font: 600 19px/1.25 var(--letra-titulo); }
+  .lado-a-lado { display: flex; align-items: center; gap: 16px; }
+  .lado-base { margin: 0; flex: 0 0 96px; display: grid; gap: 4px; justify-items: center; font-size: 12.5px; color: var(--texto-2); }
+  .lado-base img { width: 96px; aspect-ratio: 4 / 5; object-fit: contain; display: block; border-radius: 8px; background: var(--fundo-estilo, var(--mesa)); }
+  .lado-nota { margin: 0; flex: 1 1 auto; min-width: 0; font-size: 14px; color: var(--texto-2); }
+  .amostras { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 76px)); gap: 12px; }
+  .amostras li { display: grid; gap: 6px; font-size: 13px; }
+  .amostra-cor {
+    display: block;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    background: var(--amostra);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--escuro) 16%, transparent);
+  }
+  .letras { margin: 16px 0 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+  .letras-nome { font: 600 18px/1.25 var(--letra-titulo); }
+  .passos { list-style: none; counter-reset: passo; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .passos li { counter-increment: passo; display: flex; align-items: center; gap: 12px; }
+  .passos li::before {
+    content: counter(passo);
+    flex: 0 0 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--escuro);
+    color: var(--sobre-escuro);
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .tecnico { padding-top: 16px; border-top: 1px solid var(--linha); }
+  .tecnico summary { cursor: pointer; font: 600 19px/1.25 var(--letra-titulo); }
+  .tecnico h4 { margin: 18px 0 6px; }
+  .tecnico dl { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 14px; font-size: 14px; }
+  .tecnico dt { color: var(--texto-2); }
+  .tecnico dd { margin: 0; overflow-wrap: anywhere; }
+  .tecnico ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; }
+  .codigo { font-family: var(--letra-mono); }
+
+  /* ---- prévias na marca: andamento, marcador de leitura, lado a lado, troca de cores, leitura difícil ---- */
+  .andamento { display: grid; gap: 6px; justify-items: start; width: min(100%, 380px); }
+  .andamento:empty { display: none; }
+  .andamento-linha { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: 14px; }
+  .andamento-nota { margin: 0; font-size: 13px; color: var(--texto-2); }
+  .andamento-erro { margin: 0; font-size: 13px; color: var(--erro); font-weight: 600; }
+  .trilho { display: block; width: 100%; height: 6px; border-radius: 999px; background: var(--linha); overflow: hidden; }
+  .trilho span { display: block; height: 100%; background: var(--acento); }
+  .botao-mini { padding: 3px 12px; font-size: 13px; }
+  .marcador {
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+    z-index: 2;
+    pointer-events: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px 3px 4px;
+    border-radius: 999px;
+    background: rgb(255, 246, 214);
+    color: rgb(74, 53, 0);
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 1px 4px color-mix(in srgb, var(--escuro) 25%, transparent);
+  }
+  .marcador-sinal { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: rgb(150, 98, 20); color: rgb(255, 255, 255); font-size: 12px; font-weight: 800; }
+  .aba-nota { margin-left: 6px; font-weight: 500; font-size: 11.5px; color: var(--texto-2); }
+  .video-nota { margin: 12px 0 0; max-width: 405px; font-size: 14px; color: var(--texto-2); text-align: center; }
+  .lado-dois { display: grid; grid-template-columns: repeat(2, minmax(0, 150px)); gap: 14px; }
+  .lado-dois figure { margin: 0; display: grid; gap: 4px; justify-items: center; font-size: 12.5px; font-weight: 600; color: var(--texto-2); }
+  .lado-dois img { width: 100%; aspect-ratio: 4 / 5; object-fit: contain; display: block; border-radius: 8px; background: var(--fundo-estilo, var(--mesa)); }
+  .troca { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 10px 12px; align-items: center; }
+  .troca .amostras { grid-template-columns: repeat(4, minmax(0, 56px)); gap: 10px; }
+  .amostra-vazia .amostra-cor { background: transparent; box-shadow: inset 0 0 0 1px var(--linha); }
+  .troca-letras { margin: 14px 0 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-size: 14px; }
+  .troca-seta { color: var(--texto-2); }
+  .tecnico-nota { margin: 14px 0 0; font-size: 14px; }
+  .leitura {
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: rgb(255, 246, 214);
+    border: 1px solid rgb(229, 199, 107);
+    color: rgb(61, 45, 0);
+    display: grid;
+    gap: 10px;
+    font-size: 14px;
+  }
+  .leitura p { margin: 0; }
+  .leitura-outros { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+  .sugestoes { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .sugestao {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 8px 12px;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--claro);
+    color: var(--texto);
+    border: 1px solid var(--linha);
+  }
+  .sugestao > .amostra-cor { width: 44px; }
+  .sugestao-nome { display: grid; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
+  .sugestao-nome .codigo { font-size: 12.5px; color: var(--texto-2); }
+  .sugestao-botoes { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; }
+  .sugestao-estado { grid-column: 1 / -1; font-size: 13px; color: var(--texto-2); }
+  .sugestao-estado:empty { display: none; }
+  .sugestao-ver { grid-column: 1 / -1; }
+  a.botao { display: inline-block; text-decoration: none; }
+
+  /* ---- o caminho: os pedidos ao Claude no alto, os caminhos sem marca, "Seu estilo", "Seus estilos" ---- */
+  .faixa {
+    margin: 22px 28px 0;
+    padding: 16px 18px;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--acento) 8%, var(--claro));
+    border: 1px solid color-mix(in srgb, var(--acento) 35%, var(--claro));
+    display: grid;
+    gap: 12px;
+  }
+  .faixa-cabeca { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
+  .faixa h2 { margin: 0; font: 600 17px/1.3 var(--letra-titulo); }
+  .faixa-resumo { margin: 2px 0 0; font-size: 13.5px; color: var(--texto-2); }
+  .faixa-alternar { border: 0; background: none; padding: 2px 0; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .faixa-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .pedido-item {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--claro);
+    border: 1px solid var(--linha);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2px 12px;
+    align-items: start;
+  }
+  .pedido-item h3 { margin: 0; font-size: 15px; font-weight: 700; overflow-wrap: anywhere; }
+  .pedido-data { margin: 0; grid-column: 1; font-size: 13px; color: var(--texto-2); }
+  .pedido-estado {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 700;
+    white-space: nowrap;
+    border: 1px solid var(--linha);
+    background: var(--claro);
+  }
+  .pedido-estado.pronto { background: var(--escuro); border-color: var(--escuro); color: var(--sobre-escuro); }
+  .pedido-estado.fazendo { background: color-mix(in srgb, var(--acento) 18%, var(--claro)); border-color: color-mix(in srgb, var(--acento) 45%, var(--claro)); }
+  .pedido-texto {
+    grid-column: 1 / -1;
+    margin: 8px 0 0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--mesa);
+    font-size: 14px;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+  }
+  .faixa-nota { margin: 0; font-size: 13px; color: var(--texto-2); }
+  .base-caminhos { color: var(--texto); }
+  .base-caminhos a { font-weight: 600; text-underline-offset: 3px; color: var(--texto); }
+  .selo-seu {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    pointer-events: none;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    background: var(--escuro);
+    color: var(--sobre-escuro);
+    box-shadow: 0 1px 4px color-mix(in srgb, var(--escuro) 25%, transparent);
+  }
+  .detalhe-selos { display: flex; flex-wrap: wrap; gap: 6px; }
+  .detalhe-seu { background: var(--escuro); border-color: var(--escuro); color: var(--sobre-escuro); }
+  .estante-titulo { margin: 0 0 14px; font: 600 21px/1.2 var(--letra-titulo); }
+  .grade + .estante-titulo { padding-top: 32px; }
+  .estante-nota { margin: -8px 0 16px; font-size: 14px; color: var(--texto-2); }
+
+  /* ---- a marca que nasce do estilo (decisão 10 A): cores e letras de verdade, num cartão neutro ---- */
+  .quadro-marca {
+    padding: 14px;
+    border-radius: 12px;
+    background: rgb(255, 255, 255);
+    color: rgb(30, 32, 36);
+    border: 1px solid var(--linha);
+    display: grid;
+    gap: 12px;
+  }
+  .quadro-peca {
+    padding: 14px 16px 16px;
+    border-radius: 8px;
+    background: var(--q-claro, rgb(246, 244, 239));
+    color: var(--q-escuro, rgb(30, 32, 36));
+    border-left: 6px solid var(--q-escuro, rgb(30, 32, 36));
+    display: grid;
+    gap: 6px;
+    justify-items: start;
+  }
+  /* como nas peças: título, texto e botão na letra principal; só a etiqueta pequena em caixa-alta na dos rótulos */
+  .quadro-peca-sobre { margin: 0; font: 600 11px/1.3 var(--q-letra-rotulo, ui-monospace, monospace); letter-spacing: 0.08em; text-transform: uppercase; color: var(--q-neutro, rgb(132, 128, 120)); }
+  .quadro-peca-titulo { margin: 0; font: 600 22px/1.15 var(--q-letra-principal, ui-serif, serif); overflow-wrap: anywhere; }
+  .quadro-peca-texto { margin: 0; font: 400 14px/1.4 var(--q-letra-principal, ui-serif, serif); }
+  .quadro-peca-botao { margin-top: 4px; padding: 4px 12px; border-radius: 999px; font: 600 12.5px/1.3 var(--q-letra-principal, ui-serif, serif); background: var(--q-acento, rgb(38, 102, 168)); color: var(--q-sobre-acento, rgb(255, 255, 255)); }
+  .quadro-cores { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .quadro-cores li { display: grid; gap: 4px; font-size: 12.5px; color: rgb(84, 86, 92); }
+  .quadro-cores .amostra-cor { aspect-ratio: 5 / 4; border-radius: 6px; }
+  .quadro-letras { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+  .quadro-letras li { display: flex; align-items: baseline; gap: 10px; font-size: 13px; color: rgb(84, 86, 92); min-width: 0; overflow-wrap: anywhere; }
+  .quadro-aa { font-size: 22px; line-height: 1; color: rgb(30, 32, 36); }
+  .confirmar-titulo { margin: 0; font-weight: 700; }
+  .pronto-linha { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; }
+  .pronto-frase { flex: 1 1 240px; min-width: 0; }
+  .pedido-aviso a { color: var(--texto); font-weight: 600; text-underline-offset: 3px; }
+
+  /* ---- imagens do estilo novo: área de soltar com miniaturas ---- */
+  .soltar {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    padding: 16px;
+    border: 2px dashed var(--linha);
+    border-radius: 12px;
+    background: var(--claro);
+    text-align: center;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .soltar.sobre { border-color: var(--acento); background: color-mix(in srgb, var(--acento) 8%, var(--claro)); }
+  .soltar small { color: var(--texto-2); }
+  .soltar input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .soltar:focus-within { outline: 3px solid var(--acento); outline-offset: 2px; }
+  .miniaturas { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .miniaturas li { position: relative; }
+  .miniatura { width: 72px; height: 72px; object-fit: cover; display: block; border-radius: 8px; background: var(--mesa); }
+  .miniatura-tirar {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--linha);
+    background: var(--claro);
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+  }
+  .imagens-recusa { margin: 0; font-size: 13px; color: var(--erro); font-weight: 600; }
+  .imagens-recusa:empty { display: none; }
+
+  @media (max-width: 900px) {
+    .detalhe-corpo { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .detalhe-previas { position: static; }
+  }
+
+  @media (max-width: 760px) {
+    .topo { padding: 16px 16px 18px; }
+    .aviso { padding: 12px 16px; }
+    .base { margin: 16px 16px 0; padding: 14px 16px; }
+    .faixa { margin: 16px 16px 0; padding: 14px; }
+    .quadro-cores { gap: 6px; }
+    .quadro-cores li { font-size: 11.5px; line-height: 1.25; }
+    .barra { margin: 16px 16px 0; }
+    .estante { padding: 18px 16px 40px; }
+    /* no celular cada grupo de filtros vira uma faixa que corre para o lado (só a faixa, nunca a página) */
+    .grupo { display: grid; gap: 6px; }
+    .grupo-titulo { padding-top: 0; }
+    .grupo-opcoes {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      margin: 0 -16px;
+      padding: 0 16px 4px;
+      scrollbar-width: none;
+    }
+    .grupo-opcoes::-webkit-scrollbar { display: none; }
+    .chip { flex: 0 0 auto; white-space: nowrap; }
+    .empresa-seletor-lista { max-width: 180px; }
+    .interruptor button { padding: 7px 12px; }
+    .detalhe { padding: 12px 16px 48px; }
+    .abas { gap: 0; }
+    .aba { padding: 8px 8px 9px; font-size: 14px; }
+    .aba-painel { padding: 14px; }
+    .amostras { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .troca { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+    .troca .amostras { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cartao-midia, .cartao-video, .slider-trilho { transition: none; }
+  }
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="topo-titulo">
+    <h1>Estilos</h1>
+    <p class="topo-empresa" id="nome-empresa"></p>
+  </div>
+  <div class="topo-acoes">
+    <span class="nota-exemplo" id="nota-exemplo" hidden>Usando as cores de exemplo</span>
+    <a id="link-laboratorio" href="laboratorio.html" hidden>Abrir o Laboratório</a>
+    <a id="link-cronograma" href="cronograma.html" hidden>Abrir o Cronograma</a>
+    <div id="seletor" hidden></div>
+  </div>
+</header>
+<p class="aviso" id="aviso" role="status" hidden></p>
+
+<main id="conteudo">
+  <div class="vazio"><p>Carregando…</p></div>
+</main>
+
+<!-- Detalhe de um estilo: preenchido por mostrarDetalhe(estilo); a grade fica escondida (com filtros e rolagem) enquanto ele está aberto. -->
+<section class="detalhe" id="detalhe" aria-label="Estilo aberto" hidden></section>
+
+<script src="empresa-seletor.js"></script>
+<script>
+'use strict';
+(function () {
+  const seletor = EmpresaSeletor.criar();
+  const $ = (id) => document.getElementById(id);
+  const conteudo = $('conteudo');
+
+  const AVISO_BASE = 'Estes são modelos base. Cores e letras viram as da sua marca. Você pode ajustar tudo depois.';
+  const SEM_MARCA = 'Você ainda não definiu a sua marca. Os estilos continuam valendo: você escolhe um e a marca nasce dele.';
+  const NOTA_NA_MARCA = 'Suas prévias na marca ainda não foram geradas.';
+  const SEM_RESULTADO = 'Nenhum estilo combina com esses filtros. Limpe um filtro.';
+  const SEM_FOTO = 'funciona-sem-foto';
+  const SEU_ESTILO = 'Seu estilo';
+  const SEUS_ESTILOS = 'Seus estilos';
+  const PASSO_LAMINAS = 1100; // tempo de cada lâmina quando o cartão passa o carrossel
+  // Prévias na marca
+  const NA_SUA_MARCA = 'Na sua marca';
+  const VER_NA_MARCA = 'Ver os estilos na minha marca';
+  const MARCA_MUDOU = 'Sua marca mudou. Estamos refazendo as prévias.';
+  // em pausa a página não pede de novo sozinha: as prévias recomeçam com a marca nova no "Continuar"
+  const MARCA_MUDOU_PAUSA = 'Sua marca mudou. As prévias estão em pausa: elas recomeçam com a marca nova quando você clicar em Continuar.';
+  const SEM_DEMONSTRACAO = 'Algumas prévias de vídeo precisam do vídeo de demonstração neste computador.';
+  const SEM_SERVIDOR = 'Não consegui falar com o servidor dos painéis. Confira se a janela do servidor continua aberta e tente de novo.';
+  const INTERVALO_CONSULTA = 5000; // no máximo uma consulta do andamento a cada 5 s
+  const ESTADOS_DO_VIDEO = ['pronto', 'esperando', 'fazendo', 'erro', 'sem-fonte', 'sem-modelo'];
+
+  // O que a tela mostra da empresa escolhida. Os filtros moram só aqui (na memória da página).
+  // `intencao`: formatos que a empresa quer ver primeiro (a aba que o detalhe abre); `nome`: o nome da empresa na tela.
+  // `progresso`: o andamento das prévias na marca; `marcaDaEmpresa`: cores e letras da marca (para o detalhe);
+  // `querMarca`: a pessoa pediu as prévias (a grade vai para a marca quando elas chegam), a não ser que `escolheuVista`;
+  // `refazendo`: a página pediu de novo sozinha porque a marca mudou.
+  // O caminho: `atual` o estilo escolhido ({ estilo, origem, nome } ou null); `pedidos` o andamento dos pedidos ao Claude
+  // ({ itens, ilegiveis } ou null antes de ler); `faixa` o que a pessoa abriu ou recolheu nela; `letras` a lista de letras
+  // livres (família -> endereço do arquivo), lida uma vez quando o quadro da marca precisa.
+  const tela = { estilos: [], total: 0, marca: null, vista: 'base', cartoes: [], filtros: filtrosVazios(), intencao: [], nome: '',
+    progresso: null, marcaDaEmpresa: null, querMarca: false, escolheuVista: false, refazendo: false,
+    atual: null, pedidos: null, faixa: { escondida: false, todos: false }, letras: null };
+  function filtrosVazios() { return { busca: '', nichos: new Set(), tons: new Set(), semFoto: false }; }
+
+  // Mouse de verdade (passa por cima) e movimento liberado: só assim o cartão toca sozinho ao passar o mouse.
+  const comMouse = window.matchMedia('(hover: hover) and (pointer: fine)');
+  const poucoMovimento = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const tocaAoPassar = () => comMouse.matches && !poucoMovimento.matches;
+
+  // ---- utilidades ----
+  function el(tag, props, filhos) {
+    const e = document.createElement(tag);
+    Object.entries(props || {}).forEach(([k, v]) => {
+      if (v === undefined || v === null || v === false) return;
+      if (k === 'texto') e.textContent = v;
+      else if (k === 'classe') e.className = v;
+      else if (k.indexOf('on') === 0) e.addEventListener(k.slice(2), v);
+      else e.setAttribute(k, v === true ? '' : v);
+    });
+    (filhos || []).forEach((f) => { if (f) e.appendChild(typeof f === 'string' ? document.createTextNode(f) : f); });
+    return e;
+  }
+  function trocar(...filhos) { conteudo.textContent = ''; filhos.forEach((f) => conteudo.appendChild(f)); }
+  const erroDe = (r, padrao) => (r && r.json && r.json.erro) || padrao || 'O servidor dos painéis não respondeu como esperado. Feche o painel e abra de novo pelo atalho.';
+  function vazio(titulo, ...linhas) {
+    return el('div', { classe: 'vazio' }, [el('h2', { texto: titulo })].concat(linhas.map((l) => el('p', { texto: l }))));
+  }
+  function erro(titulo, texto) {
+    const v = vazio(titulo, texto);
+    v.classList.add('erro');
+    return v;
+  }
+  const semAcento = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  // Endereço de prévia vindo do servidor: só um arquivo da pasta das prévias da biblioteca (base) ou da pasta das prévias
+  // da empresa escolhida agora (na marca), neste mesmo servidor, sem trecho ".." ou "." (nem escrito com %2e) e sem barra
+  // invertida, "?" ou "#". Endereço de outra empresa é descartado.
+  const PASTA_DAS_PREVIAS = /^\/04-LABORATORIO-DE-DESIGN\/biblioteca\/previas\/[^?#\\]+$/;
+  const PREVIAS_DA_EMPRESA = /^\/empresas\/([a-z0-9][a-z0-9-]*)\/(previas|cores-sugeridas)\/[^?#\\]+$/;
+  const trechoOk = (p) => {
+    let d;
+    try { d = decodeURIComponent(p); } catch (err) { return false; }
+    return p !== '' && d !== '.' && d !== '..' && !/[\\/]/.test(d);
+  };
+  const enderecoBase = (u) => (typeof u === 'string' && PASTA_DAS_PREVIAS.test(u) && u.split('/').slice(4).every(trechoOk) ? u : null);
+  const enderecoDaMarca = (u, pasta = 'previas', partes = 2) => { const m = typeof u === 'string' ? PREVIAS_DA_EMPRESA.exec(u) : null; const resto = m ? u.split('/').slice(4) : []; return m && m[1] === seletor.atual() && m[2] === pasta && resto.length === partes && resto.every(trechoOk) ? u : null; };
+  const enderecoLocal = (u) => enderecoBase(u) || enderecoDaMarca(u);
+  // Prévia de um estilo próprio da empresa escolhida: só /empresas/<empresa>/previas/proprios/<estilo>/<arquivo>.
+  const PREVIAS_PROPRIAS = /^\/empresas\/([a-z0-9][a-z0-9-]*)\/previas\/proprios\/[^?#\\]+$/;
+  const enderecoProprio = (u) => { const m = typeof u === 'string' ? PREVIAS_PROPRIAS.exec(u) : null; const resto = m ? u.split('/').slice(5) : []; return m && m[1] === seletor.atual() && resto.length === 2 && resto.every(trechoOk) ? u : null; };
+  // Arquivo de letra da lista de letras livres (o quadro da marca que nasce do estilo usa as letras de verdade).
+  const PASTA_DAS_LETRAS = /^\/08-FERRAMENTAS\/tesseract\/modelos\/fontes\/[^/?#\\]+$/;
+  const enderecoDeLetra = (u) => (typeof u === 'string' && PASTA_DAS_LETRAS.test(u) && trechoOk(u.split('/').pop()) ? u : null);
+  const corValida = (c) => (typeof c === 'string' && /^#[0-9a-f]{6}$/i.test(c) ? c : null);
+  const texto = (v) => (typeof v === 'string' ? v : '');
+  const rotulos = (v) => (Array.isArray(v) ? v.filter((x) => x && typeof x.codigo === 'string' && typeof x.rotulo === 'string' && x.rotulo) : []);
+  const objeto = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v : {});
+  const lista = (v) => (Array.isArray(v) ? v : []);
+  // Texto que vem de um arquivo (avisos, rótulos): sem caracteres de controle nem invisíveis, numa linha, cortado.
+  const limpo = (v, max) => (typeof v === 'string' ? v.replace(/[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]+/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, max) : '');
+
+  // Item do catálogo só com o que a tela usa, conferido. As prévias base vêm só da pasta das prévias da biblioteca; as
+  // prévias na marca, só da pasta da empresa escolhida (conferirMarca). `proprio`: um estilo próprio da empresa (Seus
+  // estilos), com as prévias só da pasta dela; a `chave` (o que vai no endereço) não se confunde com um do catálogo.
+  function conferirItem(e, proprio) {
+    const base = proprio ? enderecoProprio : enderecoBase;
+    const p = e.previas && typeof e.previas === 'object' ? e.previas : {};
+    const f = objeto(p.fixados);
+    const carrossel = Array.isArray(p.carrossel) ? p.carrossel.map(base).filter(Boolean) : [];
+    return {
+      id: e.id,
+      chave: proprio ? 'proprio:' + e.id : e.id,
+      proprio: !!proprio,
+      nome: texto(e.nome) || e.id,
+      linha: texto(e.linha),
+      combinaCom: rotulos(e.combinaCom),
+      tom: rotulos(e.tom),
+      precisa: rotulos(e.precisa),
+      fundo: corValida(e.cores && e.cores.escuro),
+      capa: base(p.capa) || carrossel[0] || base(p.reelsCapa) || base(p.videoCapa),
+      carrossel,
+      video: base(p.video),
+      videoCapa: base(p.videoCapa),
+      reelsCapa: base(p.reelsCapa),
+      fixados: Object.keys(ROTULO_FIXADO).map((k) => ({ rotulo: ROTULO_FIXADO[k], src: base(f[k]) })).filter((x) => x.src),
+      marca: conferirMarca(e.previasMarca), // o estilo próprio ainda não tem prévias na marca (vem null do servidor)
+      videoMarca: ESTADOS_DO_VIDEO.includes(e.videoMarca) ? e.videoMarca : null,
+      notaDestaque: limpo(e.notaDestaque, 200) || null,
+      original: e, // o item inteiro, para o detalhe (Tarefa 3)
+    };
+  }
+  const ehItem = (e) => e && typeof e.id === 'string' && e.id;
+  // O estilo escolhido pela empresa ({ estilo, origem, nome } do catálogo) e se um item é ele (o próprio com o mesmo código
+  // de um do catálogo não é o escolhido).
+  function conferirAtual(a) {
+    const o = objeto(a);
+    return typeof o.estilo === 'string' && o.estilo && (o.origem === 'catalogo' || o.origem === 'proprio') ? { estilo: o.estilo, origem: o.origem, nome: limpo(o.nome, 80) || o.estilo } : null;
+  }
+  const ehSeuEstilo = (e) => !!tela.atual && tela.atual.estilo === e.id && (tela.atual.origem === 'proprio') === !!e.proprio;
+
+  // As prévias na marca de um estilo, conferidas (o selo "Na sua marca" só nasce daqui): sem capa da empresa escolhida,
+  // nada; o vídeo só com a capa dele.
+  function conferirMarca(p) {
+    const o = objeto(p);
+    const capa = enderecoDaMarca(o.capa);
+    if (!capa) return null;
+    const f = objeto(o.fixados);
+    const video = enderecoDaMarca(o.video);
+    const videoCapa = enderecoDaMarca(o.videoCapa);
+    return {
+      capa,
+      carrossel: lista(o.carrossel).map((u) => enderecoDaMarca(u)).filter(Boolean),
+      fixados: Object.keys(ROTULO_FIXADO).map((k) => ({ rotulo: ROTULO_FIXADO[k], src: enderecoDaMarca(f[k]) })).filter((x) => x.src),
+      reelsCapa: enderecoDaMarca(o.reelsCapa),
+      video: video && videoCapa ? video : null,
+      videoCapa: video && videoCapa ? videoCapa : null,
+      avisos: lista(o.avisos).map((a) => limpo(a, 200)).filter(Boolean).slice(0, 20),
+      leitura: lista(o.leitura).map(conferirLeitura).filter(Boolean), // todos os grupos (no máximo 4 papéis e o "estilo")
+    };
+  }
+  // Um grupo de texto difícil de ler: { tipo: 'cor', papel, onde, peca, sugestoes: [{ cor, rotulo }] } ou { tipo: 'estilo', onde, peca }.
+  // Um grupo de texto difícil de ler: { tipo: 'cor', papel, pecas, onde, sugestoes: [{ cor, rotulo }] } ou { tipo: 'estilo',
+  // pecas, onde }. As peças são formato + número; o "onde" que a tela escreve sai delas (nunca do texto do arquivo).
+  function conferirLeitura(g) {
+    const o = objeto(g);
+    const pecas = lista(o.pecas).map((p) => ({ formato: objeto(p).formato, lamina: objeto(p).lamina })).filter((p) => ondeDaPeca(p)).slice(0, 12);
+    if (!pecas.length) return null;
+    const base = { pecas, onde: pecas.map(ondeDaPeca) };
+    if (o.tipo === 'estilo' || o.tipo === 'detalhe') return Object.assign({ tipo: o.tipo }, base);
+    if (o.tipo !== 'cor' || !Object.prototype.hasOwnProperty.call(NOME_COR, o.papel)) return null;
+    const sugestoes = lista(o.sugestoes).map((s) => ({ cor: corValida(objeto(s).cor), rotulo: limpo(objeto(s).rotulo, 60) })).filter((s) => s.cor).slice(0, 3);
+    return Object.assign({ tipo: 'cor', papel: o.papel, sugestoes }, base);
+  }
+  // Onde fica uma peça, em palavras: "da lâmina 3", "do post fixado de método", "da capa de Reels" (vazio: peça estranha).
+  const FIXADO_EM_PALAVRAS = ['apresentação', 'método', 'contratar'];
+  function ondeDaPeca(p) {
+    const o = p && typeof p === 'object' ? p : {};
+    if (!Number.isInteger(o.lamina) || o.lamina < 1) return '';
+    if (o.formato === 'carrossel' && o.lamina <= 40) return 'da lâmina ' + o.lamina;
+    if (o.formato === 'fixados' && o.lamina <= FIXADO_EM_PALAVRAS.length) return 'do post fixado de ' + FIXADO_EM_PALAVRAS[o.lamina - 1];
+    if (o.formato === 'reels' && o.lamina === 1) return 'da capa de Reels';
+    return '';
+  }
+  const mesmaPeca = (a, b) => !!a && !!b && a.formato === b.formato && a.lamina === b.lamina;
+
+  // ---- empresa ----
+  async function iniciar() {
+    let s;
+    try {
+      s = await seletor.carregar();
+    } catch (e) {
+      trocar(erro('Não consegui abrir a biblioteca de estilos', e.message));
+      return;
+    }
+    seletor.montar({ seletor: $('seletor'), aviso: $('aviso'), aoTrocar: () => carregarEmpresa(false) });
+    if (!s.atual) {
+      $('nome-empresa').textContent = '';
+      trocar(vazio('Nenhuma empresa configurada ainda',
+        'A biblioteca mostra os estilos para uma empresa. Peça ao agente, na conversa com o Claude, para configurar a sua empresa.'));
+      return;
+    }
+    carregarEmpresa(true);
+  }
+
+  // `primeira`: a abertura da página (vale o #estilo=<id> do endereço). Trocar de empresa fecha o detalhe aberto.
+  async function carregarEmpresa(primeira) {
+    pararTudo();
+    pararConsulta();
+    const pedido = primeira === true ? idDoEndereco() : null;
+    fecharVista(false);
+    if (!primeira) tirarDoEndereco();
+    tela.estilos = [];
+    tela.cartoes = [];
+    tela.filtros = filtrosVazios();
+    tela.progresso = null;
+    tela.marcaDaEmpresa = null;
+    tela.querMarca = false;
+    tela.escolheuVista = false;
+    tela.refazendo = false;
+    tela.atual = null;
+    tela.pedidos = null;
+    tela.faixa = { escondida: false, todos: false };
+    const codigo = seletor.atual();
+    tela.nome = seletor.nome();
+    $('nome-empresa').textContent = seletor.nome();
+    $('link-laboratorio').hidden = true;
+    $('link-cronograma').hidden = true;
+    trocar(el('div', { classe: 'vazio' }, [el('p', { texto: 'Carregando os estilos para ' + seletor.nome() + '…' })]));
+    let marca, biblioteca, paineis;
+    try {
+      [marca, biblioteca, paineis] = await Promise.all([seletor.aplicarMarca(), seletor.ler('/api/biblioteca'), seletor.ler('/api/paineis')]);
+    } catch (e) {
+      if (seletor.atual() === codigo) trocar(erro('Não consegui falar com o servidor dos painéis', 'Confira se a janela do servidor continua aberta e recarregue a página.'));
+      return;
+    }
+    if (marca === null || biblioteca === null || paineis === null) return; // a pessoa já trocou de empresa
+    $('nota-exemplo').hidden = !marca.exemplo;
+    if (marca.nome) { $('nome-empresa').textContent = marca.nome; tela.nome = marca.nome; }
+    tela.marcaDaEmpresa = marca.exemplo ? null : { cores: objeto(marca.cores), fontes: objeto(marca.fontes) };
+    if (paineis.ok && paineis.json.laboratorio) {
+      $('link-laboratorio').href = 'laboratorio.html?empresa=' + encodeURIComponent(codigo);
+      $('link-laboratorio').hidden = false;
+    }
+    if (paineis.ok && paineis.json.cronograma) {
+      $('link-cronograma').href = 'cronograma.html?empresa=' + encodeURIComponent(codigo);
+      $('link-cronograma').hidden = false;
+    }
+    if (!biblioteca.ok) {
+      trocar(erro('Não consegui ler a biblioteca de estilos', erroDe(biblioteca)));
+      return;
+    }
+    // "Seus estilos" (os próprios da empresa) vêm antes do catálogo
+    tela.estilos = lista(biblioteca.json.proprios).filter(ehItem).map((e) => conferirItem(e, true))
+      .concat(lista(biblioteca.json.estilos).filter(ehItem).map((e) => conferirItem(e, false)));
+    tela.total = tela.estilos.length;
+    tela.atual = conferirAtual(biblioteca.json.atual);
+    lerMarca(biblioteca.json.marca);
+    tela.progresso = tela.marca.definida ? conferirProgresso(objeto(biblioteca.json.marca).progresso) : null;
+    tela.intencao = Array.isArray(biblioteca.json.intencao) ? biblioteca.json.intencao.filter((q) => typeof q === 'string') : [];
+    // com prévias na marca prontas, a página abre "Na minha marca" (decisão B2)
+    tela.vista = tela.marca.naMarca ? 'marca' : 'base';
+    desenhar();
+    lerPedidos();
+    // Endereço com #estilo=<id>: abre o detalhe direto. Estilo que não existe: fica a grade.
+    if (pedido) {
+      const e = tela.estilos.find((x) => x.chave === pedido);
+      if (e) mostrarDetalhe(e); else tirarDoEndereco();
+    }
+    if (!tela.marca.definida) return;
+    // A marca mudou desde as prévias de antes: a página pede de novo sozinha (decisão B2). Senão, com trabalho pela frente,
+    // lê o andamento de verdade (com quem está fazendo) e segue consultando.
+    const estado = tela.progresso.estado;
+    if (tela.marca.desatualizada && estado !== 'pausado' && estado !== 'sem-marca') {
+      tela.refazendo = true;
+      tela.querMarca = true;
+      agirNasPrevias('gerar', null);
+    } else if (trabalhando()) consultar();
+  }
+
+  // A marca do catálogo: { definida, naMarca, desatualizada, semConferir }. O interruptor acompanha.
+  function lerMarca(m) {
+    const o = objeto(m);
+    tela.marca = { definida: o.definida === true, naMarca: o.naMarca === true, desatualizada: o.desatualizada === true, semConferir: contagem(o.semConferir) };
+    const b = $('vista-marca');
+    if (!b) return;
+    b.disabled = !tela.marca.naMarca;
+    if (tela.marca.naMarca) b.removeAttribute('aria-describedby'); else b.setAttribute('aria-describedby', 'nota-na-marca');
+  }
+
+  // ---- desenho ----
+  function desenhar() {
+    if (!tela.estilos.length) {
+      trocar(vazio('A biblioteca ainda não tem estilos',
+        'Quando houver estilos prontos, eles aparecem aqui, cada um com a sua prévia.'));
+      return;
+    }
+    tela.cartoes = tela.estilos.map(cartao);
+    // "Seus estilos" (os próprios da empresa) numa grade antes da do catálogo, cada uma com o título dela
+    const proprios = tela.cartoes.filter((c) => c.estilo.proprio);
+    const grade = el('ul', { classe: 'grade', id: 'grade' }, tela.cartoes.filter((c) => !c.estilo.proprio).map((c) => c.li));
+    const deles = proprios.length ? [
+      el('h2', { classe: 'estante-titulo', id: 'titulo-seus', texto: SEUS_ESTILOS }),
+      el('p', { classe: 'estante-nota', id: 'nota-seus', texto: 'Os estilos feitos só para ' + tela.nome + '.' }),
+      el('ul', { classe: 'grade', id: 'grade-seus' }, proprios.map((c) => c.li)),
+      el('h2', { classe: 'estante-titulo', id: 'titulo-biblioteca', texto: 'Estilos da biblioteca' }),
+    ] : [];
+    const semResultado = el('div', { classe: 'vazio sem-resultado', id: 'sem-resultado', hidden: true }, [
+      el('p', { texto: SEM_RESULTADO }),
+      el('button', { classe: 'botao', type: 'button', texto: 'Limpar filtros', onclick: limparFiltros }),
+    ]);
+    trocar(faixaDosPedidos(), desenharBase(), desenharFiltros(), el('section', { classe: 'estante', 'aria-label': 'Estilos' }, deles.concat(grade, semResultado)));
+    desenharAndamento();
+    desenharFaixa();
+    filtrar();
+  }
+
+  function desenharBase() {
+    const naMarca = tela.marca.naMarca;
+    const botao = (vista, rotulo) => el('button', {
+      type: 'button', role: 'radio', id: 'vista-' + vista, texto: rotulo,
+      'aria-checked': tela.vista === vista ? 'true' : 'false',
+      disabled: vista === 'marca' && !naMarca,
+      'aria-describedby': vista === 'marca' && !naMarca ? 'nota-na-marca' : null,
+      onclick: () => trocarVista(vista),
+    });
+    return el('section', { classe: 'base', 'aria-label': 'Sobre as prévias' }, [
+      el('div', { classe: 'base-texto' }, [
+        el('p', { classe: 'base-aviso', id: 'aviso-base', texto: AVISO_BASE }),
+        // sem marca: os outros dois caminhos ficam a um clique, no próprio aviso (spec 8.4)
+        tela.marca.definida ? null : el('p', { classe: 'base-sem-marca', id: 'sem-marca' }, [
+          SEM_MARCA + ' ',
+          el('span', { classe: 'base-caminhos' }, ['Prefere outro caminho? ',
+            el('a', { id: 'caminho-do-zero', texto: 'Criar do zero', href: caminhoSemMarca('criar-do-zero') }), ' · ',
+            el('a', { id: 'caminho-referencias', texto: 'Enviar referências', href: caminhoSemMarca('enviar-referencias') })]),
+        ]),
+      ]),
+      el('div', { classe: 'base-vista' }, [
+        el('div', { classe: 'interruptor', id: 'interruptor', role: 'radiogroup', 'aria-label': 'Como ver as prévias' }, [
+          botao('base', 'Modelo base'),
+          botao('marca', 'Na minha marca'),
+        ]),
+        el('div', { classe: 'andamento', id: 'andamento' }),
+      ]),
+    ]);
+  }
+
+  // "Na minha marca" só com prévias na marca prontas. Trocar a vista troca só os cartões (os filtros e a rolagem ficam).
+  // `daPessoa`: a pessoa escolheu (a grade não troca mais sozinha quando as prévias chegam).
+  function trocarVista(vista, daPessoa = true) {
+    if (vista === 'marca' && !tela.marca.naMarca) return;
+    if (daPessoa) tela.escolheuVista = true;
+    if (tela.vista === vista) return;
+    tela.vista = vista;
+    document.querySelectorAll('#interruptor [role="radio"]').forEach((b) => b.setAttribute('aria-checked', b.id === 'vista-' + vista ? 'true' : 'false'));
+    pararTudo();
+    tela.cartoes.slice().forEach((c) => trocarCartao(c, c.estilo));
+    filtrar();
+  }
+
+  // ---- prévias na marca: o andamento, as ações e a consulta ----
+  // O andamento fica logo abaixo do interruptor (decisão D4): a contagem, "Pausar" e "Continuar", os avisos e o botão de
+  // começar. Os dados vêm do catálogo (ao abrir) e de /api/previas-marca; as ações vão para a mesma rota.
+  const ESTADOS_DO_ANDAMENTO = ['nada', 'imagens', 'videos', 'pausado', 'pronto', 'sem-marca'];
+  const contagem = (v) => (Number.isInteger(v) && v >= 0 ? v : 0);
+  function conferirProgresso(p) {
+    const o = objeto(p);
+    const im = objeto(o.imagens);
+    const v = objeto(o.videos);
+    return {
+      estado: ESTADOS_DO_ANDAMENTO.includes(o.estado) ? o.estado : 'nada',
+      imagens: { estado: typeof im.estado === 'string' ? im.estado : null, feitos: contagem(im.feitos), total: contagem(im.total), erro: limpo(im.erro, 160) || null },
+      videos: { feitos: contagem(v.feitos), total: contagem(v.total), prontos: contagem(v.prontos), semFonte: contagem(v.semFonte), erros: contagem(v.erros) },
+      desatualizada: o.desatualizada === true,
+      trabalhador: typeof o.trabalhador === 'boolean' ? o.trabalhador : null,
+    };
+  }
+
+  const nota = (textoDaNota, id) => el('p', { classe: 'andamento-nota', id, texto: textoDaNota });
+  const botaoAcao = (rotulo, acao, forte) => el('button', {
+    classe: forte ? 'botao botao-forte' : 'botao botao-mini', type: 'button', 'data-acao': acao, texto: rotulo,
+    onclick: (ev) => agirNasPrevias(acao, ev.currentTarget),
+  });
+  function trilho(feitos, total) {
+    const barra = el('span', { classe: 'trilho', 'aria-hidden': 'true' }, [el('span')]);
+    barra.firstChild.style.width = (total ? Math.min(100, Math.round((feitos / total) * 100)) : 0) + '%';
+    return barra;
+  }
+
+  function desenharAndamento() {
+    const caixa = $('andamento');
+    if (!caixa) return;
+    caixa.textContent = '';
+    const m = tela.marca;
+    const p = tela.progresso;
+    const linhas = [];
+    if (!m.definida || !p || p.estado === 'sem-marca') {
+      if (!m.naMarca) linhas.push(nota(m.definida ? NOTA_NA_MARCA : NOTA_MARCA, 'nota-na-marca'));
+    } else {
+      if (tela.refazendo && (trabalhando() || p.estado === 'nada')) linhas.push(nota(MARCA_MUDOU));
+      // marca mudada com as prévias em pausa: a página não pede de novo sozinha; diz que recomeçam no "Continuar"
+      if ((m.desatualizada || p.desatualizada) && p.estado === 'pausado') linhas.push(nota(MARCA_MUDOU_PAUSA, 'marca-mudou-pausa'));
+      const im = p.imagens;
+      const v = p.videos;
+      if (p.estado === 'nada') {
+        if (!m.naMarca && !tela.refazendo) linhas.push(nota(NOTA_NA_MARCA, 'nota-na-marca'), botaoAcao(VER_NA_MARCA, 'gerar', true));
+      } else if (p.estado === 'imagens' || p.estado === 'videos' || p.estado === 'pausado') {
+        const deImagens = im.estado === 'esperando' || im.estado === 'fazendo';
+        const feitos = deImagens ? im.feitos : v.feitos;
+        const total = deImagens ? im.total : v.total;
+        const pausado = p.estado === 'pausado';
+        const parado = !pausado && p.trabalhador === false; // ninguém está fazendo (o computador foi reiniciado, por exemplo)
+        linhas.push(el('p', { classe: 'andamento-linha', id: 'andamento-texto' }, [
+          el('span', {}, [deImagens ? 'Preparando suas prévias na marca: ' : 'Suas prévias de vídeo: ', el('strong', { texto: feitos + ' de ' + total }), pausado ? ' · em pausa' : parado ? ' · parado' : '']),
+          pausado || parado ? botaoAcao('Continuar', 'retomar') : botaoAcao('Pausar', 'pausar'),
+        ]));
+        linhas.push(trilho(feitos, total));
+      }
+      if (v.semFonte) linhas.push(nota(SEM_DEMONSTRACAO));
+      const falhou = im.estado === 'erro' ? im.erro || 'Não deu para preparar as imagens na sua marca.' : v.erros === 1 ? 'Uma prévia de vídeo não ficou pronta.' : v.erros > 1 ? v.erros + ' prévias de vídeo não ficaram prontas.' : '';
+      if (falhou) linhas.push(el('p', { classe: 'andamento-linha' }, [el('span', { texto: falhou }), botaoAcao('Tentar de novo', 'gerar')]));
+    }
+    linhas.forEach((l) => caixa.appendChild(l));
+  }
+
+  // As ações das prévias na marca (gerar, pausar, retomar) pelo botão. A resposta de outra empresa é descartada.
+  async function agirNasPrevias(acao, botao) {
+    const codigo = seletor.atual();
+    if (botao) botao.disabled = true;
+    if (acao === 'gerar') tela.querMarca = true;
+    const r = await enviarPrevias({ acao });
+    if (r === null || codigo !== seletor.atual()) return;
+    if (!r.ok) {
+      if (botao) botao.disabled = false;
+      const caixa = $('andamento');
+      if (caixa) caixa.appendChild(el('p', { classe: 'andamento-erro', role: 'status', texto: erroDe(r, 'Não consegui atualizar as prévias na marca. Tente de novo.') }));
+      return;
+    }
+    await aplicarProgresso(objeto(r.json).estado);
+  }
+  // Todo envio das prévias na marca sai por aqui (o seletor põe a empresa escolhida por último no corpo).
+  async function enviarPrevias(corpo) {
+    try { return await seletor.enviar('/api/previas-marca', corpo); } catch (e) { return { ok: false, json: { erro: SEM_SERVIDOR } }; }
+  }
+
+  // O andamento novo: redesenha a linha e, quando uma imagem ou um vídeo fica pronto, relê o catálogo e troca só os
+  // cartões que mudaram.
+  async function aplicarProgresso(p) {
+    const antes = tela.progresso;
+    tela.progresso = conferirProgresso(p);
+    const agora = tela.progresso;
+    if (tela.refazendo && agora.estado !== 'nada' && !trabalhando()) tela.refazendo = false;
+    desenharAndamento();
+    if (antes && (antes.imagens.feitos !== agora.imagens.feitos || antes.videos.feitos !== agora.videos.feitos || antes.estado !== agora.estado)) await recarregarCatalogo();
+    agendarConsulta();
+  }
+
+  // Relê o catálogo e troca só os cartões que mudaram; o resto da página (filtros, rolagem, foco, o vídeo que toca) fica.
+  async function recarregarCatalogo() {
+    const codigo = seletor.atual();
+    const vez = consulta.vez;
+    let b;
+    try { b = await seletor.ler('/api/biblioteca'); } catch (e) { return; }
+    if (b === null || !b.ok || vez !== consulta.vez || codigo !== seletor.atual()) return;
+    const tinhaMarca = tela.marca.definida;
+    lerMarca(b.json.marca);
+    tela.atual = conferirAtual(b.json.atual);
+    // a marca acabou de nascer (do estilo escolhido): o aviso de "sem marca" sai e o andamento das prévias na marca começa
+    if (!tinhaMarca && tela.marca.definida) {
+      tela.progresso = conferirProgresso(objeto(b.json.marca).progresso);
+      const sem = $('sem-marca');
+      if (sem) sem.hidden = true;
+      const notaLado = $('lado-nota');
+      if (notaLado) notaLado.textContent = notaDaMarca();
+    }
+    const chave = (e) => JSON.stringify([e.marca, e.videoMarca]);
+    for (const novo of lista(b.json.estilos).filter(ehItem).map((e) => conferirItem(e, false))) {
+      const i = tela.estilos.findIndex((x) => x.chave === novo.chave);
+      if (i < 0 || chave(tela.estilos[i]) === chave(novo)) continue;
+      tela.estilos[i] = novo;
+      const c = tela.cartoes.find((x) => x.estilo.chave === novo.chave);
+      if (c) trocarCartao(c, novo);
+    }
+    marcarSeuEstilo();
+    // a pessoa pediu para ver na marca: quando as primeiras prévias ficam prontas, a grade vai para a marca
+    if (tela.marca.naMarca && tela.querMarca && !tela.escolheuVista && tela.vista === 'base') trocarVista('marca', false);
+    desenharAndamento();
+    filtrar();
+  }
+
+  // A consulta do andamento: um só temporizador, só enquanto há trabalho e a página está à vista; trocar de empresa (ou a
+  // página sumir) para, e a resposta que chega depois é descartada (a `vez` mudou).
+  const consulta = { timer: null, vez: 0 };
+  const trabalhando = () => !!(tela.progresso && (tela.progresso.estado === 'imagens' || tela.progresso.estado === 'videos'));
+  function pararConsulta() {
+    clearTimeout(consulta.timer);
+    consulta.timer = null;
+    consulta.vez += 1;
+  }
+  function agendarConsulta() {
+    if (consulta.timer !== null || document.hidden || !trabalhando()) return;
+    consulta.timer = setTimeout(consultar, INTERVALO_CONSULTA);
+  }
+  async function consultar() {
+    consulta.timer = null;
+    const vez = consulta.vez;
+    const codigo = seletor.atual();
+    let r = null;
+    try { r = await seletor.ler('/api/previas-marca'); } catch (e) { r = null; }
+    if (vez !== consulta.vez || codigo !== seletor.atual()) return;
+    if (r && r.ok) await aplicarProgresso(r.json);
+    else agendarConsulta();
+  }
+
+  // ---- o andamento dos pedidos ao Claude (decisão 6 A): uma faixa no alto, com todos os pedidos da empresa, inclusive
+  // os que não têm estilo (criar do zero, referências). Vem de /api/pedidos: o tipo em palavras, a data, o estado e o
+  // resumo do agente, que entra sempre como texto (textContent). Relida ao abrir, depois de cada pedido ou escolha e quando
+  // a página volta à vista (sem temporizador: o único da tela é o das prévias na marca). ----
+  const ESTADO_DO_PEDIDO = { pendente: { rotulo: 'Esperando', classe: '', um: 'esperando', varios: 'esperando', nota: 'No Claude, digite /fabrica continuar.' }, 'em-andamento': { rotulo: 'Sendo feito', classe: 'fazendo', um: 'sendo feito', varios: 'sendo feitos', nota: 'O agente está fazendo este pedido no Claude.' }, parado: { rotulo: 'Parado', classe: '', um: 'parado', varios: 'parados', nota: 'Parou no meio. No Claude, digite /fabrica continuar para retomar.' }, atendido: { rotulo: 'Pronto', classe: 'pronto', um: 'pronto', varios: 'prontos', nota: 'O agente terminou este pedido.' }, recusado: { rotulo: 'Não foi feito', classe: '', um: 'não feito', varios: 'não feitos', nota: 'O agente não fez este pedido.' } };
+  const MOSTRAR_PEDIDOS = 3; // os mais novos à vista; o resto num clique
+  // A resposta do servidor só com o que a faixa usa, conferida; o mais novo primeiro (o servidor manda do mais antigo).
+  function conferirPedidos(j) {
+    const o = objeto(j);
+    const itens = lista(o.pedidos).map(objeto)
+      .filter((p) => Object.prototype.hasOwnProperty.call(ESTADO_DO_PEDIDO, p.estado) && limpo(p.tipo, 60))
+      .map((p) => ({ tipo: limpo(p.tipo, 60), data: limpo(p.dataLocal, 20), estado: p.estado, resumo: limpo(p.resumo, 600) || null, estilo: limpo(p.estilo, 80) || null }))
+      .reverse();
+    return { itens, ilegiveis: Number.isInteger(o.ilegiveis) && o.ilegiveis > 0 ? o.ilegiveis : 0 };
+  }
+  // "1 pronto · 1 sendo feito · 1 esperando"
+  function resumoDosPedidos(itens) {
+    return ['atendido', 'em-andamento', 'parado', 'pendente', 'recusado'].map((e) => {
+      const n = itens.filter((p) => p.estado === e).length;
+      return n ? n + ' ' + (n === 1 ? ESTADO_DO_PEDIDO[e].um : ESTADO_DO_PEDIDO[e].varios) : '';
+    }).filter(Boolean).join(' · ');
+  }
+  function itemDoPedido(p) {
+    const e = ESTADO_DO_PEDIDO[p.estado];
+    return el('li', { classe: 'pedido-item' }, [
+      // com o nome do estilo do pedido, a faixa diz qual era (inclusive depois de "Desfazer")
+      el('h3', { texto: p.estilo ? p.tipo + ': ' + p.estilo : p.tipo }),
+      el('span', { classe: 'pedido-estado ' + e.classe, texto: e.rotulo }),
+      p.data ? el('p', { classe: 'pedido-data', texto: 'Pedido em ' + p.data }) : null,
+      p.resumo ? el('p', { classe: 'pedido-texto', texto: p.resumo }) : el('p', { classe: 'pedido-texto', texto: e.nota }),
+    ]);
+  }
+  // O lugar da faixa (vazio e escondido até os pedidos chegarem).
+  const faixaDosPedidos = () => el('section', { classe: 'faixa', id: 'faixa-pedidos', 'aria-label': 'Seus pedidos ao Claude', hidden: true });
+  function desenharFaixa() {
+    const caixa = $('faixa-pedidos');
+    if (!caixa) return;
+    caixa.textContent = '';
+    const p = tela.pedidos;
+    if (!p || (!p.itens.length && !p.ilegiveis)) { caixa.hidden = true; return; }
+    const f = tela.faixa;
+    const refazer = (mudar) => () => { mudar(); desenharFaixa(); const b = $('faixa-alternar'); if (b) b.focus(); };
+    caixa.appendChild(el('div', { classe: 'faixa-cabeca' }, [
+      el('div', {}, [el('h2', { texto: 'Seus pedidos ao Claude' }), p.itens.length ? el('p', { classe: 'faixa-resumo', texto: resumoDosPedidos(p.itens) }) : null]),
+      p.itens.length ? el('button', { classe: 'faixa-alternar', id: 'faixa-alternar', type: 'button', 'aria-expanded': f.escondida ? 'false' : 'true', texto: f.escondida ? 'Mostrar' : 'Esconder',
+        onclick: refazer(() => { f.escondida = !f.escondida; }) }) : null,
+    ]));
+    if (!f.escondida && p.itens.length) {
+      caixa.appendChild(el('ul', { classe: 'faixa-lista', id: 'faixa-lista' }, (f.todos ? p.itens : p.itens.slice(0, MOSTRAR_PEDIDOS)).map(itemDoPedido)));
+      const resto = p.itens.length - MOSTRAR_PEDIDOS;
+      if (resto > 0) caixa.appendChild(el('button', { classe: 'faixa-alternar', type: 'button', texto: f.todos ? 'Mostrar só os mais novos' : resto === 1 ? 'Ver mais um pedido' : 'Ver mais ' + resto + ' pedidos', onclick: () => { f.todos = !f.todos; desenharFaixa(); } }));
+    }
+    if (p.ilegiveis) caixa.appendChild(el('p', { classe: 'faixa-nota', texto: p.ilegiveis === 1 ? 'Um pedido não pôde ser lido. Peça ajuda no Claude.' : p.ilegiveis + ' pedidos não puderam ser lidos. Peça ajuda no Claude.' }));
+    caixa.hidden = false;
+  }
+  // Relê o andamento dos pedidos da empresa escolhida; a resposta de outra empresa (a pessoa trocou no meio) é descartada.
+  async function lerPedidos() {
+    const codigo = seletor.atual();
+    if (!codigo) return;
+    let r = null;
+    try { r = await seletor.ler('/api/pedidos'); } catch (e) { return; }
+    if (r === null || !r.ok || codigo !== seletor.atual()) return;
+    tela.pedidos = conferirPedidos(r.json);
+    desenharFaixa();
+  }
+
+  // Códigos de um campo presentes no catálogo, do mais usado para o menos usado.
+  function opcoes(campo) {
+    const contagem = new Map();
+    tela.estilos.forEach((e) => e[campo].forEach((x) => {
+      const atual = contagem.get(x.codigo) || { codigo: x.codigo, rotulo: x.rotulo, n: 0 };
+      atual.n += 1;
+      contagem.set(x.codigo, atual);
+    }));
+    return [...contagem.values()].sort((a, b) => b.n - a.n || a.rotulo.localeCompare(b.rotulo, 'pt-BR'));
+  }
+
+  function chip(rotulo, ligado, aoTocar, extra) {
+    const b = el('button', Object.assign({ classe: 'chip', type: 'button', 'aria-pressed': ligado ? 'true' : 'false', texto: rotulo }, extra || {}));
+    b.addEventListener('click', () => {
+      const novo = b.getAttribute('aria-pressed') !== 'true';
+      b.setAttribute('aria-pressed', novo ? 'true' : 'false');
+      aoTocar(novo);
+      filtrar();
+    });
+    return b;
+  }
+
+  function grupo(titulo, itens) {
+    if (!itens.length) return null;
+    return el('div', { classe: 'grupo', role: 'group', 'aria-label': titulo }, [
+      el('span', { classe: 'grupo-titulo', 'aria-hidden': 'true', texto: titulo }),
+      el('div', { classe: 'grupo-opcoes' }, itens),
+    ]);
+  }
+
+  function desenharFiltros() {
+    const f = tela.filtros;
+    const alternar = (conjunto, codigo) => (ligado) => { if (ligado) conjunto.add(codigo); else conjunto.delete(codigo); };
+    const busca = el('input', {
+      classe: 'busca', type: 'search', id: 'busca', placeholder: 'Buscar estilo pelo nome',
+      'aria-label': 'Buscar estilo pelo nome ou pela descrição', autocomplete: 'off', value: f.busca || null,
+    });
+    busca.addEventListener('input', () => { f.busca = busca.value; filtrar(); });
+    const temSemFoto = tela.estilos.some((e) => e.precisa.some((x) => x.codigo === SEM_FOTO));
+    return el('section', { classe: 'barra', 'aria-label': 'Buscar e filtrar' }, [
+      busca,
+      grupo('Combina com', opcoes('combinaCom').map((o) => chip(o.rotulo, f.nichos.has(o.codigo), alternar(f.nichos, o.codigo), { 'data-nicho': o.codigo, 'data-n': String(o.n) }))),
+      grupo('Tom', opcoes('tom').map((o) => chip(o.rotulo, f.tons.has(o.codigo), alternar(f.tons, o.codigo), { 'data-tom': o.codigo, 'data-n': String(o.n) }))),
+      temSemFoto ? grupo('Fotos', [chip('Funciona sem foto', f.semFoto, (ligado) => { f.semFoto = ligado; }, { id: 'filtro-sem-foto' })]) : null,
+      el('div', { classe: 'resumo' }, [
+        el('p', { classe: 'contagem', id: 'contagem', role: 'status' }),
+        el('button', { classe: 'botao', type: 'button', id: 'limpar-filtros', texto: 'Limpar filtros', onclick: limparFiltros }),
+      ]),
+    ]);
+  }
+
+  // Limpa no mesmo objeto: a busca e os botões de filtro guardam uma referência a ele.
+  function limparFiltros() {
+    const f = tela.filtros;
+    f.busca = '';
+    f.nichos.clear();
+    f.tons.clear();
+    f.semFoto = false;
+    const busca = $('busca');
+    if (busca) busca.value = '';
+    document.querySelectorAll('.barra .chip').forEach((b) => b.setAttribute('aria-pressed', 'false'));
+    filtrar();
+  }
+
+  // Grupos somam com E; dentro do grupo, qualquer escolha serve (OU).
+  function passa(e, f) {
+    const busca = semAcento(f.busca).trim();
+    if (busca && !semAcento(e.nome + ' ' + e.linha).includes(busca)) return false;
+    if (f.nichos.size && !e.combinaCom.some((x) => f.nichos.has(x.codigo))) return false;
+    if (f.tons.size && !e.tom.some((x) => f.tons.has(x.codigo))) return false;
+    if (f.semFoto && !e.precisa.some((x) => x.codigo === SEM_FOTO)) return false;
+    return true;
+  }
+
+  function filtrar() {
+    const f = tela.filtros;
+    let n = 0;
+    tela.cartoes.forEach((c) => {
+      const mostra = passa(c.estilo, f);
+      if (!mostra && ativo === c) parar(c);
+      c.li.hidden = !mostra;
+      if (mostra) n += 1;
+    });
+    const contagem = $('contagem');
+    if (contagem) {
+      contagem.textContent = '';
+      contagem.appendChild(el('strong', { texto: String(n) }));
+      contagem.appendChild(document.createTextNode(' de ' + tela.total + (tela.total === 1 ? ' estilo' : ' estilos')));
+    }
+    const algum = !!(semAcento(f.busca).trim() || f.nichos.size || f.tons.size || f.semFoto);
+    const botaoLimpar = $('limpar-filtros');
+    if (botaoLimpar) botaoLimpar.disabled = !algum;
+    const sem = $('sem-resultado');
+    if (sem) sem.hidden = n > 0;
+    // cada grade (Seus estilos e a da biblioteca) some quando nenhum cartão dela passa nos filtros, com o título junto
+    const nos = (proprio) => tela.cartoes.filter((c) => c.estilo.proprio === proprio && !c.li.hidden).length;
+    const grade = $('grade');
+    if (grade) grade.hidden = nos(false) === 0;
+    const seus = nos(true);
+    ['grade-seus', 'titulo-seus', 'nota-seus'].forEach((id) => { if ($(id)) $(id).hidden = seus === 0; });
+    if ($('titulo-biblioteca')) $('titulo-biblioteca').hidden = seus === 0 || nos(false) === 0;
+  }
+
+  // ---- cartões ----
+  // O lugar da prévia de um estilo que não tem nenhuma: o nome e o aviso, em vez de um quadro vazio.
+  function quadroSemPrevia(nome) {
+    return el('div', { classe: 'quadro-sem-previa' }, [el('strong', { texto: nome }), el('span', { texto: 'Prévia em preparo' })]);
+  }
+
+  // O que o cartão mostra na vista de agora: na marca, as prévias da empresa conferidas (selo "Na sua marca"); o vídeo na
+  // marca só quando ficou pronto, senão o vídeo base (decisão D3: enquanto ele toca, o selo diz "Modelo base"). Estilo
+  // sem prévia na marca fica com a base e o selo "Modelo base". `leitura`: marcador "Leitura difícil" (decisão D5).
+  function vistaDoCartao(e) {
+    const m = tela.vista === 'marca' ? e.marca : null;
+    if (!m) return { capa: e.capa, carrossel: e.carrossel, video: e.video, videoCapa: e.videoCapa, naMarca: false, videoNaMarca: false, leitura: false };
+    return { capa: m.capa, carrossel: m.carrossel, video: m.video || e.video, videoCapa: m.video ? m.videoCapa : e.videoCapa, naMarca: true, videoNaMarca: !!m.video, leitura: m.leitura.some((g) => g.tipo !== 'detalhe') };
+  }
+  const seloDe = (v) => (v.naMarca ? NA_SUA_MARCA : 'Modelo base');
+
+  function cartao(e) {
+    const v = vistaDoCartao(e);
+    const capa = v.capa ? el('img', { classe: 'cartao-capa', src: v.capa, alt: '', loading: 'lazy', decoding: 'async' }) : null;
+    const midia = el('div', { classe: 'cartao-midia' }, [capa || quadroSemPrevia(e.nome), el('span', { classe: 'selo', texto: seloDe(v) })]);
+    if (v.leitura) midia.appendChild(el('span', { classe: 'marcador' }, [el('span', { classe: 'marcador-sinal', 'aria-hidden': 'true', texto: '!' }), 'Leitura difícil']));
+    if (ehSeuEstilo(e)) midia.appendChild(el('span', { classe: 'selo-seu', texto: SEU_ESTILO }));
+    if (e.fundo) midia.style.setProperty('--fundo-estilo', e.fundo);
+    const c = { estilo: e, vista: v, li: null, midia, capa, video: null, play: null, laminas: null, passo: 0, depois: null };
+    if (v.video) {
+      c.play = el('button', { classe: 'cartao-play', type: 'button', 'aria-pressed': 'false', 'aria-label': 'Ver o vídeo do estilo ' + e.nome }, [
+        el('span', { classe: 'icone-tocar', 'aria-hidden': 'true' }),
+        el('span', { classe: 'icone-parar', 'aria-hidden': 'true' }),
+      ]);
+      c.play.addEventListener('click', (ev) => { ev.stopPropagation(); if (ativo === c && c.video && !c.video.paused) parar(c); else tocar(c); });
+      midia.appendChild(c.play);
+    }
+    const marcas = e.combinaCom.slice(0, 3);
+    c.li = el('li', { classe: 'cartao', 'data-estilo': e.chave }, [
+      midia,
+      el('div', { classe: 'cartao-texto' }, [
+        el('h2', {}, [el('button', { classe: 'cartao-abrir', type: 'button', texto: e.nome, onclick: () => abrirDetalhe(e) })]),
+        e.linha ? el('p', { classe: 'cartao-linha', texto: e.linha }) : null,
+        marcas.length ? el('ul', { classe: 'cartao-marcas', 'aria-label': 'Combina com' }, marcas.map((x) => el('li', { texto: x.rotulo }))) : null,
+      ]),
+    ]);
+    c.li.addEventListener('pointerenter', (ev) => { if (ev.pointerType === 'mouse' && tocaAoPassar()) tocar(c); });
+    c.li.addEventListener('pointerleave', (ev) => { if (ev.pointerType === 'mouse' && ativo === c) parar(c); });
+    // o foco do teclado (ou do toque) que sai do cartão também para o vídeo dele
+    c.li.addEventListener('focusout', (ev) => { if (ativo === c && !c.li.contains(ev.relatedTarget)) parar(c); });
+    return c;
+  }
+
+  // O selo "Seu estilo" acompanha a escolha (depois de usar um estilo ou de desfazer), nos cartões e no detalhe aberto.
+  function marcarSeuEstilo() {
+    tela.cartoes.forEach((c) => {
+      const selo = c.midia.querySelector('.selo-seu');
+      const seu = ehSeuEstilo(c.estilo);
+      if (seu && !selo) c.midia.appendChild(el('span', { classe: 'selo-seu', texto: SEU_ESTILO }));
+      if (!seu && selo) selo.remove();
+    });
+    const d = $('detalhe-seu');
+    if (d && aberto.estilo) d.hidden = !ehSeuEstilo(aberto.estilo);
+  }
+
+  // Troca um cartão por um novo, no mesmo lugar: o filtro (escondido ou não) e o foco ficam. O cartão que está tocando fica
+  // como está até parar (aí a troca acontece).
+  function trocarCartao(c, estilo) {
+    if (ativo === c) { c.depois = estilo; return; }
+    const novo = cartao(estilo);
+    const comFoco = c.li.contains(document.activeElement);
+    novo.li.hidden = c.li.hidden;
+    c.li.replaceWith(novo.li);
+    const i = tela.cartoes.indexOf(c);
+    if (i >= 0) tela.cartoes[i] = novo;
+    if (comFoco) { const b = novo.li.querySelector('.cartao-abrir'); if (b) b.focus({ preventScroll: true }); }
+  }
+
+  // Um cartão animado por vez (vídeo ou lâminas). Começar outro para e rebobina o anterior.
+  let ativo = null;
+
+  function tocar(c) {
+    if (ativo && ativo !== c) parar(ativo);
+    const e = c.estilo;
+    const v = c.vista;
+    if (v.video) {
+      ativo = c;
+      if (!c.video) {
+        // O vídeo só nasce na primeira vez que a pessoa passa o mouse ou toca no botão: a grade abre sem nenhum.
+        c.video = el('video', { classe: 'cartao-video', src: v.video, poster: v.videoCapa, preload: 'none', muted: true, playsinline: true, loop: true, 'aria-hidden': 'true', tabindex: '-1', disablepictureinpicture: true });
+        c.video.muted = true;
+        c.video.addEventListener('error', () => semVideo(c));
+        c.midia.insertBefore(c.video, c.midia.querySelector('.selo'));
+      }
+      // decisão D3: o cartão na marca que toca o vídeo base diz "Modelo base" enquanto ele toca
+      if (c.vista.naMarca && !c.vista.videoNaMarca) c.midia.querySelector('.selo').textContent = 'Modelo base';
+      c.li.classList.add('tocando');
+      if (c.play) c.play.setAttribute('aria-pressed', 'true');
+      if (c.play) c.play.setAttribute('aria-label', 'Parar o vídeo do estilo ' + e.nome);
+      const promessa = c.video.play();
+      if (promessa && promessa.catch) promessa.catch(() => { /* parado antes de começar: nada a fazer */ });
+      vigiar(c);
+      return;
+    }
+    if (v.carrossel.length > 1 && c.capa && !poucoMovimento.matches) {
+      ativo = c;
+      c.passo = 0;
+      c.laminas = setInterval(() => {
+        c.passo = (c.passo + 1) % v.carrossel.length;
+        c.capa.setAttribute('src', v.carrossel[c.passo]);
+      }, PASSO_LAMINAS);
+    }
+  }
+
+  function parar(c) {
+    if (c.video) {
+      c.video.pause();
+      try { c.video.currentTime = 0; } catch (err) { /* vídeo ainda sem dados */ }
+    }
+    c.li.classList.remove('tocando');
+    c.midia.querySelector('.selo').textContent = seloDe(c.vista);
+    if (c.play) {
+      c.play.setAttribute('aria-pressed', 'false');
+      c.play.setAttribute('aria-label', 'Ver o vídeo do estilo ' + c.estilo.nome);
+    }
+    if (c.laminas) {
+      clearInterval(c.laminas);
+      c.laminas = null;
+      if (c.capa && c.vista.capa) c.capa.setAttribute('src', c.vista.capa);
+    }
+    if (ativo === c) ativo = null;
+    // prévias novas chegaram enquanto ele tocava: agora o cartão é trocado
+    if (c.depois) { const novo = c.depois; c.depois = null; trocarCartao(c, novo); }
+  }
+
+  function pararTudo() { if (ativo) parar(ativo); }
+
+  // Vídeo que não abre: o cartão fica com a capa (e passa as lâminas, se tiver).
+  function semVideo(c) {
+    if (ativo === c) parar(c);
+    if (c.video) { c.video.removeAttribute('src'); c.video.remove(); c.video = null; }
+    if (c.play) { c.play.remove(); c.play = null; }
+    c.vista.video = null;
+  }
+
+  // O cartão que sai da tela (rolagem) para de tocar.
+  const observador = 'IntersectionObserver' in window ? new IntersectionObserver((entradas) => {
+    entradas.forEach((x) => { if (!x.isIntersecting && ativo && ativo.li === x.target) parar(ativo); });
+  }) : null;
+  function vigiar(c) { if (observador) { observador.disconnect(); observador.observe(c.li); } }
+  // A página escondida para os vídeos e a consulta do andamento; de volta à vista, a consulta volta (se há trabalho) e o
+  // andamento dos pedidos é relido (a pessoa pode ter atendido um pedido no Claude enquanto isso).
+  document.addEventListener('visibilitychange', () => { if (document.hidden) { pararTudo(); pararVideoDoDetalhe(); pararConsulta(); } else agendarConsulta(); if (!document.hidden) lerPedidos(); });
+
+  // ---- detalhe de um estilo ----
+  // Abre pelo cartão (o estilo vai no endereço, #estilo=<id>, e "Voltar" do navegador fecha) ou direto pelo endereço.
+  // Enquanto ele está aberto a grade só fica escondida: os filtros e a posição da rolagem continuam lá.
+  const detalhe = $('detalhe');
+  const ROTULO_ABA = { video: 'Vídeo', carrossel: 'Carrossel', 'capa-reels': 'Capa de Reels', fixados: 'Posts fixados' };
+  const NOME_COR = { escuro: 'Escuro', claro: 'Claro', acento: 'Acento', neutro: 'Neutro' };
+  const PAPEL_LETRA = { principal: 'Letra principal', mono: 'Letra dos rótulos', acento: 'Destaque' };
+  const ROTULO_FIXADO = { apresentacao: 'Apresentação', metodo: 'Método', contratar: 'Como contratar' };
+  const ROTULO_TRATAMENTO = { destaque: 'Destaque', foto: 'Foto', textura: 'Textura', grafismo: 'Grafismo' };
+  const NOTA_MARCA = 'Suas prévias na marca chegam depois de você definir a marca.';
+  // Com a marca já definida o texto muda: o que falta são as prévias, não a marca.
+  function notaDaMarca() { return tela.marca && tela.marca.definida ? NOTA_NA_MARCA : NOTA_MARCA; }
+  // Os valores de "Tratamentos" vêm do catálogo sem acento e com hífen: aqui viram palavras de gente.
+  const PALAVRA_TRATAMENTO = { italico: 'itálico', 'cartao-arredondado': 'cartão arredondado', 'cartao-com-sombra': 'cartão com sombra', circulo: 'círculo', 'circulo-riscado': 'círculo riscado', 'circulo-com-anel': 'círculo com anel', 'numero-em-circulo': 'número em círculo', 'laco-a-mao': 'laço à mão', 'cantoneira-de-camera': 'cantoneira de câmera', 'falha-cromatica': 'falha cromática', grao: 'grão', 'grao-de-filme': 'grão de filme', aneis: 'anéis', 'objeto-de-escritorio': 'objeto de escritório', 'forma-organica': 'forma orgânica' };
+  function rotuloTratamento(valor) {
+    return String(valor).split('+').map((p) => PALAVRA_TRATAMENTO[p] || legivel(p)).join(' + ');
+  }
+  const PASSOS = ['Você escolhe a marca', 'A Fábrica troca as cores e as letras', 'Você ajusta o que quiser'];
+  const LIMITE_RECADO = 500;
+  // As três decisões do detalhe. "Usar este estilo" escolhe na hora (decisão D1, /api/estilo) depois de uma confirmação
+  // na própria página; "Personalizar" leva a Sua marca (marca.html); o estilo novo grava o pedido ao agente, com recado e
+  // imagens opcionais. Nada de janela do navegador.
+  const PEDIDOS = {
+    'usar-estilo': {
+      botao: 'Usar este estilo', confirmar: 'Usar este estilo',
+      texto: (empresa, estilo) => 'O estilo ' + estilo + ' passa a ser o da ' + empresa + '. As cores e letras continuam as da sua marca.',
+    },
+    personalizar: {
+      botao: 'Personalizar', link: true,
+      texto: () => 'Muda cores, letras ou detalhes do estilo, olhando o resultado.',
+    },
+    'estilo-novo': {
+      botao: 'Criar um estilo novo a partir de referências', confirmar: 'Enviar pedido', recado: true, imagens: true,
+      texto: (empresa, estilo) => 'O agente vai criar um estilo novo para ' + empresa + ', partindo do ' + estilo + ' e das imagens que você mandar aqui ou mostrar a ele no Claude.',
+    },
+  };
+  const MARCA_NASCE = 'A sua marca vai nascer deste estilo';
+  const MARCA_NASCE_NOTA = 'As cores e letras deste estilo viram as da sua marca. Dá para trocar depois.';
+  const PROPRIO_SEM_MARCA = 'A sua marca ainda não foi definida; você pode defini-la em Sua marca.';
+  // O detalhe aberto. `vez` muda a cada abertura e fechamento: a resposta de um pedido antigo não mexe na tela nova.
+  // `recado`: o texto digitado no pedido de estilo novo. Fica guardado enquanto o detalhe está aberto (fechar a área do
+  // pedido, com Esc ou Cancelar, não apaga); só some depois de um envio que deu certo ou ao sair do detalhe.
+  // `priorizado`: o vídeo deste estilo passou para a frente nesta abertura; `imagens`: as imagens escolhidas para o estilo
+  // novo (como o recado, ficam enquanto o detalhe está aberto).
+  const aberto = { estilo: null, empilhado: false, rolagem: 0, vez: 0, recado: '', priorizado: false, imagens: [] };
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+  function idDoEndereco() {
+    const m = /^#estilo=(.+)$/.exec(location.hash);
+    if (!m) return null;
+    try { return decodeURIComponent(m[1]); } catch (e) { return null; }
+  }
+  function tirarDoEndereco() {
+    if (!/^#estilo=/.test(location.hash)) return;
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* sem histórico: o endereço fica */ }
+  }
+
+  // Clicar no cartão: o estilo vai para o endereço e o hashchange abre o detalhe.
+  function abrirDetalhe(estilo) {
+    pararTudo();
+    if (idDoEndereco() === estilo.chave) { mostrarDetalhe(estilo); return; }
+    aberto.empilhado = true;
+    location.hash = 'estilo=' + encodeURIComponent(estilo.chave);
+  }
+
+  // Voltar, Esc: se o detalhe veio do cartão, volta no histórico (o hashchange fecha); se veio pelo endereço, só fecha.
+  function fecharDetalhe() {
+    if (detalhe.hidden) return;
+    if (aberto.empilhado) { aberto.empilhado = false; history.back(); return; }
+    tirarDoEndereco();
+    fecharVista(true);
+  }
+
+  // Esconde o detalhe e mostra a grade como estava. `devolver`: volta a rolagem e o foco para o cartão do estilo.
+  function fecharVista(devolver) {
+    if (detalhe.hidden) return;
+    pararVideoDoDetalhe();
+    const id = aberto.estilo && aberto.estilo.chave;
+    aberto.estilo = null;
+    aberto.empilhado = false;
+    aberto.recado = '';
+    limparImagens();
+    aberto.vez += 1;
+    detalhe.hidden = true;
+    detalhe.textContent = '';
+    conteudo.hidden = false;
+    document.title = 'Estilos';
+    if (!devolver) return;
+    window.scrollTo(0, aberto.rolagem);
+    const c = tela.cartoes.find((x) => x.estilo.chave === id);
+    const botao = c && !c.li.hidden ? c.li.querySelector('.cartao-abrir') : null;
+    if (botao) botao.focus({ preventScroll: true });
+  }
+
+  window.addEventListener('hashchange', () => {
+    const id = idDoEndereco();
+    const e = id ? tela.estilos.find((x) => x.chave === id) : null;
+    if (e) { if (!aberto.estilo || aberto.estilo.chave !== e.chave) mostrarDetalhe(e); return; }
+    fecharVista(true);
+  });
+
+  // Voltar ou avançar no navegador entre endereços de empresas diferentes (trocar de empresa com o detalhe aberto deixa
+  // um endereço de cada empresa no histórico): o seletor e a tela acompanham o ?empresa= do endereço. Endereço sem
+  // empresa, empresa que não existe ou a mesma que já está na tela: nada muda.
+  function acompanharEmpresaDoEndereco() {
+    let codigo = null;
+    try { codigo = new URLSearchParams(location.search).get('empresa'); } catch (e) { return; }
+    if (!codigo || !seletor.situacao().empresas.some((x) => x.codigo === codigo)) return;
+    seletor.escolher(codigo);
+  }
+  window.addEventListener('popstate', acompanharEmpresaDoEndereco);
+
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key !== 'Escape' || detalhe.hidden) return;
+    ev.preventDefault();
+    // Com a confirmação de um pedido aberta, Esc só fecha a confirmação (esconde a área; o recado digitado fica guardado).
+    const area = $('pedido-area');
+    if (area && !area.hidden) { fecharPedido(); return; }
+    fecharDetalhe();
+  });
+
+  function pararVideoDoDetalhe() { detalhe.querySelectorAll('video').forEach((v) => v.pause()); }
+
+  // As abas que o estilo tem (só o que tem prévia), na ordem da tela. `p` são as prévias já conferidas.
+  function abasDe(p) {
+    const abas = [];
+    if (p.video) abas.push('video');
+    if (p.carrossel.length) abas.push('carrossel');
+    if (p.reelsCapa) abas.push('capa-reels');
+    if (p.fixados.length) abas.push('fixados');
+    return abas;
+  }
+
+  // A aba que abre primeiro: o primeiro formato que a empresa quer e o estilo tem; senão o Carrossel; senão a primeira.
+  function primeiraAba(abas, intencao) {
+    const querida = intencao.find((q) => abas.includes(q));
+    if (querida) return querida;
+    return abas.includes('carrossel') ? 'carrossel' : (abas[0] || null);
+  }
+
+  // As prévias do detalhe na vista de agora. Na marca, cada formato vem da marca quando existe; o que ainda não existe na
+  // marca fica na base (`daMarca[aba]` falso: a aba diz "Modelo base").
+  function previasDoDetalhe(estilo) {
+    // as prévias base já conferidas no item (as do estilo próprio, só da pasta da empresa)
+    const base = {
+      video: estilo.video,
+      videoCapa: estilo.videoCapa,
+      carrossel: estilo.carrossel,
+      reelsCapa: estilo.reelsCapa,
+      fixados: estilo.fixados,
+      naMarca: false,
+      daMarca: {},
+    };
+    const m = tela.vista === 'marca' ? estilo.marca : null;
+    if (!m) return base;
+    const daMarca = { video: !!m.video, carrossel: m.carrossel.length > 0, 'capa-reels': !!m.reelsCapa, fixados: m.fixados.length > 0 };
+    return {
+      video: m.video || base.video,
+      videoCapa: m.video ? m.videoCapa : base.videoCapa,
+      carrossel: daMarca.carrossel ? m.carrossel : base.carrossel,
+      reelsCapa: m.reelsCapa || base.reelsCapa,
+      fixados: daMarca.fixados ? m.fixados : base.fixados,
+      naMarca: true,
+      daMarca,
+    };
+  }
+
+  const imagem = (src, alt) => el('img', { src, alt, decoding: 'async', draggable: 'false' });
+
+  function mostrarDetalhe(estilo) {
+    pararTudo();
+    pararVideoDoDetalhe();
+    if (detalhe.hidden) aberto.rolagem = window.scrollY;
+    aberto.estilo = estilo;
+    aberto.recado = '';
+    limparImagens();
+    aberto.priorizado = false;
+    aberto.vez += 1;
+    if (!tela.marca.definida) lerLetras(); // o quadro da marca que nasce do estilo usa as letras de verdade
+    const previas = previasDoDetalhe(estilo);
+    const titulo = el('h2', { classe: 'detalhe-nome', id: 'detalhe-titulo', tabindex: '-1', texto: estilo.nome });
+    detalhe.textContent = '';
+    if (estilo.fundo) detalhe.style.setProperty('--fundo-estilo', estilo.fundo); else detalhe.style.removeProperty('--fundo-estilo');
+    detalhe.appendChild(el('div', { classe: 'detalhe-barra' }, [
+      el('button', { classe: 'voltar', type: 'button', id: 'detalhe-voltar', onclick: fecharDetalhe }, [el('span', { 'aria-hidden': 'true', texto: '← ' }), 'Voltar para os estilos']),
+    ]));
+    detalhe.appendChild(el('div', { classe: 'detalhe-corpo' }, [desenharPrevias(estilo, previas), desenharInfo(estilo, titulo, previas)]));
+    conteudo.hidden = true;
+    detalhe.hidden = false;
+    document.title = estilo.nome + ' · Estilos';
+    window.scrollTo(0, 0);
+    titulo.focus({ preventScroll: true });
+    // o vídeo na marca deste estilo ainda espera: ele passa para a frente (uma vez por abertura)
+    if (previas.naMarca && estilo.videoMarca === 'esperando') priorizarVideo(estilo);
+  }
+
+  const PROXIMO = 'Seu vídeo deste estilo é o próximo a ficar pronto.';
+  async function priorizarVideo(estilo) {
+    const vez = aberto.vez;
+    const r = await enviarPrevias({ acao: 'priorizar', estilo: estilo.id });
+    if (r === null || vez !== aberto.vez || !r.ok) return;
+    aberto.priorizado = true;
+    const notaDoVideoNaTela = $('video-nota');
+    if (notaDoVideoNaTela) notaDoVideoNaTela.textContent = PROXIMO;
+    aplicarProgresso(objeto(r.json).estado);
+  }
+  // O que a aba Vídeo diz quando o vídeo na marca ainda não existe (o que toca é o vídeo base).
+  function notaDoVideo(estilo) {
+    const v = estilo.videoMarca;
+    if (v === 'fazendo') return 'Seu vídeo deste estilo está sendo feito agora. Até lá, este é o modelo base.';
+    if (v === 'esperando') return aberto.priorizado ? PROXIMO : 'Seu vídeo deste estilo ainda vai ser feito. Até lá, este é o modelo base.';
+    if (v === 'sem-fonte') return 'O vídeo de demonstração não está neste computador, então o vídeo deste estilo fica no modelo base.';
+    if (v === 'sem-modelo') return 'O vídeo deste estilo ainda não troca as cores pelas da sua marca; ele fica no modelo base.';
+    if (v === 'erro') return 'Não deu para fazer o vídeo deste estilo na sua marca; ele fica no modelo base.';
+    return 'Este é o vídeo no modelo base.';
+  }
+
+  // ---- à esquerda: as prévias em abas ----
+  function desenharPrevias(estilo, previas) {
+    const abas = abasDe(previas);
+    const caixa = el('div', { classe: 'detalhe-previas' });
+    if (!abas.length) {
+      caixa.appendChild(quadroSemPrevia(estilo.nome));
+      return caixa;
+    }
+    const painel = el('div', { classe: 'aba-painel', role: 'tabpanel', id: 'aba-painel' });
+    // na marca, o formato que ainda não existe nela mostra a base e diz "Modelo base" na própria aba
+    const botoes = abas.map((a) => el('button', {
+      classe: 'aba', type: 'button', role: 'tab', id: 'aba-' + a, 'data-aba': a, 'aria-controls': 'aba-painel',
+      texto: ROTULO_ABA[a], onclick: () => escolher(a),
+    }, previas.naMarca && !previas.daMarca[a] ? [el('small', { classe: 'aba-nota', texto: 'Modelo base' })] : []));
+    const lista = el('div', { classe: 'abas', role: 'tablist', 'aria-label': 'Prévias do estilo' }, botoes);
+    let atual = null;
+    function escolher(a) {
+      pararVideoDoDetalhe();
+      atual = a;
+      botoes.forEach((b) => {
+        const sim = b.getAttribute('data-aba') === a;
+        b.setAttribute('aria-selected', sim ? 'true' : 'false');
+        b.tabIndex = sim ? 0 : -1;
+      });
+      painel.setAttribute('aria-labelledby', 'aba-' + a);
+      // a aba escolhida aparece inteira (no celular as abas correm para o lado)
+      const ativa = botoes[abas.indexOf(a)];
+      if (ativa && ativa.scrollIntoView && lista.scrollWidth > lista.clientWidth) ativa.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      painel.textContent = '';
+      if (a === 'video') painel.appendChild(quadroVideo(estilo, previas));
+      else if (a === 'carrossel') painel.appendChild(slider(estilo, previas.carrossel));
+      else if (a === 'capa-reels') painel.appendChild(el('div', { classe: 'quadro-alto' }, [imagem(previas.reelsCapa, 'Capa de Reels do estilo ' + estilo.nome)]));
+      else painel.appendChild(quadroFixados(estilo, previas.fixados));
+    }
+    // setas entre as abas (o jeito de sempre das abas no teclado)
+    lista.addEventListener('keydown', (ev) => {
+      const i = abas.indexOf(atual);
+      const destino = { ArrowRight: (i + 1) % abas.length, ArrowLeft: (i - 1 + abas.length) % abas.length, Home: 0, End: abas.length - 1 }[ev.key];
+      if (destino === undefined) return;
+      ev.preventDefault();
+      escolher(abas[destino]);
+      botoes[destino].focus();
+    });
+    escolher(primeiraAba(abas, tela.intencao));
+    // sinal de que há mais abas para o lado (some quando a última aparece)
+    const caixaAbas = el('div', { classe: 'abas-caixa' }, [lista]);
+    const marcarMais = () => caixaAbas.classList.toggle('tem-mais', lista.scrollWidth - lista.scrollLeft - lista.clientWidth > 2);
+    lista.addEventListener('scroll', marcarMais);
+    requestAnimationFrame(marcarMais);
+    caixa.appendChild(caixaAbas);
+    caixa.appendChild(painel);
+    return caixa;
+  }
+
+  // O vídeo do detalhe nasce parado (preload none, só a capa): toca quando a pessoa aperta o play, e daí em diante
+  // ficam os controles do próprio navegador.
+  function quadroVideo(estilo, previas) {
+    const video = el('video', { classe: 'detalhe-video', src: previas.video, poster: previas.videoCapa, preload: 'none', playsinline: true, 'aria-label': 'Vídeo de exemplo do estilo ' + estilo.nome });
+    const play = el('button', { classe: 'detalhe-play', type: 'button', id: 'detalhe-play' }, [el('span', { classe: 'icone-tocar', 'aria-hidden': 'true' }), 'Ver o vídeo']);
+    const quadro = el('div', { classe: 'quadro-alto' }, [video, play]);
+    play.addEventListener('click', () => tocarVideoDoDetalhe(video, play));
+    video.addEventListener('error', () => quadro.replaceWith(el('p', { classe: 'sem-previa', texto: 'Não consegui abrir o vídeo deste estilo. As outras prévias continuam nas abas.' })));
+    if (!previas.naMarca || previas.daMarca.video) return quadro;
+    return el('div', {}, [quadro, el('p', { classe: 'video-nota', id: 'video-nota', texto: notaDoVideo(estilo) })]);
+  }
+  function tocarVideoDoDetalhe(video, play) {
+    pararTudo();
+    video.controls = true;
+    play.remove();
+    video.focus({ preventScroll: true });
+    const promessa = video.play();
+    if (promessa && promessa.catch) promessa.catch(() => { /* parado antes de começar: os controles continuam ali */ });
+  }
+
+  // Carrossel: uma lâmina por vez. Passa arrastando (mouse ou dedo), pelas setas do teclado ou pelos botões.
+  function slider(estilo, laminas) {
+    const total = laminas.length;
+    let i = 0;
+    let inicio = null;
+    let arrasto = 0;
+    const trilho = el('div', { classe: 'slider-trilho' }, laminas.map((src, k) => el('div', {
+      classe: 'slide', role: 'group', 'aria-roledescription': 'lâmina', 'aria-label': (k + 1) + ' de ' + total,
+    }, [imagem(src, 'Lâmina ' + (k + 1) + ' do carrossel do estilo ' + estilo.nome)])));
+    const janela = el('div', {
+      classe: 'slider-janela', id: 'slider', tabindex: '0', role: 'region', 'aria-roledescription': 'carrossel',
+      'aria-label': 'Carrossel do estilo ' + estilo.nome + '. Use as setas do teclado para passar as lâminas.',
+    }, [trilho]);
+    const contador = el('p', { classe: 'slider-contador', id: 'slider-contador' });
+    const antes = el('button', { classe: 'slider-seta', type: 'button', id: 'slider-antes', 'aria-label': 'Lâmina anterior', onclick: () => ir(i - 1) }, [el('span', { 'aria-hidden': 'true', texto: '‹' })]);
+    const depois = el('button', { classe: 'slider-seta', type: 'button', id: 'slider-depois', 'aria-label': 'Próxima lâmina', onclick: () => ir(i + 1) }, [el('span', { 'aria-hidden': 'true', texto: '›' })]);
+    function ir(k) {
+      i = Math.max(0, Math.min(total - 1, k));
+      trilho.style.transform = 'translateX(' + (-i * 100) + '%)';
+      [...trilho.children].forEach((s, n) => { if (n === i) s.removeAttribute('aria-hidden'); else s.setAttribute('aria-hidden', 'true'); });
+      contador.textContent = (i + 1) + ' de ' + total;
+      antes.disabled = i === 0;
+      depois.disabled = i === total - 1;
+    }
+    janela.addEventListener('keydown', (ev) => {
+      const destino = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: total - 1 }[ev.key];
+      if (destino === undefined) return;
+      ev.preventDefault();
+      ir(destino);
+    });
+    janela.addEventListener('pointerdown', (ev) => {
+      if (ev.button !== 0 || total < 2) return;
+      inicio = ev.clientX;
+      arrasto = 0;
+      try { janela.setPointerCapture(ev.pointerId); } catch (e) { /* o arraste segue sem a captura */ }
+      janela.classList.add('arrastando');
+    });
+    janela.addEventListener('pointermove', (ev) => {
+      if (inicio === null) return;
+      arrasto = ev.clientX - inicio;
+      trilho.style.transform = 'translateX(calc(' + (-i * 100) + '% + ' + arrasto + 'px))';
+    });
+    const soltar = () => {
+      if (inicio === null) return;
+      inicio = null;
+      janela.classList.remove('arrastando');
+      const limiar = Math.min(60, janela.clientWidth * 0.15);
+      ir(Math.abs(arrasto) > limiar ? i + (arrasto < 0 ? 1 : -1) : i);
+    };
+    janela.addEventListener('pointerup', soltar);
+    janela.addEventListener('pointercancel', soltar);
+    ir(0);
+    return el('div', { classe: 'slider' }, [janela, el('div', { classe: 'slider-controles' }, [antes, contador, depois])]);
+  }
+
+  function quadroFixados(estilo, fixados) {
+    return el('div', { classe: 'fixados-caixa' }, [
+      el('p', { classe: 'fixados-texto', texto: 'Os posts que ficam fixados no topo do perfil.' }),
+      el('ul', { classe: 'fixados' }, fixados.map((x) => el('li', {}, [
+        el('figure', {}, [imagem(x.src, x.rotulo + ', post fixado do estilo ' + estilo.nome), el('figcaption', { texto: x.rotulo })]),
+      ]))),
+    ]);
+  }
+
+  // ---- à direita: o que o estilo é, o que pede e como vira da empresa ----
+  const marcas = (lista) => el('ul', { classe: 'marcas' }, lista.map((x) => el('li', { texto: x.rotulo })));
+  const secao = (titulo, filhos) => el('section', { classe: 'secao', 'aria-label': titulo }, [el('h3', { texto: titulo })].concat(filhos));
+  const legivel = (v) => String(v).replace(/\+/g, ' + ').replace(/-/g, ' ');
+
+  // As amostras de cor de um papel a outro, na ordem de NOME_COR. `todas`: papel sem cor vira um quadrado vazio (assim, na
+  // troca do estilo pela marca, cada cor fica em cima da que toma o lugar dela).
+  function amostrasDe(cores, rotulo, todas) {
+    const papeis = Object.keys(NOME_COR).filter((k) => todas || corValida(cores[k]));
+    return el('ul', { classe: 'amostras', 'aria-label': rotulo }, papeis.map((k) => {
+      const q = el('span', { classe: 'amostra-cor', 'aria-hidden': 'true' });
+      if (corValida(cores[k])) q.style.setProperty('--amostra', corValida(cores[k]));
+      return el('li', { classe: corValida(cores[k]) ? null : 'amostra-vazia' }, [q, el('span', { texto: NOME_COR[k] })]);
+    }));
+  }
+  // O nome de uma letra da marca pelo arquivo dela ("DMMono-Medium.ttf" vira "DM Mono Medium").
+  function nomeDaLetra(u) {
+    let n;
+    try { n = decodeURIComponent(String(u).split('/').pop()); } catch (e) { return ''; }
+    return limpo(n.replace(/\.[a-z0-9]+$/i, '').replace(/\[[^\]]*\]/g, '').replace(/[-_]+/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/([A-Z])([A-Z][a-z])/g, '$1 $2'), 40);
+  }
+
+  function desenharInfo(estilo, titulo, previas) {
+    const o = estilo.original;
+    const cores = objeto(o.cores);
+    const fontes = objeto(o.fontes);
+    const tratamentos = objeto(o.tratamentos);
+    const regras = Array.isArray(o.regras) ? o.regras.filter((x) => typeof x === 'string' && x) : [];
+    const papeisCor = Object.keys(NOME_COR).filter((k) => corValida(cores[k]));
+    const papeisLetra = Object.keys(PAPEL_LETRA).filter((k) => texto(fontes[k]));
+    const familias = [...new Set(papeisLetra.map((k) => fontes[k]))];
+    // a marca da empresa (para "Cores e letras" e os detalhes técnicos), só na vista na marca
+    const daEmpresa = previas.naMarca && tela.marcaDaEmpresa ? tela.marcaDaEmpresa : null;
+    const coresDaMarca = daEmpresa ? objeto(daEmpresa.cores) : {};
+    const letrasDaMarca = daEmpresa ? [...new Set(Object.keys(PAPEL_LETRA).map((k) => (daEmpresa.fontes[k] ? nomeDaLetra(daEmpresa.fontes[k]) : '')).filter(Boolean))] : [];
+    const naMarca = !!daEmpresa;
+    const campos = [];
+    if (estilo.combinaCom.length) campos.push(el('dt', { texto: 'Combina com' }), el('dd', {}, [marcas(estilo.combinaCom)]));
+    if (estilo.precisa.length) campos.push(el('dt', { texto: 'O que precisa' }), el('dd', {}, [marcas(estilo.precisa)]));
+    const par = (rotulo, valor, classe) => [el('dt', { texto: rotulo }), el('dd', { classe, texto: valor })];
+    const tecnico = [];
+    if (papeisLetra.length) tecnico.push(el('h4', { classe: 'rotulo-pequeno', texto: 'Fontes' }), el('dl', {}, papeisLetra.flatMap((k) => par(PAPEL_LETRA[k], fontes[k]))));
+    if (papeisCor.length) tecnico.push(el('h4', { classe: 'rotulo-pequeno', texto: 'Códigos das cores' }), el('dl', {}, papeisCor.flatMap((k) => par(NOME_COR[k], corValida(cores[k]), 'codigo'))));
+    const papeisDaMarca = Object.keys(NOME_COR).filter((k) => corValida(coresDaMarca[k]));
+    if (papeisDaMarca.length) tecnico.push(el('h4', { classe: 'rotulo-pequeno', texto: 'Códigos das cores da sua marca' }), el('dl', {}, papeisDaMarca.flatMap((k) => par(NOME_COR[k], corValida(coresDaMarca[k]), 'codigo'))));
+    const trat = Object.keys(tratamentos).filter((k) => texto(tratamentos[k]));
+    if (trat.length) tecnico.push(el('h4', { classe: 'rotulo-pequeno', texto: 'Tratamentos' }), el('dl', {}, trat.flatMap((k) => par(ROTULO_TRATAMENTO[k] || legivel(k), rotuloTratamento(tratamentos[k])))));
+    if (regras.length) tecnico.push(el('h4', { classe: 'rotulo-pequeno', texto: 'Regras do estilo' }), el('ul', {}, regras.map((x) => el('li', { texto: x }))));
+    if (previas.naMarca && estilo.notaDestaque) tecnico.push(el('p', { classe: 'tecnico-nota', texto: estilo.notaDestaque }));
+    // Base e marca lado a lado (decisão D2 A): as duas capas, cada uma com a legenda; sem prévia na marca, a nota de hoje
+    const marcaDoEstilo = estilo.marca;
+    const ladoALado = marcaDoEstilo && estilo.capa
+      ? el('div', { classe: 'lado-dois' }, [
+        el('figure', {}, [imagem(estilo.capa, 'Prévia do estilo ' + estilo.nome + ' no modelo base'), el('figcaption', { texto: 'Modelo base' })]),
+        el('figure', {}, [imagem(marcaDoEstilo.capa, 'Prévia do estilo ' + estilo.nome + ' na sua marca'), el('figcaption', { texto: NA_SUA_MARCA })]),
+      ])
+      : el('div', { classe: 'lado-a-lado' }, [
+        estilo.capa ? el('figure', { classe: 'lado-base' }, [imagem(estilo.capa, 'Prévia do estilo ' + estilo.nome + ' no modelo base'), el('figcaption', { texto: 'Modelo base' })]) : null,
+        el('p', { classe: 'lado-nota', id: 'lado-nota', texto: notaDaMarca() }),
+      ]);
+    // Cores e letras (decisão D6 B): na marca, as do estilo em cima das da marca, cor por cor; sem ela, as do estilo
+    const coresELetras = naMarca
+      ? [
+        el('div', { classe: 'troca' }, [
+          el('span', { classe: 'rotulo-pequeno', texto: 'Do estilo' }), amostrasDe(cores, 'Cores do estilo', true),
+          el('span', { classe: 'rotulo-pequeno', texto: NA_SUA_MARCA }), amostrasDe(coresDaMarca, 'Cores da sua marca', true),
+        ]),
+        el('p', { classe: 'troca-letras' }, [
+          el('span', { classe: 'rotulo-pequeno', texto: 'Letras' }), el('span', { texto: familias.join(' · ') || 'as do estilo' }),
+          el('span', { classe: 'troca-seta', 'aria-hidden': 'true', texto: '→' }), el('span', { classe: 'letras-nome', texto: letrasDaMarca.join(' · ') || 'as letras do estilo' }),
+        ]),
+      ]
+      : [
+        papeisCor.length ? amostrasDe(cores, 'Cores do estilo', false) : null,
+        familias.length ? el('p', { classe: 'letras' }, [el('span', { classe: 'rotulo-pequeno', texto: 'Letras' })].concat(familias.map((f) => el('span', { classe: 'letras-nome', texto: f })))) : null,
+      ];
+    return el('div', { classe: 'detalhe-info' }, [
+      el('div', { classe: 'detalhe-cabeca' }, [
+        el('div', { classe: 'detalhe-selos' }, [
+          el('p', { classe: 'detalhe-selo', texto: previas.naMarca ? NA_SUA_MARCA : 'Modelo base' }),
+          el('p', { classe: 'detalhe-selo detalhe-seu', id: 'detalhe-seu', texto: SEU_ESTILO, hidden: !ehSeuEstilo(estilo) }),
+        ]),
+        titulo,
+        estilo.linha ? el('p', { classe: 'detalhe-linha', texto: estilo.linha }) : null,
+      ]),
+      campos.length ? el('dl', { classe: 'detalhe-campos' }, campos) : null,
+      desenharPedidos(estilo),
+      previas.naMarca ? desenharLeitura(estilo) : null,
+      secao('Base e marca lado a lado', [ladoALado]),
+      naMarca || papeisCor.length || familias.length ? secao(naMarca ? 'Cores e letras' : 'Cores e letras do estilo', coresELetras) : null,
+      secao('Como este estilo vira seu', [el('ol', { classe: 'passos' }, PASSOS.map((p) => el('li', { texto: p })))]),
+      tecnico.length ? el('details', { classe: 'tecnico' }, [el('summary', { texto: 'Detalhes técnicos' })].concat(tecnico)) : null,
+    ]);
+  }
+
+  // ---- detalhe na marca: o texto difícil de ler, as cores sugeridas e "Como ficaria" (decisão D5 B, com a correção do
+  // responsável: sugerir 2 a 3 cores que funcionam e combinam, cada uma com a peça feita com ela; nunca gravar a marca) ----
+  const DO_PAPEL = { escuro: 'do escuro', claro: 'do claro', acento: 'do acento', neutro: 'do neutro' };
+  const ESTILO_DIFICIL = 'Este estilo deixa o texto difícil de ler com a sua marca; que tal outro estilo?';
+  // o que acontece no "Usar esta cor" (fluxo da etapa 8): abre Personalizar já com a cor; a marca só muda quando a pessoa guarda
+  const USAR_COR_NOTA = '“Usar esta cor” abre Personalizar, em Sua marca, já com a cor escolhida; a sua marca só muda quando você guardar ali.';
+  const DETALHE_PEQUENO ='Um detalhe pequeno deste estilo fica um pouco abaixo do ideal de leitura com a sua marca.';
+  // n = estilos da empresa ainda sem prévia válida na marca (erro, em preparo, novos): ficam fora da conta.
+  function valeParaTodos(n) {
+    const inicio = 'Usar uma cor troca a cor da sua marca: a cor muda em todos os estilos da sua marca, e só é sugerida se nenhum texto que hoje se lê';
+    if (!(n > 0)) return inicio + ', em nenhum deles, ficar difícil.';
+    return inicio + ' nos estilos já prontos ficar difícil. ' + (n === 1 ? '1 estilo ainda não foi conferido.' : n + ' estilos ainda não foram conferidos.');
+  }
+  const juntos = (l) => (l.length > 1 ? l.slice(0, -1).join(', ') + ' e ' + l[l.length - 1] : l[0] || '');
+  // As peças em palavras, até 3 ("da lâmina 1, da lâmina 2, da lâmina 3 e de mais 2 peças").
+  function pecasEmPalavras(pecas) {
+    const nomes = pecas.map(ondeDaPeca).filter(Boolean);
+    if (nomes.length <= 3) return juntos(nomes);
+    return nomes.slice(0, 3).join(', ') + ' e de mais ' + (nomes.length - 3) + ' peças';
+  }
+  function desenharLeitura(estilo) {
+    const m = estilo.marca;
+    if (!m) return null;
+    const outros = m.avisos.filter((a) => !/difícil de ler/.test(a));
+    if (!m.leitura.length && !outros.length) return null;
+    const filhos = [];
+    m.leitura.forEach((g) => {
+      if (g.tipo === 'detalhe') {
+        filhos.push(el('p', {}, [DETALHE_PEQUENO + ' Fica no texto ' + juntos(g.onde) + '.']));
+        return;
+      }
+      if (g.tipo === 'estilo') {
+        filhos.push(el('p', {}, [el('strong', { texto: ESTILO_DIFICIL }), ' Acontece no texto ' + juntos(g.onde) + '.']));
+        return;
+      }
+      filhos.push(el('p', {}, [el('strong', { texto: 'Com as suas cores, o texto ' + juntos(g.onde) + ' fica difícil de ler.' })]));
+      if (g.sugestoes.length) {
+        filhos.push(el('p', { texto: 'Cores que resolvem e combinam com a sua marca, no lugar ' + DO_PAPEL[g.papel] + (g.pecas.length > 1 ? ' (cada uma serve para todas estas peças):' : ':') }));
+        filhos.push(el('ul', { classe: 'sugestoes' }, g.sugestoes.map((s) => sugestao(estilo, g, s))));
+        if (!filhos.some((x) => x.classList && x.classList.contains('vale-para-todos'))) filhos.push(el('p', { classe: 'vale-para-todos', texto: valeParaTodos(tela.marca.semConferir) + ' ' + USAR_COR_NOTA }));
+      }
+    });
+    if (m.leitura.filter((g) => g.tipo === 'cor' && g.sugestoes.length).length > 1) filhos.push(el('p', { classe: 'leitura-uma-vez', texto: 'Escolha uma troca por vez; depois as sugestões são refeitas.' }));
+    if (outros.length) filhos.push(el('ul', { classe: 'leitura-outros' }, outros.map((a) => el('li', { texto: a }))));
+    return el('section', { classe: 'leitura', id: 'leitura', 'aria-label': 'Leitura com a sua marca' }, filhos);
+  }
+  function sugestao(estilo, g, s) {
+    const q = el('span', { classe: 'amostra-cor', 'aria-hidden': 'true' });
+    q.style.setProperty('--amostra', s.cor);
+    const ver = el('div', { classe: 'sugestao-ver', hidden: true });
+    const estado = el('p', { classe: 'sugestao-estado', role: 'status' });
+    const nome = (s.rotulo || 'Outra cor') + ', ' + s.cor;
+    const comoFica = el('button', { classe: 'botao botao-mini', type: 'button', texto: 'Como ficaria',
+      'aria-label': 'Como ficaria: ' + nome + ', no texto ' + pecasEmPalavras(g.pecas) });
+    comoFica.addEventListener('click', () => verComoFicaria(estilo, g, s, comoFica, ver, estado));
+    // "Usar esta cor" é um link para "Personalizar" em Sua marca, já com o papel e a cor (sem endereço conferido, sem link)
+    const usar = usarCor(estilo, g, s) ? el('a', { classe: 'botao botao-mini botao-forte', texto: 'Usar esta cor', href: usarCor(estilo, g, s),
+      'aria-label': 'Usar esta cor: ' + nome + ' no lugar ' + DO_PAPEL[g.papel] + ', para o texto ' + pecasEmPalavras(g.pecas) }) : null;
+    return el('li', { classe: 'sugestao' }, [q, el('div', { classe: 'sugestao-nome' }, [el('strong', { texto: s.rotulo || 'Outra cor' }), el('span', { classe: 'codigo', texto: s.cor })]),
+      el('div', { classe: 'sugestao-botoes' }, [comoFica, usar]), estado, ver]);
+  }
+  // Um texto que a cor estragaria, em palavras: “café”, na lâmina 1 do estilo Cartilha (o nome do estilo e o texto vêm do servidor, limpos).
+  function textoPiorado(p) {
+    const t = limpo(p.texto, 40);
+    return (t ? '“' + t + '”' : 'um texto') + ', n' + ondeDaPeca(p).slice(1) + ' do estilo ' + (limpo(p.nome, 60) || 'outro');
+  }
+  // "Como ficaria": as peças do grupo com esta cor, feitas na hora pelo gerador das prévias (leva cerca de um minuto; a
+  // segunda vez é na hora). O pedido diz a peça; para cada peça, a de hoje e a nova, lado a lado, e o que ainda ficou difícil.
+  async function verComoFicaria(estilo, g, s, botao, ver, estado) {
+    const vez = aberto.vez;
+    botao.disabled = true;
+    estado.textContent = 'Preparando com esta cor. Leva cerca de um minuto…';
+    const r = await enviarPrevias({ acao: 'como-ficaria', estilo: estilo.id, papel: g.papel, cor: s.cor, peca: g.pecas[0] });
+    if (r === null || vez !== aberto.vez) return;
+    botao.disabled = false;
+    if (!r.ok) { estado.textContent = erroDe(r, 'Não consegui preparar a peça com esta cor. Tente de novo.'); return; }
+    // só as peças deste grupo, cada endereço da pasta das cores sugeridas da empresa escolhida
+    const pecas = lista(objeto(r.json.comoFicaria).pecas).map(objeto)
+      .filter((p) => g.pecas.some((x) => mesmaPeca(x, p)) && enderecoDaMarca(p.endereco, 'cores-sugeridas', 3)).slice(0, 6);
+    if (!pecas.length) { estado.textContent = 'Não consegui mostrar a peça com esta cor. Tente de novo.'; return; }
+    const ainda = pecas.filter((p) => lista(p.dificeis).length);
+    // peças que hoje se leem e, com esta cor, ficam difíceis: isso vem antes de tudo
+    const pioradas = lista(objeto(r.json.comoFicaria).pioradas).map(objeto).filter((p) => ondeDaPeca(p));
+    if (pioradas.length) estado.textContent = 'Com esta cor, estas peças ficam difíceis: ' + pioradas.slice(0, 6).map(textoPiorado).join('; ') + (pioradas.length > 6 ? '; e mais ' + (pioradas.length - 6) : '') + '.';
+    else if (!ainda.length) estado.textContent = 'Com esta cor, o texto fica fácil de ler.';
+    else {
+      estado.textContent = 'Com esta cor, ainda fica difícil de ler: ' + ainda.map((p) => lista(p.dificeis).map((t) => '“' + limpo(t, 40) + '”').filter((t) => t.length > 2).join(', ') + ' ' + ondeDaPeca(p)).join('; ') + '.';
+    }
+    ver.textContent = '';
+    pecas.forEach((p) => {
+      const atual = enderecoDaMarca(p.atual);
+      ver.appendChild(el('p', { classe: 'rotulo-pequeno', texto: 'O texto ' + ondeDaPeca(p) }));
+      ver.appendChild(el('div', { classe: 'lado-dois' }, [
+        atual ? el('figure', {}, [imagem(atual, 'Hoje, com as suas cores, ' + ondeDaPeca(p)), el('figcaption', { texto: 'Hoje' })]) : null,
+        el('figure', {}, [imagem(enderecoDaMarca(p.endereco, 'cores-sugeridas', 3), 'Com a cor ' + s.cor + ', ' + ondeDaPeca(p)), el('figcaption', { texto: 'Com esta cor' })]),
+      ]));
+    });
+    ver.hidden = false;
+  }
+  // "Usar esta cor" (contrato com Sua marca): o endereço de "Personalizar" já com o papel e a cor sugerida. Lá a cor aparece
+  // no editor daquele papel, marcada como sugerida, e nada é gravado até "Guardar a minha marca". A cor muda em todos os
+  // estilos da sua marca (dito na tela, acima das sugestões).
+  function usarCor(estilo, g, s) {
+    return enderecoPersonalizar(estilo.id, g.papel, s.cor, estilo.proprio);
+  }
+  // O endereço de "Personalizar" em Sua marca: marca.html?personalizar=<estilo>[&papel=<papel>&cor=<RRGGBB>]&empresa=<empresa>.
+  // Papel só da lista, cor só com seis algarismos de código de cor (sem "#"); qualquer outra coisa: nenhum endereço.
+  // `proprio`: o estilo é um estilo próprio da empresa (que pode ter o mesmo código de um do catálogo): vai `origem=proprio`.
+  function enderecoPersonalizar(id, papel, cor, proprio) {
+    const codigo = seletor.atual();
+    if (!codigo || typeof id !== 'string' || !id) return null;
+    let extra = '';
+    if (papel !== undefined || cor !== undefined) {
+      if (typeof papel !== 'string' || !Object.prototype.hasOwnProperty.call(NOME_COR, papel)) return null;
+      if (typeof cor !== 'string' || !/^#?[0-9A-Fa-f]{6}$/.test(cor)) return null;
+      extra = '&papel=' + papel + '&cor=' + cor.replace('#', '').toUpperCase();
+    }
+    if (proprio === true) extra += '&origem=proprio';
+    return 'marca.html?personalizar=' + encodeURIComponent(id) + extra + '&empresa=' + encodeURIComponent(codigo);
+  }
+  // Os caminhos sem marca, nas seções de Sua marca ("Criar uma identidade do zero" e "Enviar referências do que você gosta").
+  function caminhoSemMarca(secao) {
+    return 'marca.html?empresa=' + encodeURIComponent(seletor.atual() || '') + '#' + secao;
+  }
+
+  // ---- as decisões do detalhe: usar o estilo, personalizar, pedir um estilo novo ----
+  function desenharPedidos(estilo) {
+    const area = el('div', { classe: 'pedido-area', id: 'pedido-area', hidden: true });
+    const aviso = el('p', { classe: 'pedido-aviso', id: 'pedido-aviso', role: 'status', tabindex: '-1' });
+    const botoes = Object.keys(PEDIDOS).filter((tipo) => !PEDIDOS[tipo].link).map((tipo) => el('button', {
+      classe: tipo === 'usar-estilo' ? 'botao botao-forte' : 'botao', type: 'button', 'data-pedido': tipo,
+      'aria-expanded': 'false', 'aria-controls': 'pedido-area', texto: PEDIDOS[tipo].botao,
+      onclick: () => abrirPedido(estilo, tipo, area, aviso, botoes),
+    }));
+    // "Personalizar" leva a Sua marca (o mesmo editor de cores e letras, e os detalhes do estilo)
+    const personalizar = enderecoPersonalizar(estilo.id)
+      ? el('a', { classe: 'botao', id: 'personalizar', texto: PEDIDOS.personalizar.botao, href: enderecoPersonalizar(estilo.id, undefined, undefined, estilo.proprio), title: PEDIDOS.personalizar.texto() }) : null;
+    return el('section', { classe: 'pedidos', 'aria-label': 'Decidir' }, [el('div', { classe: 'acoes' }, [botoes[0], personalizar].concat(botoes.slice(1))), area, aviso]);
+  }
+
+  // A confirmação fica na própria página. "Usar este estilo": sem marca, mostra antes a marca que nasce do estilo (decisão
+  // 10 A); o botão escolhe na hora. Estilo novo: recado e imagens opcionais, e "Enviar pedido".
+  function abrirPedido(estilo, tipo, area, aviso, botoes) {
+    const def = PEDIDOS[tipo];
+    aviso.textContent = '';
+    aviso.className = 'pedido-aviso';
+    botoes.forEach((b) => b.setAttribute('aria-expanded', b.getAttribute('data-pedido') === tipo ? 'true' : 'false'));
+    area.textContent = '';
+    area.setAttribute('data-tipo', tipo);
+    let recado = null;
+    if (tipo === 'usar-estilo' && ehSeuEstilo(estilo)) {
+      // já é o estilo da empresa: nada a confirmar
+      area.appendChild(el('p', { texto: 'O estilo ' + estilo.nome + ' já é o da ' + tela.nome + '.' }));
+      const fechar = el('button', { classe: 'botao', type: 'button', id: 'pedido-cancelar', texto: 'Fechar', onclick: fecharPedido });
+      area.appendChild(el('div', { classe: 'pedido-botoes' }, [fechar]));
+      area.hidden = false;
+      fechar.focus();
+      return;
+    }
+    if (tipo === 'usar-estilo') {
+      const nasce = !tela.marca.definida && !estilo.proprio;
+      if (nasce) {
+        area.appendChild(el('p', { classe: 'confirmar-titulo', texto: MARCA_NASCE }));
+        const quadro = quadroDaMarca(estilo);
+        area.appendChild(quadro);
+        area.appendChild(el('p', { texto: MARCA_NASCE_NOTA }));
+        // as letras de verdade chegam com a lista de letras: o quadro é refeito quando ela chega
+        if (!tela.letras) {
+          const vez = aberto.vez;
+          lerLetras().then(() => { if (vez === aberto.vez && tela.letras && quadro.isConnected) quadro.replaceWith(quadroDaMarca(estilo)); });
+        }
+      } else {
+        area.appendChild(el('p', { texto: tela.marca.definida ? def.texto(tela.nome, estilo.nome) : 'O estilo ' + estilo.nome + ' passa a ser o da ' + tela.nome + '. ' + PROPRIO_SEM_MARCA }));
+      }
+    } else {
+      area.appendChild(el('p', { texto: def.texto(tela.nome, estilo.nome) }));
+    }
+    if (def.recado) {
+      recado = el('textarea', { classe: 'recado', id: 'recado', maxlength: String(LIMITE_RECADO), rows: '4', 'aria-describedby': 'recado-conta' });
+      const conta = el('p', { classe: 'recado-conta', id: 'recado-conta' });
+      const contar = () => { conta.textContent = recado.value.length + ' de ' + LIMITE_RECADO + ' caracteres'; };
+      recado.value = aberto.recado; // o que a pessoa já tinha digitado, se fechou a área e abriu de novo
+      recado.addEventListener('input', () => { aberto.recado = recado.value; contar(); });
+      contar();
+      area.appendChild(el('label', { classe: 'recado-rotulo', for: 'recado', texto: 'Recado para o agente (opcional)' }));
+      area.appendChild(recado);
+      area.appendChild(conta);
+    }
+    if (def.imagens) areaDeImagens(area);
+    const confirmar = el('button', { classe: 'botao botao-forte', type: 'button', id: 'pedido-confirmar', texto: def.confirmar });
+    const cancelar = el('button', { classe: 'botao', type: 'button', id: 'pedido-cancelar', texto: 'Cancelar', onclick: fecharPedido });
+    const desligar = botoes.concat(confirmar, cancelar);
+    confirmar.addEventListener('click', () => {
+      if (tipo === 'usar-estilo') escolherEstilo(estilo, desligar, area, aviso);
+      else enviarPedido(estilo, tipo, recado ? recado.value.trim().slice(0, LIMITE_RECADO) : '', desligar, area, aviso);
+    });
+    area.appendChild(el('div', { classe: 'pedido-botoes' }, [confirmar, cancelar]));
+    area.hidden = false;
+    (recado || confirmar).focus();
+  }
+
+  // ---- imagens do estilo novo (opcionais): área de soltar com miniaturas; cada imagem vai pelo envio de arquivo, que
+  // confere o conteúdo e dá o nome, e o pedido leva os nomes devolvidos ----
+  const LIMITE_IMAGENS = 12;
+  const LIMITE_MB_IMAGEM = 10;
+  const TIPOS_DE_IMAGEM = /^image\/[a-z0-9.+-]+$/; // o servidor confere o conteúdo de cada uma (só as imagens que ele aceita passam)
+  // Das imagens soltas ou escolhidas, as que cabem (tipo, tamanho e o total de 12) e o motivo de cada recusa.
+  function aceitarImagens(novas, ja) {
+    const aceitas = [];
+    const recusas = [];
+    for (const f of novas) {
+      const nome = limpo(f && f.name, 60) || 'imagem';
+      if (!f || typeof f.type !== 'string' || !TIPOS_DE_IMAGEM.test(f.type)) { recusas.push('“' + nome + '” não é uma imagem.'); continue; }
+      if (!(f.size <= LIMITE_MB_IMAGEM * 1024 * 1024)) { recusas.push('“' + nome + '” passa de ' + LIMITE_MB_IMAGEM + ' MB.'); continue; }
+      if (ja + aceitas.length >= LIMITE_IMAGENS) { recusas.push('Dá para mandar até ' + LIMITE_IMAGENS + ' imagens; as outras ficaram de fora.'); break; }
+      aceitas.push(f);
+    }
+    return { aceitas, recusas };
+  }
+  function areaDeImagens(area) {
+    const entrada = el('input', { type: 'file', id: 'imagens', accept: 'image/*', multiple: true });
+    const miniaturas = el('ul', { classe: 'miniaturas', 'aria-label': 'Imagens escolhidas' });
+    const recusa = el('p', { classe: 'imagens-recusa', role: 'status' });
+    const soltar = el('label', { classe: 'soltar', for: 'imagens' }, [
+      el('strong', { texto: 'Imagens do que você gosta (opcional)' }),
+      el('span', { texto: 'Solte aqui ou clique para escolher' }),
+      el('small', { texto: 'Até ' + LIMITE_IMAGENS + ' imagens, de até ' + LIMITE_MB_IMAGEM + ' MB cada. Elas são só inspiração: nada é copiado.' }),
+      entrada,
+    ]);
+    const desenharMiniaturas = () => {
+      miniaturas.textContent = '';
+      aberto.imagens.forEach((x) => miniaturas.appendChild(el('li', {}, [
+        el('img', { classe: 'miniatura', src: x.url, alt: x.nome }),
+        el('button', { classe: 'miniatura-tirar', type: 'button', 'aria-label': 'Tirar a imagem ' + x.nome, texto: '×', onclick: () => {
+          URL.revokeObjectURL(x.url);
+          aberto.imagens = aberto.imagens.filter((y) => y !== x);
+          desenharMiniaturas();
+          entrada.focus();
+        } }),
+      ])));
+    };
+    const receber = (arquivos) => {
+      const { aceitas, recusas } = aceitarImagens([...arquivos], aberto.imagens.length);
+      aceitas.forEach((f) => aberto.imagens.push({ arquivo: f, nome: limpo(f.name, 60) || 'imagem', url: URL.createObjectURL(f) }));
+      recusa.textContent = recusas.join(' ');
+      desenharMiniaturas();
+    };
+    entrada.addEventListener('change', () => { receber(entrada.files || []); entrada.value = ''; });
+    soltar.addEventListener('dragover', (ev) => { ev.preventDefault(); soltar.classList.add('sobre'); });
+    soltar.addEventListener('dragleave', () => soltar.classList.remove('sobre'));
+    soltar.addEventListener('drop', (ev) => { ev.preventDefault(); soltar.classList.remove('sobre'); receber((ev.dataTransfer && ev.dataTransfer.files) || []); });
+    area.appendChild(soltar);
+    area.appendChild(miniaturas);
+    area.appendChild(recusa);
+    desenharMiniaturas();
+  }
+  // As imagens escolhidas somem (ao sair do detalhe ou depois do envio certo do pedido).
+  function limparImagens() {
+    aberto.imagens.forEach((x) => URL.revokeObjectURL(x.url));
+    aberto.imagens = [];
+  }
+  const lerComoDados = (arquivo) => new Promise((ok, falha) => { const r = new FileReader(); r.onload = () => ok(String(r.result)); r.onerror = () => falha(r.error); r.readAsDataURL(arquivo); });
+  // Toda imagem sai por aqui (o seletor põe a empresa escolhida por último no corpo).
+  async function enviarArquivo(dados) {
+    try { return await seletor.enviar('/api/arquivo', { tipo: 'referencia', dados }); } catch (e) { return { ok: false, json: { erro: SEM_SERVIDOR } }; }
+  }
+
+  // ---- a marca que nasce do estilo (decisão 10 A): as cores e as letras de verdade do estilo, num cartão neutro, com o
+  // papel de cada cor. É a única prévia que esta tela desenha sozinha; as letras vêm da lista de letras livres. ----
+  const PAPEL_NO_QUADRO = { escuro: 'Fundo escuro', claro: 'Fundo claro', acento: 'Destaque', neutro: 'Apoio' };
+  // os papéis da marca (marca.exemplo.yaml), com os nomes de Sua marca: `principal` na legenda, nos títulos e no botão;
+  // `mono` nos rótulos pequenos em caixa-alta
+  const LETRA_NO_QUADRO = { principal: 'Letra principal', mono: 'Letra dos rótulos', acento: 'Destaque' };
+  // A cor de texto que mais contrasta com um fundo, entre duas (conta de luminância do contraste de leitura).
+  function sobreCor(fundo, a, b) {
+    const lum = (c) => {
+      const v = [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16) / 255).map((x) => (x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4)));
+      return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2];
+    };
+    const contraste = (x, y) => { const [l1, l2] = [lum(x), lum(y)].sort((m, n) => n - m); return (l1 + 0.05) / (l2 + 0.05); };
+    return contraste(fundo, a) >= contraste(fundo, b) ? a : b;
+  }
+  function quadroDaMarca(estilo) {
+    const cores = objeto(estilo.original.cores);
+    const fontes = objeto(estilo.original.fontes);
+    const peca = el('div', { classe: 'quadro-peca', 'aria-hidden': 'true' }, [
+      el('p', { classe: 'quadro-peca-sobre', texto: 'Sua marca · exemplo' }),
+      el('p', { classe: 'quadro-peca-titulo', texto: 'Um título com a sua letra' }),
+      el('p', { classe: 'quadro-peca-texto', texto: 'E um texto curto, para ver as cores e as letras juntas.' }),
+      el('span', { classe: 'quadro-peca-botao', texto: 'Saiba mais' }),
+    ]);
+    const q = el('div', { classe: 'quadro-marca', id: 'quadro-marca', role: 'group', 'aria-label': 'A marca que nasce do estilo ' + estilo.nome }, [peca]);
+    Object.keys(PAPEL_NO_QUADRO).forEach((k) => { if (corValida(cores[k])) q.style.setProperty('--q-' + k, corValida(cores[k])); });
+    if (corValida(cores.acento) && corValida(cores.escuro) && corValida(cores.claro)) q.style.setProperty('--q-sobre-acento', sobreCor(corValida(cores.acento), corValida(cores.escuro), corValida(cores.claro)));
+    q.appendChild(el('ul', { classe: 'quadro-cores', 'aria-label': 'Cores' }, Object.keys(PAPEL_NO_QUADRO).map((k) => {
+      const a = el('span', { classe: 'amostra-cor', 'aria-hidden': 'true' });
+      if (corValida(cores[k])) a.style.setProperty('--amostra', corValida(cores[k]));
+      return el('li', { classe: corValida(cores[k]) ? null : 'amostra-vazia' }, [a, el('span', { texto: PAPEL_NO_QUADRO[k] })]);
+    })));
+    // as letras: cada família com o arquivo da lista de letras livres (endereço conferido) é carregada e usada no quadro
+    const letras = Object.keys(LETRA_NO_QUADRO).filter((k) => texto(fontes[k])).map((k) => {
+      const familia = texto(fontes[k]);
+      const url = tela.letras ? enderecoDeLetra(tela.letras.get(familia)) : null;
+      const nome = 'Quadro ' + estilo.id + ' ' + k;
+      const usada = url && carregarLetra(nome, url) ? '"' + nome + '", ' : '';
+      if (k === 'principal') q.style.setProperty('--q-letra-principal', usada + 'ui-serif, serif');
+      if (k === 'mono') q.style.setProperty('--q-letra-rotulo', usada + 'system-ui, sans-serif');
+      const aa = el('span', { classe: 'quadro-aa', 'aria-hidden': 'true', texto: 'Aa' });
+      if (usada) aa.style.setProperty('font-family', usada + 'serif');
+      return el('li', {}, [aa, el('span', { texto: LETRA_NO_QUADRO[k] + ' · ' + familia })]);
+    });
+    if (letras.length) q.appendChild(el('ul', { classe: 'quadro-letras', 'aria-label': 'Letras' }, letras));
+    return q;
+  }
+  // A letra vem do endereço que o servidor deu (um arquivo da pasta de letras livres). Se não carregar, fica a do sistema.
+  function carregarLetra(familia, url) {
+    if (!window.FontFace || !document.fonts) return false;
+    try {
+      const f = new FontFace(familia, 'url("' + url.replace(/"/g, '%22') + '")', { display: 'swap' });
+      document.fonts.add(f);
+      f.load().catch(() => { /* arquivo de letra com defeito: vale a do sistema */ });
+      return true;
+    } catch (e) { return false; }
+  }
+  // A lista de letras livres (família -> endereço do arquivo), lida uma vez por página.
+  async function lerLetras() {
+    if (tela.letras) return;
+    let r = null;
+    try { r = await seletor.ler('/api/letras'); } catch (e) { return; }
+    if (r === null || !r.ok) return;
+    tela.letras = new Map(lista(objeto(r.json).letras).map(objeto).filter((l) => texto(l.familia) && enderecoDeLetra(l.endereco)).map((l) => [l.familia, l.endereco]));
+  }
+
+  // "Usar este estilo" (decisão D1): escolhe na hora pelo servidor, que, sem marca, grava antes a marca que nasce do estilo
+  // e anota o pedido "usar-estilo" já aplicado (o agente começa o primeiro trabalho). A resposta de outra empresa ou de um
+  // detalhe que já fechou não aparece aqui. Depois: "Pronto" com "Desfazer", embaixo (decisão 10 A).
+  function corpoDaEscolha(estilo) {
+    return { estilo: estilo.id, origem: estilo.proprio ? 'proprio' : 'catalogo', comMarca: !tela.marca.definida && !estilo.proprio };
+  }
+  async function escolherEstilo(estilo, desligar, area, aviso) {
+    const vez = aberto.vez;
+    desligar.forEach((b) => { b.disabled = true; });
+    aviso.className = 'pedido-aviso';
+    aviso.textContent = 'Escolhendo o estilo…';
+    let r;
+    try {
+      r = await seletor.enviar('/api/estilo', corpoDaEscolha(estilo));
+    } catch (e) {
+      r = { ok: false, json: { erro: SEM_SERVIDOR } };
+    } finally {
+      desligar.forEach((b) => { b.disabled = false; });
+    }
+    if (r === null || vez !== aberto.vez) return;
+    aviso.textContent = '';
+    if (!r.ok) {
+      aviso.className = 'pedido-aviso erro';
+      aviso.textContent = erroDe(r, 'Não consegui escolher o estilo. Tente de novo.');
+      const confirmar = $('pedido-confirmar');
+      if (confirmar) confirmar.focus();
+      return;
+    }
+    const marcaCriada = objeto(r.json).marcaCriada === true;
+    const paraOClaude = /\/fabrica continuar/.test(texto(objeto(r.json).mensagem)); // o pedido ao agente foi anotado
+    area.hidden = true;
+    area.textContent = '';
+    detalhe.querySelectorAll('[data-pedido]').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+    aviso.className = 'pedido-aviso ok';
+    const frase = el('span', { classe: 'pronto-frase' }, [el('strong', { texto: 'Pronto.' }), ' O estilo ' + estilo.nome + ' agora é o da ' + tela.nome + '.'
+      + (marcaCriada ? ' As cores e letras dele já são as da sua marca.' : '')
+      + (paraOClaude ? ' No Claude, digite /fabrica continuar para fazer a primeira peça.' : '')]);
+    const desfazer = el('button', { classe: 'botao', type: 'button', id: 'desfazer-escolha', texto: 'Desfazer' });
+    desfazer.addEventListener('click', () => desfazerEscolha(estilo, marcaCriada, desfazer, aviso));
+    aviso.appendChild(el('span', { classe: 'pronto-linha' }, [frase, desfazer]));
+    aviso.focus({ preventScroll: true });
+    await depoisDaEscolha(marcaCriada);
+  }
+  // "Desfazer": volta a escolha de antes (a marca que nasceu do estilo continua: ela tem o próprio "Desfazer" em Sua marca).
+  async function desfazerEscolha(estilo, marcaCriada, botao, aviso) {
+    const vez = aberto.vez;
+    botao.disabled = true;
+    let r;
+    try {
+      r = await seletor.enviar('/api/estilo/desfazer', {});
+    } catch (e) {
+      r = { ok: false, json: { erro: SEM_SERVIDOR } };
+    }
+    if (r === null || vez !== aberto.vez) return;
+    if (!r.ok) {
+      botao.disabled = false;
+      aviso.appendChild(el('span', { classe: 'andamento-erro', texto: ' ' + erroDe(r, 'Não consegui desfazer. Tente de novo.') }));
+      return;
+    }
+    const volta = objeto(objeto(r.json).estilo);
+    aviso.textContent = '';
+    aviso.className = 'pedido-aviso ok';
+    aviso.appendChild(el('strong', { texto: 'Desfeito.' }));
+    aviso.appendChild(document.createTextNode(texto(volta.id) ? ' O seu estilo voltou a ser ' + (limpo(volta.nome, 80) || volta.id) + '.' : ' Nenhum estilo está escolhido agora.'));
+    if (marcaCriada) {
+      aviso.appendChild(document.createTextNode(' A marca que nasceu do estilo ' + estilo.nome + ' continua; dá para trocá-la em '));
+      aviso.appendChild(el('a', { href: caminhoSemMarca('sua-marca'), texto: 'Sua marca' }));
+      aviso.appendChild(document.createTextNode('.'));
+    }
+    aviso.focus({ preventScroll: true });
+    await depoisDaEscolha(false);
+  }
+  // Depois de escolher ou desfazer: relê o catálogo (o estilo escolhido e a marca), pinta a página com a marca nova
+  // quando ela acabou de nascer, e relê o andamento dos pedidos.
+  async function depoisDaEscolha(marcaCriada) {
+    if (marcaCriada) {
+      const m = await seletor.aplicarMarca();
+      if (m && !m.exemplo) { tela.marcaDaEmpresa = { cores: objeto(m.cores), fontes: objeto(m.fontes) }; $('nota-exemplo').hidden = true; }
+    }
+    await recarregarCatalogo();
+    lerPedidos();
+  }
+
+  // Só esconde a área: o recado digitado continua guardado (aberto.recado) para quando a pessoa abrir de novo.
+  function fecharPedido() {
+    const area = $('pedido-area');
+    if (!area || area.hidden) return;
+    const tipo = area.getAttribute('data-tipo');
+    area.hidden = true;
+    detalhe.querySelectorAll('[data-pedido]').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+    const botao = detalhe.querySelector('[data-pedido="' + tipo + '"]');
+    if (botao) botao.focus();
+  }
+
+  // O pedido sai pelo seletor (que põe a empresa escolhida por último no corpo). Enquanto ele vai, os botões ficam
+  // desligados. Resposta de outra empresa (a pessoa trocou no meio) ou de um detalhe que já fechou não aparece aqui.
+  async function enviarPedido(estilo, tipo, recado, desligar, area, aviso) {
+    const vez = aberto.vez;
+    const corpo = { tipo, estilo: estilo.id };
+    if (recado) corpo.nota = recado;
+    const imagens = tipo === 'estilo-novo' ? aberto.imagens.slice() : [];
+    desligar.forEach((b) => { b.disabled = true; });
+    aviso.className = 'pedido-aviso';
+    aviso.textContent = 'Enviando o pedido…';
+    let r;
+    try {
+      // as imagens vão antes, uma por vez (o servidor confere cada uma e dá o nome); se uma não passa, o pedido não sai.
+      // A que já subiu guarda o nome dado pelo servidor (com a empresa): se o pedido for recusado e a pessoa mandar de
+      // novo, ela não sobe outra vez (nada de imagem sobrando na pasta da empresa).
+      const anexos = [];
+      const dona = seletor.atual(); // a imagem que subiu vale só para a pasta desta empresa
+      for (let i = 0; i < imagens.length; i += 1) {
+        const ja = imagens[i].enviada;
+        if (ja && ja.dona === dona && texto(ja.nome)) { anexos.push(ja.nome); continue; }
+        aviso.textContent = 'Enviando as imagens: ' + (i + 1) + ' de ' + imagens.length + '…';
+        const env = await enviarArquivo(await lerComoDados(imagens[i].arquivo));
+        if (env === null) { r = null; break; }
+        if (!env.ok || !texto(objeto(env.json).nome)) { r = { ok: false, json: { erro: 'A imagem “' + imagens[i].nome + '” não foi aceita. ' + erroDe(env, 'Tente outra.') } }; break; }
+        imagens[i].enviada = { dona, nome: env.json.nome };
+        anexos.push(env.json.nome);
+      }
+      if (r === undefined) {
+        if (anexos.length) corpo.anexos = anexos;
+        r = await seletor.enviar('/api/pedido', corpo);
+      }
+    } catch (e) {
+      r = { ok: false, json: { erro: 'Não consegui falar com o servidor dos painéis. Confira se a janela do servidor continua aberta e tente de novo.' } };
+    } finally {
+      desligar.forEach((b) => { b.disabled = false; });
+    }
+    if (r === null || vez !== aberto.vez) return;
+    aviso.textContent = '';
+    if (!r.ok) {
+      aviso.className = 'pedido-aviso erro';
+      aviso.textContent = erroDe(r, 'Não consegui enviar o pedido. Tente de novo.');
+      const confirmar = $('pedido-confirmar'); // o foco volta para o botão que a pessoa acabou de apertar (já religado)
+      if (confirmar) confirmar.focus();
+      return;
+    }
+    if (tipo === 'estilo-novo') aberto.recado = ''; // enviado: agora sim o recado e as imagens do estilo novo podem sumir
+    area.hidden = true;
+    area.textContent = '';
+    if (tipo === 'estilo-novo') limparImagens();
+    detalhe.querySelectorAll('[data-pedido]').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+    aviso.className = 'pedido-aviso ok';
+    aviso.appendChild(el('strong', { texto: 'Pedido anotado para ' + tela.nome + '.' }));
+    aviso.appendChild(document.createTextNode(' ' + texto(r.json.mensagem)));
+    aviso.focus({ preventScroll: true });
+    lerPedidos(); // o pedido novo aparece na faixa do alto
+  }
+
+  iniciar();
+})();
+</script>
+</body>
+</html>

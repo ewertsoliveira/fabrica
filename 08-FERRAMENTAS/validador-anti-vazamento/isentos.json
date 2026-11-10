@@ -1,0 +1,560 @@
+{
+  "NOTICE.md": [
+    "url",
+    "termo-privado"
+  ],
+  "LICENSE.md": [
+    "url"
+  ],
+  "06-MARCA-E-FOTOS/marca.exemplo.yaml": [
+    "fonte"
+  ],
+  "06-MARCA-E-FOTOS/exemplo/fontes/Fraunces-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "06-MARCA-E-FOTOS/exemplo/fontes/SpaceMono-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/validador-anti-vazamento/isentos.json": [
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/projetos/montar-video.js": [
+    "url"
+  ],
+  "08-FERRAMENTAS/tesseract/blocos-motion/gerar-mapa.js": [
+    "url"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/adesivo.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/bloco.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/caderno.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/cinema.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/circulo.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/faixa.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/impacto.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/neon.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/recorte.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/retro.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/visor.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/vitrine.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/_comum.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/gerar-texturas.js": [
+    "hex",
+    "fonte",
+    "url"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/motor.js": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/README.md": [
+    "fonte",
+    "dia-da-semana"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/Inter-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/montar.js": [
+    "hex"
+  ],
+  "08-FERRAMENTAS/validador-anti-vazamento/LEIA-ME.md": [
+    "fonte"
+  ],
+  "08-FERRAMENTAS/validador-anti-vazamento/validar.test.js": [
+    "hex",
+    "fonte",
+    "handle"
+  ],
+  "_fabrica/core/boas-praticas/image-design.md": [
+    "hex",
+    "fonte",
+    "url"
+  ],
+  "_fabrica/core/boas-praticas/researching.md": [
+    "url"
+  ],
+  "_fabrica/core/boas-praticas/social-networks-publishing.md": [
+    "url",
+    "handle"
+  ],
+  "_fabrica/core/prompts/investigacao-compartilhado.md": [
+    "url",
+    "handle"
+  ],
+  "_fabrica/core/prompts/investigacao-instagram.md": [
+    "url",
+    "handle"
+  ],
+  "_fabrica/core/prompts/investigacao-youtube.md": [
+    "url",
+    "handle"
+  ],
+  "_fabrica/core/prompts/investigacao-twitter.md": [
+    "url",
+    "handle"
+  ],
+  "_fabrica/core/prompts/investigacao-linkedin.md": [
+    "url",
+    "handle"
+  ],
+  "_fabrica/core/visual.js": [
+    "hex",
+    "fonte",
+    "url",
+    "handle"
+  ],
+  "05-ESTRATEGIA/nucleo-de-conteudo/regras/12-decisao-visual.md": [],
+  "_fabrica/modelo.json": [
+    "url"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/palco.js": [
+    "fonte"
+  ],
+  "08-FERRAMENTAS/marca/marca.test.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/mockups/mockups.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/mockups/previa.html": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/mockups/mockups.test.js": [
+    "hex"
+  ],
+  "08-FERRAMENTAS/mockups/previa.js": [
+    "hex"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/contraste/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/papelaria/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/colagem/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/editorial/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/primeira-pagina/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/terra-e-salvia/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/cartilha/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/circuito-neon/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/gravura/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/concreto-acido/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/revista-dominical/estilo.yaml": [
+    "hex",
+    "fonte",
+    "dia-da-semana"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/protagonista/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/luz-de-vela/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/fanzine/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/bloco/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/circulo/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/faixa/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/palco/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/recorte/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/caderno/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/adesivo/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/retro/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/vitrine/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/neon/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/cinema/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/impacto/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/visor/estilo.yaml": [
+    "hex",
+    "fonte"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/papelaria/estilo.css": [
+    "hex"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/papelaria/objetos/postit.html": [
+    "hex"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/retro/estilo.css": [
+    "hex"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/fanzine/estilo.css": [
+    "hex"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/_demo/ilustracoes/prato-cafe.svg": [
+    "hex"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/previa.js": [
+    "hex",
+    "handle"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/catalogo.html": [
+    "hex",
+    "fonte",
+    "handle",
+    "url",
+    "dia-da-semana"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/kit.html": [
+    "hex",
+    "fonte",
+    "handle",
+    "url",
+    "dia-da-semana"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/kit.js": [
+    "hex",
+    "handle"
+  ],
+  "08-FERRAMENTAS/carrossel/molde.js": [
+    "url"
+  ],
+  "08-FERRAMENTAS/carrossel/molde.test.js": [
+    "hex"
+  ],
+  "08-FERRAMENTAS/carrossel/preview.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/carrossel/conferir.test.js": [
+    "hex",
+    "url"
+  ],
+  "04-LABORATORIO-DE-DESIGN/estilos/LEIA-ME.md": [
+    "dia-da-semana"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/concreto-acido.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/luz-de-vela.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/revista-dominical.js": [
+    "hex",
+    "fonte",
+    "dia-da-semana"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/protagonista.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/fanzine.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/terra-e-salvia.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/cartilha.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/circuito-neon.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/gravura.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/primeira-pagina.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/contraste.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/papelaria.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/colagem.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/estilos/editorial.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/Anton-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/CormorantGaramond-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/DMMono-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/DMSans-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/DMSerifDisplay-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/Fraunces-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/InterTight-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/JetBrainsMono-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/Montserrat-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/PlayfairDisplay-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/Poppins-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/SpaceGrotesk-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/BebasNeue-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/Caveat-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/CourierPrime-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/GreatVibes-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/InstrumentSerif-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/KaushanScript-OFL.txt": [
+    "url",
+    "email",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/Oswald-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/SpaceMono-OFL.txt": [
+    "url",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/fontes/familias.json": [
+    "fonte"
+  ],
+  "08-FERRAMENTAS/marca/escrever.test.js": [
+    "hex",
+    "fonte"
+  ],
+  "docs/superpowers/plans/2026-10-30-etapa-1-gavetas-por-empresa.md": [
+    "hex",
+    "url",
+    "handle",
+    "fonte"
+  ],
+  "_fabrica/core/empresa.test.js": [
+    "url",
+    "handle"
+  ],
+  "_fabrica/core/migracao.test.js": [
+    "hex"
+  ],
+  "_fabrica/core/isolamento.test.js": [
+    "hex",
+    "url"
+  ],
+  "_fabrica/paineis/modelos/Abrir Laboratório de Design.bat": [
+    "handle"
+  ],
+  "_fabrica/paineis/servidor.js": [
+    "url"
+  ],
+  "_fabrica/paineis/testes/servidor.test.js": [
+    "url",
+    "hex",
+    "fonte"
+  ],
+  "_fabrica/paineis/testes/telas.test.js": [
+    "url",
+    "hex"
+  ],
+  "_fabrica/paineis/testes/enviar-cliente.test.js": [
+    "hex"
+  ],
+  "_fabrica/paineis/testes/biblioteca.test.js": [
+    "hex"
+  ],
+  "04-LABORATORIO-DE-DESIGN/biblioteca/revisao.html": [
+    "dia-da-semana"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/tema-marca.test.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/inverso.test.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/lote-a.test.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/lote-b.test.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/tesseract/modelos/todos-na-marca.test.js": [
+    "hex",
+    "fonte"
+  ],
+  "08-FERRAMENTAS/biblioteca/gerar-previas.test.js": [
+    "fonte"
+  ],
+  "_fabrica/paineis/testes/caminho.test.js": [
+    "url",
+    "hex"
+  ],
+  "INSTALAR.md": [
+    "url"
+  ],
+  "_fabrica/core/ambiente.js": [
+    "url"
+  ],
+  "08-FERRAMENTAS/imagem-ia/gerar.js": [
+    "url"
+  ],
+  "README.md": [
+    "url"
+  ]
+}

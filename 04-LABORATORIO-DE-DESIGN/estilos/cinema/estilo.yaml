@@ -1,0 +1,39 @@
+# Estilo de catálogo vindo do modelo de Reels "Cinema": granulação, vinheta e tom quente, serifada com itálico e brilho manuscrito.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: cinema
+nome: Cinema
+linha: Granulação de filme, vinheta e tom quente, serifada com destaque em itálico, estrelinha de brilho e anotação manuscrita.
+origem: catalogo
+combina-com: [gastronomia, moda, estetica-e-beleza, bem-estar, arquitetura-e-casa]
+tom: [elegante, acolhedor]
+precisa: [foto-de-pessoa, fotos-do-assunto]
+sugestao:
+  cores: { escuro: "#1A120B", claro: "#FAF2E6", acento: "#B5652B", neutro: "#7A5A3A" }
+  tipografia: { principal: "Instrument Serif", mono: "Instrument Serif", acento: "Great Vibes" }
+  google: "family=Instrument+Serif:ital@0;1&family=Great+Vibes"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-cinema]
+    miolo: [miolo-cinema-abaixo, miolo-cinema-acima]
+    fecho: [fecho-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [escuro, claro]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-cinema, metodo: miolo-cinema-abaixo, contratar: fecho-visual }
+  reels: { modelo: cinema, capa: capa-cinema }
+tratamentos: { destaque: italico+fonte, foto: sangria, textura: grao-de-filme, grafismo: estrela-de-brilho }
+kit:
+  regras:
+    - "Grão e vinheta em toda lâmina; tom quente, nunca frio."
+    - "Serifada com o destaque em itálico; na capa, o destaque na letra manuscrita."
+    - "Uma estrelinha de brilho por lâmina, junto do visual."
+  movimento:
+    - video: "grão e vinheta que respiram"
+      peca: "grão e vinheta fixos"
+    - video: "título manuscrito que acende com estrela"
+      peca: "destaque manuscrito da capa com estrelinha"
+    - video: "B-roll em meia tela"
+      peca: "foto da lâmina desfocada no fundo escuro"

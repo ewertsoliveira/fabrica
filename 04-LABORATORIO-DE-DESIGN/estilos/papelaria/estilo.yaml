@@ -1,0 +1,34 @@
+# Estilo de catálogo: serifa condensada com uma palavra em itálico colorido e, em cada lâmina do miolo, um objeto de
+# escritório que carrega a frase-chave (post-it com clipe, cartão sobreposto, foto colada, folha de caderno, etiqueta).
+# Cores e fontes abaixo são só a sugestão de demonstração; na produção, valem as do marca.yaml.
+id: papelaria
+nome: Papelaria
+linha: Serifa condensada com itálico colorido, texto curto em sem-serifa e um objeto de escritório por lâmina.
+origem: catalogo
+combina-com: [negocios-e-servicos, educacao, financas, direito, psicologia]
+tom: [elegante, acolhedor]
+precisa: [foto-de-pessoa, fotos-do-assunto]
+sugestao:
+  cores: { escuro: "#1F3358", claro: "#EFEBE3", acento: "#CF4F20", neutro: "#8C8478" }
+  tipografia: { principal: "Instrument Serif", mono: "Inter Tight", acento: "" }
+  google: "family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;600;800"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-foto]
+    miolo: [miolo-objeto]
+    fecho: [miolo-objeto]
+    molde_do_miolo: fixo
+    alinhamento: esquerda
+    navegacao: { barra: false, arraste: false, contador: false }
+    fundos: [acento, claro, escuro]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-foto, metodo: capa-foto, contratar: capa-foto }
+  reels: { modelo: papelaria, capa: capa-foto }
+tratamentos: { destaque: italico, foto: sangria, textura: grao, grafismo: objeto-de-escritorio }
+objetos: [postit, cartao, foto, folha, etiqueta]
+kit:
+  regras:
+    - "Um objeto de escritório por lâmina, carregando a frase-chave."
+    - "Serifa condensada com uma palavra em itálico colorido."
+    - "Texto curto em sem-serifa."

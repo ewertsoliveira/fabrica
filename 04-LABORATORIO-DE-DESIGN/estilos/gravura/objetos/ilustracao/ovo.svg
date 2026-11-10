@@ -1,0 +1,21 @@
+<svg class="gravura" viewBox="0 0 400 900"><defs>
+<pattern id="h-ovo-2" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(38)"><line x1="0" y1="0" x2="0" y2="9" stroke="currentColor" stroke-width="2.2"/></pattern>
+<pattern id="x-ovo-2" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-38)"><line x1="0" y1="0" x2="0" y2="9" stroke="currentColor" stroke-width="2.2"/></pattern>
+</defs><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+<ellipse cx="210" cy="812" rx="160" ry="16" fill="url(#h-ovo-2)" stroke="none"/>
+<line x1="20" y1="800" x2="390" y2="800" stroke-width="2.5"/>
+<path d="M200 170C285 170 330 300 330 400C330 490 272 545 200 545C128 545 70 490 70 400C70 300 115 170 200 170Z" fill="var(--f)"/>
+<path d="M235 190C300 230 330 320 330 400C330 490 272 545 200 545C250 520 285 460 285 390C285 300 265 230 235 190Z" fill="url(#h-ovo-2)" stroke="none"/>
+<path d="M140 252C122 282 113 312 110 342" stroke-width="3"/>
+<path d="M60 470C60 590 120 640 200 640C280 640 340 590 340 470Z" fill="var(--f)"/>
+<path d="M262 482L338 474C336 580 290 628 228 637C280 600 272 530 262 482Z" fill="url(#h-ovo-2)" stroke="none"/>
+<path d="M75 520C150 536 250 536 325 520" stroke-width="2.5"/>
+<path d="M82 548C150 562 250 562 318 548" stroke-width="2.5"/>
+<path d="M170 640C175 690 165 718 150 742L250 742C235 718 225 690 230 640" fill="var(--f)"/>
+<path d="M208 648C212 690 222 716 238 740L250 742C235 718 225 690 230 640Z" fill="url(#h-ovo-2)" stroke="none"/>
+<path d="M105 742C105 774 140 792 200 792C260 792 295 774 295 742Z" fill="var(--f)"/>
+<path d="M210 742H295C295 772 262 790 214 792C240 780 248 760 210 742Z" fill="url(#x-ovo-2)" stroke="none"/>
+<path d="M300 868L365 580" stroke-width="5"/>
+<ellipse cx="372" cy="548" rx="24" ry="40" transform="rotate(14 372 548)" fill="var(--f)"/>
+<path d="M378 520C392 540 392 568 380 584" stroke-width="2.5"/>
+</g></svg>

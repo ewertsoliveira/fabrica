@@ -1,0 +1,30 @@
+[
+  {
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-sentada.jpg",
+    "recorte": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-sentada-recorte.webp",
+    "posicao_foto": "62% 20%",
+    "palavra": "treino",
+    "kicker": "Reels · nutrição",
+    "titulo": "O que comer *antes do treino*",
+    "fundo": "claro"
+  },
+  {
+    "visual": {
+      "tipo": "foto",
+      "arquivo": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/maca-amendoim.jpg"
+    },
+    "palavra": "treino",
+    "kicker": "Reels · nutrição",
+    "titulo": "O que comer *antes do treino*",
+    "fundo": "escuro"
+  },
+  {
+    "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-sentada.jpg",
+    "recorte": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-sentada-recorte.webp",
+    "posicao_foto": "62% 20%",
+    "palavra": "treino",
+    "kicker": "Reels · nutrição",
+    "titulo": "O que comer *antes do treino*",
+    "fundo": "acento"
+  }
+]

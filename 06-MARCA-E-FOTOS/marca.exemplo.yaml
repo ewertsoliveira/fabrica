@@ -1,0 +1,118 @@
+# Contrato de marca — EXEMPLO FICTÍCIO
+#
+# Todo valor que muda de empresa para empresa mora aqui, e só aqui. As regras do
+# Núcleo e os scripts da Fábrica falam em papéis ("cor de acento", "fonte de
+# título"); o valor de cada papel vem deste arquivo.
+#
+# A marca de cada empresa não se copia daqui: ela é gravada pela tela Sua marca
+# (ou pelo agente, com `08-FERRAMENTAS/marca/escrever.js`), no caminho `marca`
+# da empresa (na pasta antiga, `06-MARCA-E-FOTOS/marca.yaml`; numa empresa nova,
+# `empresas/<codigo>/marca.yaml`), com histórico e Desfazer. Os scripts leem o
+# `marca.yaml` da empresa ativa; se ele não existir, usam este exemplo e avisam
+# em destaque. Outro caminho: variável de ambiente FABRICA_MARCA.
+#
+# Os valores abaixo são de uma empresa inventada, de propósito com paleta e
+# tipografia que não lembram nenhuma marca real (é a empresa-fantasma do teste
+# de fogo). Caminhos são relativos à raiz da Fábrica.
+
+empresa:
+  nome: "Empresa Exemplo"
+  handle: "@empresa.exemplo"   # endereço da conta, só aparece no cartão final
+  idioma: pt                   # idioma da fala, para a transcrição
+  setor: nenhum                # camada setorial ativa (05-ESTRATEGIA/nucleo-de-conteudo/setor/)
+
+# Cores por papel. Hex de 6 dígitos. Não crie papéis novos sem registrar no
+# CORE.md: os scripts só conhecem estes quatro.
+cores:
+  escuro: "#1E2B3A"   # fundo escuro do par de base; texto sobre fundo claro; véus sobre o vídeo
+  claro: "#F3EEE3"    # fundo claro do par de base; legenda e títulos sobre o vídeo
+  acento: "#2FB59A"   # destaque: caixa da palavra-chave, botão, palavra do cartão, trilho do alerta
+  neutro: "#8C8478"   # apoio: linhas finas, textos secundários
+
+# Fontes por papel: arquivo .ttf ou .otf. O nome da família e os pesos
+# disponíveis são lidos do próprio arquivo pelo Tesseract; quando um peso
+# pedido não existe, vale o mais próximo.
+tipografia:
+  principal:               # legenda, títulos, cartões, botão
+    arquivo: 06-MARCA-E-FOTOS/exemplo/fontes/Fraunces.ttf
+    largura-titulo: 100    # eixo wdth nos títulos, se a fonte tiver esse eixo (100 = normal)
+    # compensacao-vertical: 0.38   # opcional; fração do corpo somada em y em texto centralizado na vertical (padrão 0,38, medido numa fonte grotesca)
+  mono:                    # rótulos pequenos em caixa-alta (kicker)
+    arquivo: 06-MARCA-E-FOTOS/exemplo/fontes/SpaceMono-Regular.ttf
+
+  # Terceira voz, opcional: fonte manuscrita ou serifada para o remate (regra DG do Núcleo, três vozes).
+  # Vazio = a marca trabalha só com duas vozes. Nem toda marca aceita misturar: é decisão da marca.
+  acento:
+    arquivo: ""
+
+# Peças de imagem da marca. Todas opcionais: o que faltar é gerado ou omitido.
+pecas:
+  logo: ""                 # SVG ou PNG da logo; vazio = cartão final só com o endereço da conta
+  elemento-fundo: ""       # PNG de um elemento da identidade que pode ficar atrás da pessoa; vazio = nenhum
+  logo-aparece-em: [capa, fecho]   # onde a logo entra nas peças de imagem (economia de logo); nas demais, não
+
+# ---------------------------------------------------------------------------
+# PADRÃO DE PRIMEIRO USO (peças de imagem: carrossel, post, fixados, capas)
+#
+# Os blocos abaixo vêm prontos para a empresa começar a produzir sem configurar
+# nada. São um ponto de partida, não uma regra: troque qualquer valor aqui, ou
+# escolha outro estilo no catálogo (04-LABORATORIO-DE-DESIGN/estilos/). Se o
+# `marca.yaml` da empresa não tiver um destes campos, a Fábrica usa o valor
+# deste exemplo e avisa qual foi herdado.
+# ---------------------------------------------------------------------------
+
+# Tela e tamanhos mínimos de texto, em pixels, no canvas de feed.
+canvas:
+  feed: { largura: 1080, altura: 1350 }
+  pisos: { titulo: 72, corpo: 44, micro: 32 }      # texto de conteúdo: nada abaixo disto
+  pisos-ui: { titulo: 40, corpo: 28 }              # texto dentro de mockup e interface: escala própria
+  area-segura: { topo: 90, base: 140 }             # faixas reservadas à interface do aplicativo
+
+# Estilo de imagem permitido nas peças (regra I do Núcleo). Decisão declarada, nunca por omissão.
+imagens:
+  estilo: misto            # fotografia | vetor-plano | misto
+  vetos: [cartoon, 3d-infantil, avatar-generico]
+
+# Regras de copy que variam por marca (as universais estão no Núcleo).
+copy:
+  exclamacao: vetada       # vetada | permitida
+  emoji: { formatos: [stories], maximo: 2 }       # nunca no corpo de um slide
+
+# Vocabulário da marca nas peças de texto e imagem.
+vocabulario:
+  preferido: []            # termos que devem aparecer onde for natural
+  vetado: []               # termo da lista = rejeição automática da peça
+
+# Chamada final por rede: aponta para a interação possível naquele meio.
+cta:
+  instagram: "fale com a gente no direct"
+  linkedin: "me conta nos comentários como é no seu caso"
+
+video:
+  # Correções de grafia que a transcrição erra sempre (nome da empresa, marcas citadas).
+  # Uma palavra por chave, sem diferenciar maiúsculas: "como o transcritor escreve": "como deve ficar".
+  correcoes-transcricao:
+    empresaexemplo: "Empresa Exemplo"
+
+  # Vocabulário que nunca aparece na tela, além da lista do Núcleo.
+  vocabulario-vetado: []
+
+  # Chamada padrão do cartão final.
+  cta:
+    frase: "quer ver como isso funciona no seu caso?"
+    botao: "Fale com a gente"
+
+  # Alerta (trecho de fala sobre erro ou risco): tratamento de cor aplicado por cima do vídeo.
+  alerta:
+    saturacao: -45
+    brilho: -10
+    contraste: 6
+
+  # Pré-edição do vídeo cru.
+  pre-edicao:
+    velocidade: 1.13                          # fala acelerada sem mudar o tom
+    cor: "eq=gamma=0.90:saturation=1.08"      # correção de cor (filtro do ffmpeg); calibre pela luz da gravação
+
+  # Limites do formato.
+  duracao-maxima: 90       # segundos
+  loudness-alvo: -14       # LUFS

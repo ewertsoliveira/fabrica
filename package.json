@@ -1,0 +1,11 @@
+{
+  "name": "fabrica-de-conteudo",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Fábrica de Conteúdo: motor de produção de conteúdo configurável por empresa",
+  "dependencies": {
+    "onnxruntime-node": "^1.30.0",
+    "playwright": "^1.58.2",
+    "pngjs": "^7.0.0"
+  }
+}

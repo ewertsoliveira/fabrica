@@ -1,0 +1,32 @@
+# Estilo de catálogo da primeira rodada aprovada ("Concreto Ácido", brutalismo tipográfico): letras monumentais, preto e papel, um acento ácido e mockups de borda dura.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: concreto-acido
+nome: Concreto Ácido
+linha: Letras monumentais em caixa alta, preto e papel, um único acento ácido no destaque e mockups de borda grossa com sombra dura.
+origem: catalogo
+combina-com: [tecnologia, moda, negocios-e-servicos]
+tom: [ousado, vibrante]
+precisa: [funciona-sem-foto]
+sugestao:
+  cores: { escuro: "#0B0B0B", claro: "#F2F0E8", acento: "#D4FF3A", neutro: "#8A8A82" }
+  tipografia: { principal: "Inter", mono: "Space Mono", acento: "Anton" }
+  google: "family=Anton&family=Inter:wght@400;600;700;800&family=Space+Mono:wght@400;700"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-concreto-acido]
+    miolo: [miolo-concreto-acido-abaixo, miolo-concreto-acido-acima]
+    fecho: [fecho-cartao-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [escuro, claro, escuro, acento, claro, acento]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-concreto-acido, metodo: miolo-concreto-acido-abaixo, contratar: fecho-cartao-visual }
+  reels: { modelo: concreto-acido, capa: capa-concreto-acido }
+tratamentos: { destaque: cor, foto: sem-foto, textura: colunas, grafismo: borda-dura }
+kit:
+  regras:
+    - "Título da capa curto (até 6 palavras), em letras monumentais."
+    - "Um único acento ácido, nunca dois."
+    - "Mockups com borda grossa e sombra dura, sem desfoque."

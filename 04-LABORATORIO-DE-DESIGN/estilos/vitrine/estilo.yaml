@@ -1,0 +1,39 @@
+# Estilo de catálogo vindo do modelo de Reels "Vitrine": fundo desfocado da cena, texto fino e o mockup como cartão do B-roll.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: vitrine
+nome: Vitrine
+linha: Fundo desfocado da própria cena, texto fino com destaque em itálico pesado azul-claro e mockups como cartão com sombra longa.
+origem: catalogo
+combina-com: [estetica-e-beleza, moda, arquitetura-e-casa, gastronomia, bem-estar]
+tom: [elegante, sobrio]
+precisa: [foto-de-pessoa, fotos-do-assunto]
+sugestao:
+  cores: { escuro: "#141419", claro: "#F1F3F4", acento: "#E0EBF5", neutro: "#5F6670" }
+  tipografia: { principal: "Inter", mono: "Inter", acento: "" }
+  google: "family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,900"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-vitrine]
+    miolo: [miolo-vitrine-abaixo, miolo-vitrine-acima]
+    fecho: [fecho-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [escuro, claro, escuro, claro, escuro, acento]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-vitrine, metodo: miolo-vitrine-abaixo, contratar: fecho-visual }
+  reels: { modelo: vitrine, capa: capa-vitrine }
+tratamentos: { destaque: cor+peso, foto: sangria, textura: desfoque, grafismo: cartao-com-sombra }
+kit:
+  regras:
+    - "Fundo escuro é a própria cena desfocada; a foto da lâmina vira o fundo."
+    - "Texto fino; só a palavra do destaque ganha o itálico pesado."
+    - "O mockup entra reto, como um cartão com sombra longa, nunca inclinado."
+  movimento:
+    - video: "entrada com desfoque da cena"
+      peca: "fundo desfocado fixo, a partir da foto da lâmina"
+    - video: "palavra que ganha peso na fala"
+      peca: "destaque em itálico pesado azul-claro"
+    - video: "B-roll em cartão que desliza"
+      peca: "mockup em cartão com sombra longa"

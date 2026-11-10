@@ -1,0 +1,34 @@
+/* Cinema, do modelo de Reels de mesmo nome: granulação de filme, vinheta e tom quente, serifada com o destaque em
+   itálico, estrelinha de brilho e a anotação na letra manuscrita do vídeo. */
+.est-cinema .grao{background:radial-gradient(ellipse at center,transparent 42%,rgba(15,8,0,.62) 100%),url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22300%22%20height%3D%22300%22%3E%3Cfilter%20id%3D%22n%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.9%22%20numOctaves%3D%222%22%20stitchTiles%3D%22stitch%22%2F%3E%3CfeColorMatrix%20values%3D%220%200%200%200%200.5%200%200%200%200%200.45%200%200%200%200%200.4%200%200%200%200.9%20-0.3%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22300%22%20height%3D%22300%22%20filter%3D%22url(%23n)%22%2F%3E%3C%2Fsvg%3E");opacity:.9}
+.est-cinema.fundo-claro .grao{background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22300%22%20height%3D%22300%22%3E%3Cfilter%20id%3D%22n%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.9%22%20numOctaves%3D%222%22%20stitchTiles%3D%22stitch%22%2F%3E%3CfeColorMatrix%20values%3D%220%200%200%200%200.5%200%200%200%200%200.45%200%200%200%200%200.4%200%200%200%200.9%20-0.3%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22300%22%20height%3D%22300%22%20filter%3D%22url(%23n)%22%2F%3E%3C%2Fsvg%3E");opacity:.32}
+.est-cinema .fundo-foto{position:absolute !important;inset:-60px;z-index:0 !important;background-size:cover;background-position:center;filter:sepia(.35) saturate(1.1) brightness(.4) blur(4px)}
+.est-cinema.fundo-claro .fundo-foto{display:none}
+.est-cinema .kicker{font:400 34px/1.2 var(--fonte-mono);letter-spacing:.28em}
+.est-cinema .titulo{font-weight:400;letter-spacing:-.005em;line-height:1;font-size:max(var(--piso-titulo),104px)}
+.est-cinema .titulo .dst{font-style:italic}
+.est-cinema.fundo-escuro .titulo .dst{color:color-mix(in srgb,var(--cor-acento) 30%,var(--cor-claro))}
+.est-cinema .corpo{font-size:max(var(--piso-corpo),46px)}
+.est-cinema .nota{font-size:76px}
+.est-cinema.fundo-escuro .nota{color:var(--cor-claro);text-shadow:0 0 16px color-mix(in srgb,var(--cor-claro) 70%,transparent)}
+.est-cinema .nota::after{content:""}
+.est-cinema .vis-mockup{overflow:visible;padding:40px 0}
+.est-cinema .vis-mockup.inclinado > *{transform:none}
+.est-cinema .vis-mockup::after{content:"";position:absolute;right:14px;top:6px;width:56px;height:56px;background:var(--d);-webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2010%2010%22%3E%3Cpath%20d%3D%22M5%200C5.4%203.6%206.4%204.6%2010%205%206.4%205.4%205.4%206.4%205%2010%204.6%206.4%203.6%205.4%200%205%203.6%204.6%204.6%203.6%205%200Z%22%2F%3E%3C%2Fsvg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2010%2010%22%3E%3Cpath%20d%3D%22M5%200C5.4%203.6%206.4%204.6%2010%205%206.4%205.4%205.4%206.4%205%2010%204.6%206.4%203.6%205.4%200%205%203.6%204.6%204.6%203.6%205%200Z%22%2F%3E%3C%2Fsvg%3E") center/contain no-repeat}
+.est-cinema.fundo-escuro .vis-mockup::after{background:var(--cor-claro)}
+.est-cinema .vis-mockup .mk.mk-sombra{box-shadow:0 40px 90px rgba(0,0,0,.55)}
+.est-cinema.fundo-claro .vis-mockup .mk.mk-sombra{box-shadow:0 30px 60px rgba(70,40,10,.18)}
+.est-cinema .nav-contador{background:none;font:400 36px var(--fonte-mono)}
+.est-cinema .nav-arraste{opacity:1;font:400 36px var(--fonte-mono)}
+.est-cinema.l-capa-cinema{justify-content:flex-end}
+.est-cinema .cv{position:absolute !important;inset:0;z-index:0 !important}
+.est-cinema .cv img{width:100%;height:100%;object-fit:cover;filter:sepia(.3) saturate(1.15) contrast(1.05) brightness(.92)}
+.est-cinema .cv .veu{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 45%,rgba(15,8,0,.55) 100%),linear-gradient(transparent 47%,color-mix(in srgb,var(--cor-escuro) 86%,transparent) 62%,color-mix(in srgb,var(--cor-escuro) 95%,transparent) 76%)}
+.est-cinema.l-capa-cinema .titulo{font-size:max(var(--piso-titulo),112px)}
+.est-cinema.l-capa-cinema .titulo .dst{font-family:var(--fonte-acento);font-style:normal;color:var(--cor-claro);text-shadow:0 0 22px rgba(255,255,255,.7),0 0 4px var(--cor-claro)}
+.est-cinema.l-capa-cinema .titulo::after{content:"";display:inline-block;width:52px;height:52px;margin-left:16px;vertical-align:top;background:var(--cor-claro);-webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2010%2010%22%3E%3Cpath%20d%3D%22M5%200C5.4%203.6%206.4%204.6%2010%205%206.4%205.4%205.4%206.4%205%2010%204.6%206.4%203.6%205.4%200%205%203.6%204.6%204.6%203.6%205%200Z%22%2F%3E%3C%2Fsvg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2010%2010%22%3E%3Cpath%20d%3D%22M5%200C5.4%203.6%206.4%204.6%2010%205%206.4%205.4%205.4%206.4%205%2010%204.6%206.4%203.6%205.4%200%205%203.6%204.6%204.6%203.6%205%200Z%22%2F%3E%3C%2Fsvg%3E") center/contain no-repeat}
+.lamina.est-cinema{gap:28px}
+.est-cinema.fundo-escuro .kicker{color:color-mix(in srgb,var(--cor-acento) 28%,var(--cor-claro))}
+.est-cinema.l-fecho-visual .vis-mockup{padding:0 0 10px}
+.est-cinema.l-fecho-visual .titulo{font-size:max(var(--piso-titulo),88px)}
+.est-cinema.l-fecho-visual .corpo{font-size:var(--piso-corpo)}

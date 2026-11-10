@@ -1,0 +1,41 @@
+# Estilo de catálogo vindo do modelo de Reels "Adesivo": faixa rosa com contorno, adesivos, arco sobre o xadrez e selo estourado.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: adesivo
+nome: Adesivo
+linha: Faixa rosa com contorno preto, adesivos em volta dos mockups, a pessoa no arco sobre o xadrez rosa, papel quadriculado e selo estourado.
+origem: catalogo
+combina-com: [moda, estetica-e-beleza, gastronomia, nutricao]
+tom: [divertido, vibrante]
+precisa: [foto-de-pessoa]
+sugestao:
+  cores: { escuro: "#111111", claro: "#FBF7F2", acento: "#E8A6DB", neutro: "#4A4A4A" }
+  tipografia: { principal: "Inter", mono: "Inter", acento: "" }
+  google: "family=Inter:ital,wght@0,500;0,700;0,900;1,900"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-adesivo]
+    miolo: [miolo-adesivo-abaixo, miolo-adesivo-acima]
+    fecho: [fecho-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [claro, acento]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-adesivo, metodo: miolo-adesivo-abaixo, contratar: fecho-visual }
+  reels: { modelo: adesivo, capa: capa-adesivo }
+tratamentos: { destaque: italico, foto: arco, textura: quadriculado, grafismo: adesivo }
+kit:
+  regras:
+    - "Título na faixa rosa com contorno preto."
+    - "Dois adesivos por lâmina, nas bordas do mockup, nunca sobre o texto."
+    - "Anotação dentro do selo estourado."
+  movimento:
+    - video: "adesivos que pulam na tela"
+      peca: "adesivos fixos nas bordas do mockup"
+    - video: "faixa rosa que entra"
+      peca: "título em faixa rosa com contorno"
+    - video: "selo estourado que aparece"
+      peca: "anotação no selo estourado"
+    - video: "pessoa no arco sobre o xadrez"
+      peca: "capa com a pessoa no arco"

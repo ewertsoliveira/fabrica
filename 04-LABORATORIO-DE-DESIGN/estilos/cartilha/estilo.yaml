@@ -1,0 +1,32 @@
+# Estilo de catálogo da primeira rodada aprovada ("Cartilha", didático numerado): número grande em cada passo, pílula amarela no destaque, ideal para tutorial.
+# As cores e fontes abaixo são as originais aprovadas; na produção, valem as do marca.yaml se a empresa escolher a paleta dela.
+id: cartilha
+nome: Cartilha
+linha: Número grande em círculo amarelo em cada passo, destaque em pílula amarela, títulos redondos e pesados; feito para tutorial e passo a passo.
+origem: catalogo
+combina-com: [educacao, tecnologia, financas, nutricao, negocios-e-servicos]
+tom: [acolhedor, vibrante]
+precisa: [funciona-sem-foto]
+sugestao:
+  cores: { escuro: "#102A43", claro: "#F4F7FB", acento: "#FFC93C", neutro: "#12A39A" }
+  tipografia: { principal: "Inter", mono: "JetBrains Mono", acento: "Poppins" }
+  google: "family=Poppins:wght@700;800&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500;700"
+formatos:
+  carrossel:
+    proporcao: "4:5"
+    capa: [capa-cartilha]
+    miolo: [miolo-cartilha-abaixo, miolo-cartilha-acima]
+    fecho: [fecho-cartao-visual]
+    molde_do_miolo: rodizio
+    alinhamento: esquerda
+    navegacao: { barra: true, arraste: true, contador: true }
+    fundos: [escuro, claro, escuro, claro, escuro, acento]
+    laminas: { min: 5, max: 10 }
+  fixados: { apresentacao: capa-cartilha, metodo: miolo-cartilha-abaixo, contratar: fecho-cartao-visual }
+  reels: { modelo: cartilha, capa: capa-cartilha }
+tratamentos: { destaque: cor, foto: sem-foto, textura: nenhuma, grafismo: numero-em-circulo }
+kit:
+  regras:
+    - "Número grande em círculo em cada passo, sempre no mesmo lugar."
+    - "Um mockup por passo, alternando o lado."
+    - "Destaque em pílula amarela; ideal para lista e tutorial."

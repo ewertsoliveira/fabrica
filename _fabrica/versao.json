@@ -1,0 +1,19 @@
+{
+  "versao": "0.6.2",
+  "data": "2026-11-09",
+  "novidades": [
+    "A Fábrica agora tem endereço público (github.com/ewertsoliveira/fabrica): qualquer pessoa instala sem precisar de convite, e as melhorias passam a vir de lá",
+    "Instalação guiada: quem recebe a Fábrica cola um pedido na IA dela e a própria IA instala, passo a passo e em português simples, com um verificador do computador",
+    "A ferramenta de fotos realistas por IA gratuita (/imagem) agora vem junto com a Fábrica, sem instalar nada",
+    "Licença nova para o que a Fábrica criou (PolyForm Shield, com permissão para usar no seu negócio e para clientes que pagam você): proibido só vender ou revender a Fábrica. As versões até a 0.5.0 continuam sob a licença MIT",
+    "Caminho de quem está começando: a tela Começar pergunta para quem é a Fábrica (a sua marca ou os seus clientes), o que você quer criar e leva você, passo a passo, até o primeiro trabalho",
+    "Tela Sua marca: logo, cores e letras num só lugar, com histórico e botão Desfazer. Marca nova também pode nascer de um estilo da biblioteca, com as letras dele copiadas para a sua pasta",
+    "Biblioteca de 27 estilos para escolher olhando: carrossel, posts fixados, capa de Reels e vídeo de cada um, nas cores originais ou já na sua marca",
+    "Prévias na sua marca: a Fábrica prepara em segundo plano os 27 estilos com as suas cores e letras, com andamento, Pausar, Continuar e Cancelar. Estilos que a sua marca deixa difíceis de ler vêm avisados, com cores que resolvem",
+    "Laboratório de Design: as peças prontas para aprovar ou pedir ajuste, com o estilo da empresa fixo no alto",
+    "Cronograma de posts, também por empresa. Quem escolheu Meus clientes ganha o botão + Novo cliente e o seletor de empresa nas telas",
+    "Reels com o modelo do estilo da empresa: 27 modelos de vídeo, um para cada estilo, que usam as cores e as letras da marca. O vídeo feito com o modelo não tem cartão final de chamada, e a conferência só avisa disso",
+    "Estilos próprios da empresa, criados no Claude, que aparecem na biblioteca ao lado dos estilos da Fábrica",
+    "Arquivos antigos de marca, estilo e linhas são levados para a pasta de cada empresa sem perder nada; o que você personalizou é mantido"
+  ]
+}

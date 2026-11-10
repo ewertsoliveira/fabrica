@@ -1,0 +1,132 @@
+/* Base dos layouts de lâmina. Só papéis: as cores e fontes vêm do tema (marca.yaml ou sugestão do estilo) como
+   variáveis --cor-*, --fonte-* e --piso-*. Nenhum valor de empresa aqui. Medidas em px reais do canvas 1080 x 1350. */
+.lamina{position:relative;width:1080px;height:1350px;overflow:hidden;box-sizing:border-box;flex:none;
+  --pad:88px;padding:calc(var(--seg-topo) + 30px) var(--pad) calc(var(--seg-base) + 10px);
+  display:flex;flex-direction:column;gap:34px;background:var(--f);color:var(--t);font-family:var(--fonte-principal);text-align:left}
+.lamina *{box-sizing:border-box}
+.lamina > *{position:relative;z-index:2}
+
+/* fundos por papel (DG-15) */
+.fundo-escuro{--f:var(--cor-escuro);--t:var(--cor-claro);--d:color-mix(in srgb,var(--cor-acento) 80%,var(--cor-claro));--linha:color-mix(in srgb,var(--cor-claro) 18%,transparent)}
+.fundo-claro{--f:var(--cor-claro);--t:var(--cor-escuro);--d:color-mix(in srgb,var(--cor-acento) 80%,var(--cor-escuro));--linha:color-mix(in srgb,var(--cor-escuro) 14%,transparent)}
+.fundo-acento{--f:var(--cor-acento);--t:var(--sobre-acento);--d:var(--destaque-no-acento);--linha:color-mix(in srgb,var(--sobre-acento) 20%,transparent)}
+
+/* fundo nunca chapado: tom e grão (DG-13) */
+.grao{position:absolute !important;inset:0;z-index:1 !important;pointer-events:none;
+  background:radial-gradient(120% 90% at 15% 0%,color-mix(in srgb,var(--t) 4%,transparent),transparent 60%),
+    radial-gradient(color-mix(in srgb,var(--t) 9%,transparent) .8px,transparent .9px) 0 0/6px 6px}
+
+.alinha-centro{text-align:center;align-items:center}
+
+/* vozes */
+.kicker{margin:0;font:400 var(--piso-micro)/1.2 var(--fonte-mono);letter-spacing:.2em;text-transform:uppercase;color:var(--d)}
+.titulo{margin:0;font-weight:800;font-size:max(var(--piso-titulo),92px);line-height:1.04;letter-spacing:-.03em;text-wrap:balance}
+.titulo .dst,.corpo .dst{color:var(--d);font-style:inherit}
+.corpo{margin:0;font-size:var(--piso-corpo);line-height:1.38;max-width:900px;color:color-mix(in srgb,var(--t) 86%,transparent)}
+.corpo b{font-weight:700;color:var(--t)}
+.nota{font:400 64px/1 var(--fonte-acento);color:var(--d);transform:rotate(-4deg);align-self:flex-end}
+.nota::after{content:" ↓"}
+.pilula{align-self:center;padding:14px 40px;border-radius:60px;background:var(--cor-acento);color:var(--sobre-acento);font:700 var(--piso-micro)/1.2 var(--fonte-mono);letter-spacing:.04em}
+
+/* elemento visual (DG-09) */
+.vis{display:flex;justify-content:center;flex:1;min-height:0}
+.vis-mockup{overflow:hidden;align-items:flex-start;padding:24px 0}
+.vis-mockup.inclinado > *{transform:rotate(-2.5deg)}
+.vis-foto{overflow:hidden;border-radius:28px}
+.vis-foto img{width:100%;height:100%;object-fit:cover}
+.vis-numero{flex-direction:column;align-items:center;justify-content:center;color:var(--d)}
+.vis-numero b{font-size:300px;line-height:.9;font-weight:800;letter-spacing:-.05em}
+.vis-numero span{font:400 var(--piso-micro) var(--fonte-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--t)}
+
+/* capa: faixa diagonal de acento atrás do visual */
+.l-capa{justify-content:flex-end}
+.l-capa .faixa{position:absolute !important;left:-10%;right:-10%;top:34%;height:150px;background:var(--cor-acento);transform:rotate(-8deg);z-index:1 !important}
+.fundo-acento.l-capa .faixa{background:var(--cor-escuro)}
+.l-capa .vis{flex:1;min-height:0;margin:70px -20px 0}
+.l-capa .nota{position:absolute !important;right:var(--pad);top:calc(var(--seg-topo) + 24px);z-index:4 !important}
+.l-capa .titulo{font-size:max(var(--piso-titulo),104px)}
+.l-capa .corpo{align-self:stretch}
+
+/* conteúdo com o visual embaixo ou em cima (DG-17: eixo variado) */
+.l-conteudo-visual-abaixo .vis,.l-conteudo-visual-acima .vis{margin:0 -20px}
+.l-conteudo-visual-acima .vis{order:-1}
+
+/* lista numerada com numeral gigante de marca d'água */
+.l-lista-numerada .numeral{position:absolute !important;right:-30px;bottom:40px;font-size:620px;font-weight:800;line-height:.8;letter-spacing:-.06em;color:color-mix(in srgb,var(--t) 6%,transparent);z-index:1 !important}
+.l-lista-numerada .itens{display:flex;flex-direction:column;gap:22px;flex:1;justify-content:center}
+.l-lista-numerada .item{display:flex;align-items:baseline;gap:30px;padding:26px 34px;border-radius:26px;background:color-mix(in srgb,var(--t) 8%,transparent)}
+.l-lista-numerada .item:nth-child(2){margin-left:40px}.l-lista-numerada .item:nth-child(3){margin-left:80px}.l-lista-numerada .item:nth-child(4){margin-left:120px}
+.l-lista-numerada .item .num{font:500 var(--piso-corpo) var(--fonte-mono);color:var(--d)}
+.l-lista-numerada .item .txt{font-size:var(--piso-corpo);font-weight:600;line-height:1.25}
+.l-lista-numerada .item .txt small{display:block;font-size:var(--piso-micro);font-weight:400;margin-top:6px}
+
+/* fórmula */
+.l-formula .termos{flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px}
+.l-formula .termo{display:flex;align-items:center;gap:26px;padding:30px 36px;border-radius:26px;border:3px solid var(--linha);font-size:var(--piso-corpo);font-weight:700}
+.l-formula .termo .op{font:500 64px/1 var(--fonte-mono);color:var(--d);width:60px;text-align:center}
+.l-formula .termo:last-child{background:var(--cor-acento);color:var(--sobre-acento);border-color:transparent}
+.l-formula .termo:last-child .op{color:var(--sobre-acento)}
+
+/* citação */
+.l-citacao{justify-content:center}
+.l-citacao .aspas{font-size:420px;line-height:.6;font-weight:800;color:var(--d);height:220px}
+.l-citacao .frase{margin:0;font-size:max(var(--piso-titulo),84px);font-weight:700;line-height:1.1;letter-spacing:-.02em;text-wrap:balance}
+.l-citacao .autor{font:400 var(--piso-micro) var(--fonte-mono);letter-spacing:.14em;text-transform:uppercase}
+
+/* grade de duas colunas */
+.l-grade-2-colunas .grade{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-content:center}
+.l-grade-2-colunas .celula{display:flex;flex-direction:column;gap:14px;padding:34px;border-radius:28px;background:color-mix(in srgb,var(--t) 8%,transparent)}
+.l-grade-2-colunas .celula b{font:500 var(--piso-micro) var(--fonte-mono);color:var(--d);letter-spacing:.1em}
+.l-grade-2-colunas .celula span{font-size:var(--piso-corpo);font-weight:700;line-height:1.15}
+.l-grade-2-colunas .celula small{font-size:var(--piso-micro);line-height:1.3}
+
+/* comparativo em fluxo */
+.l-comparativo-fluxo .fluxo{flex:1;display:flex;flex-direction:column;justify-content:center;gap:0}
+.l-comparativo-fluxo .passo{display:flex;align-items:center;gap:28px;padding:28px 34px;border-radius:26px;background:color-mix(in srgb,var(--t) 8%,transparent);font-size:var(--piso-corpo);font-weight:600}
+.l-comparativo-fluxo .passo .num{display:flex;align-items:center;justify-content:center;width:84px;height:84px;border-radius:50%;background:var(--cor-acento);color:var(--sobre-acento);font:700 var(--piso-micro) var(--fonte-mono);flex:none}
+.l-comparativo-fluxo .seta{align-self:center;font-size:56px;line-height:1.1;color:var(--d)}
+
+/* fechamento em cartão (DG-11, DG-12) */
+.l-fecho-cartao{justify-content:center}
+.l-fecho-cartao .cartao{display:flex;flex-direction:column;gap:30px;padding:80px 76px;border-radius:44px;background:var(--cor-claro);color:var(--cor-escuro);box-shadow:0 40px 80px rgba(0,0,0,.28)}
+.fundo-claro.l-fecho-cartao .cartao{background:var(--cor-escuro);color:var(--cor-claro)}
+.l-fecho-cartao .cartao .titulo .dst,.l-fecho-cartao .cartao .kicker{color:color-mix(in srgb,var(--cor-acento) 80%,var(--cor-escuro))}
+.l-fecho-cartao .cartao .corpo{color:inherit;opacity:.85}
+.l-fecho-cartao .botao{align-self:center;margin-top:30px;padding:30px 64px;border-radius:80px;background:var(--cor-acento);color:var(--sobre-acento);font-size:var(--piso-corpo);font-weight:800;box-shadow:0 18px 40px color-mix(in srgb,var(--cor-acento) 45%,transparent)}
+.l-fecho-cartao .conta{position:absolute !important;left:var(--pad);bottom:calc(var(--seg-base) - 40px);font:700 var(--piso-micro) var(--fonte-principal)}
+
+/* navegação opcional (F-26 a F-29, F-53): só aparece se o estilo declarar */
+.nav-barra{position:absolute !important;left:var(--pad);right:var(--pad);bottom:calc(var(--seg-base) - 70px);height:6px;border-radius:3px;background:var(--linha)}
+.nav-barra i{display:block;height:100%;border-radius:3px;background:var(--t)}
+.nav-arraste{position:absolute !important;right:var(--pad);bottom:calc(var(--seg-base) - 30px);font:400 var(--piso-micro) var(--fonte-mono);opacity:.7}
+.nav-contador{position:absolute !important;right:56px;top:56px;padding:14px 22px;border-radius:40px;background:color-mix(in srgb,var(--t) 10%,transparent);font:500 var(--piso-micro) var(--fonte-mono)}
+
+/* logo da marca (DG-16): só nos pontos declarados em pecas.logo-aparece-em, sempre completa */
+.logo-marca{position:absolute !important;left:var(--pad);top:calc(var(--seg-topo) - 20px);height:72px;width:auto;max-width:300px;object-fit:contain;z-index:3 !important}
+
+/* fechamento com o elemento visual da conversa e o botão de chamada (DG-11) */
+.l-fecho-visual{gap:24px}
+.l-fecho-visual .titulo{font-size:max(var(--piso-titulo),80px)}
+.l-fecho-visual .vis{margin:0 -20px}
+.l-fecho-visual .botao{align-self:center;padding:28px 60px;border-radius:80px;background:var(--cor-acento);color:var(--sobre-acento);font-size:var(--piso-corpo);font-weight:800}
+.fundo-acento.l-fecho-visual .botao{background:var(--cor-escuro);color:var(--cor-claro)}
+.l-fecho-visual .conta{position:absolute !important;left:var(--pad);bottom:calc(var(--seg-base) - 40px);font:700 var(--piso-micro) var(--fonte-principal)}
+
+/* fechamento em cartão com o visual da conversa dentro (o estilo pinta o cartão com --cartao-f e --cartao-t) */
+.l-fecho-cartao-visual{justify-content:center;padding-top:96px}
+.l-fecho-cartao-visual .cartao{flex:1;min-height:0;display:flex;flex-direction:column;gap:16px;margin:0 -44px;padding:44px 52px 40px;border-radius:var(--raio-cartao,40px);
+  --f:var(--cartao-f,var(--cor-claro));--t:var(--cartao-t,var(--cor-escuro));--d:color-mix(in srgb,var(--cor-acento) 80%,var(--t));background:var(--f);color:var(--t);box-shadow:var(--cartao-sombra,0 40px 80px rgba(0,0,0,.25))}
+.l-fecho-cartao-visual .cartao .titulo{font-size:max(var(--piso-titulo),74px)}
+.l-fecho-cartao-visual .cartao .corpo{color:color-mix(in srgb,var(--t) 86%,transparent)}
+.l-fecho-cartao-visual .cartao .vis{margin:0}
+.l-fecho-cartao-visual .botao{align-self:center;padding:26px 56px;border-radius:var(--raio-botao,80px);background:var(--cor-acento);color:var(--sobre-acento);font-size:var(--piso-corpo);font-weight:800}
+.l-fecho-cartao-visual .conta{position:absolute !important;left:var(--pad);bottom:calc(var(--seg-base) - 40px);font:700 var(--piso-micro) var(--fonte-principal)}
+
+/* formatos de peça: post fixado 3:4 e capa de Reels 9:16 (V-04: o que importa fica entre y 250 e 1520, longe da coluna
+   de botões à direita); o carrossel usa o canvas.feed. No CSS, a faixa de baixo tem 30 a 40 px a mais que a do
+   conferidor: em fonte de entrelinha apertada, a caixa do texto passa um pouco da linha */
+.lamina.formato-fixados{height:1440px;--seg-base:170px}
+.lamina.formato-reels{height:1920px;--seg-topo:250px;--seg-base:440px;padding-right:calc(var(--pad) + 50px)}
+/* no fixado de apresentação e na capa de Reels, a foto do visual ocupa o espaço livre (no carrossel, o estilo decide) */
+.lamina.formato-fixados.papel-capa:not(.est-palco) .vis-foto,.lamina.formato-reels.papel-capa:not(.est-palco) .vis-foto{flex:1 1 auto;align-self:stretch;width:auto;margin-left:0;margin-right:0;border-radius:24px;overflow:hidden}
+.lamina.formato-fixados.papel-capa:not(.est-palco) .vis-foto img,.lamina.formato-reels.papel-capa:not(.est-palco) .vis-foto img{object-fit:cover;object-position:50% 25%}

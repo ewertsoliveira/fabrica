@@ -1,0 +1,24 @@
+[
+  {
+    "visual": {
+      "tipo": "janelas",
+      "itens": [
+        {
+          "nome": "retrato.jpg",
+          "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/retrato-sentada.jpg"
+        },
+        {
+          "nome": "lanche.jpg",
+          "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/maca-amendoim.jpg"
+        },
+        {
+          "nome": "cafe.jpg",
+          "foto": "04-LABORATORIO-DE-DESIGN/estilos/_demo/fotos/xicara.jpg"
+        }
+      ]
+    },
+    "palavra": "treino",
+    "kicker": "Reels · nutrição",
+    "titulo": "O que comer *antes do treino*"
+  }
+]
