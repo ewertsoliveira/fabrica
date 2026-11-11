@@ -1,7 +1,8 @@
 {
-  "versao": "0.6.2",
-  "data": "2026-11-09",
+  "versao": "0.6.3",
+  "data": "2026-11-11",
   "novidades": [
+    "Instalação guiada mais respeitosa: a IA agora pergunta onde e com que nome guardar a Fábrica, e só avisa (com o motivo) quando o nome da pasta tem acento, que atrapalha apenas os vídeos",
     "A Fábrica agora tem endereço público (github.com/ewertsoliveira/fabrica): qualquer pessoa instala sem precisar de convite, e as melhorias passam a vir de lá",
     "Instalação guiada: quem recebe a Fábrica cola um pedido na IA dela e a própria IA instala, passo a passo e em português simples, com um verificador do computador",
     "A ferramenta de fotos realistas por IA gratuita (/imagem) agora vem junto com a Fábrica, sem instalar nada",

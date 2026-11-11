@@ -26,6 +26,9 @@ fosse o primeiro contato dela com um computador, sem nunca fazê-la se sentir le
 10. **Se ela colar o pedido de novo** (por exemplo depois de fechar e abrir a ferramenta), recomece do Passo 1: tudo que já
     estiver pronto é pulado. Diga "já vi que parte está pronta, vou continuar de onde paramos".
 11. **Descubra o sistema sozinho** (Windows, Mac ou Linux) e não pergunte. Use só os comandos do sistema dela.
+12. **Nunca decida nada por ela em silêncio.** O que mexe em algo dela (onde guardar, que nome dar, o que instalar) é
+    pergunta, com a sua recomendação e o motivo, antes de agir. Se precisar fugir do que ela imagina, diga o porquê
+    **antes**, e não depois que ela perceber.
 
 ## Passo 0: Receber a pessoa
 
@@ -58,11 +61,22 @@ Rode `node --version` e `git --version`. Eles precisam existir, e o Node precisa
 
 ## Passo 2 de 5: Baixar a Fábrica
 
-1. Escolha a pasta, sem perguntar: crie uma pasta chamada `Fabrica-de-Conteudo` **sem acento e sem espaço** dentro da
-   pasta pessoal da pessoa (no Windows, `C:\Users\<nome>`). Se o nome do usuário tiver acento ou espaço, use
-   `C:\Fabrica-de-Conteudo` (no Mac e no Linux, a pasta pessoal). A Fábrica usa programas que não aceitam acento no caminho.
-2. Se a pasta atual já for uma Fábrica (existir `_fabrica/modelo.json`), pule para o Passo 3.
-3. Baixe: `git clone <endereço que a pessoa colou> <pasta>`. Diga: "Estou baixando a Fábrica. Pode demorar um pouquinho."
+1. Se a pasta atual já for uma Fábrica (existir `_fabrica/modelo.json`), pule para o Passo 3.
+2. **Pergunte onde e com que nome guardar a Fábrica. A escolha é da pessoa, nunca sua.** Uma pergunta por vez:
+   - **Lugar.** Diga: "Onde você quer guardar a Fábrica? (1) Numa pasta nova que eu crio para você (recomendo, é o mais
+     simples) (2) Dentro de uma pasta que você já usa". Se ela já abriu uma pasta na ferramenta (por exemplo a de um
+     cliente), cite-a pelo nome: "Vi que você está com a pasta X aberta. Quer que a Fábrica fique dentro dela?".
+   - **Nome.** Diga: "Que nome você quer dar à pasta da Fábrica? Pode ser o que preferir. Se não souber, sugiro
+     **Fabrica-de-Conteudo**." Aceite o nome que ela der.
+   - Na opção 1, crie a pasta dentro da pasta pessoal dela (Windows: `C:\Users\<nome>`; Mac e Linux: a pasta pessoal).
+3. **Confira o endereço completo da pasta escolhida** (o lugar mais o nome). Os programas de vídeo da Fábrica não
+   funcionam quando o endereço tem **acento** (á, ã, ç, é...), e é melhor evitar espaço. Isso afeta só os vídeos (Reels):
+   carrosséis, posts e capas funcionam do mesmo jeito. Se o endereço tiver acento ou espaço, **explique antes de seguir,
+   em palavras simples**: "O endereço dessa pasta tem acento (ou espaço). Para fotos, carrosséis e posts isso não
+   atrapalha. Só os vídeos (Reels) podem não funcionar. Você prefere: (1) Manter assim, não vou fazer vídeos (2) Que eu
+   sugira um nome parecido, sem acento, para os vídeos funcionarem". Respeite a resposta. **Nunca troque o lugar ou o
+   nome que ela escolheu sem ela saber.**
+4. Baixe: `git clone <endereço que a pessoa colou> <pasta>`. Diga: "Estou baixando a Fábrica. Pode demorar um pouquinho."
 
 **Se pedir login ou negar acesso** ("authentication", "not found", "403", uma janela do GitHub abrindo): a Fábrica fica
 num site chamado GitHub, e esta cópia só abre para quem foi convidado.
@@ -94,11 +108,13 @@ Fábrica**. Este é o único passo difícil para quem usa pouco o computador, en
 
 1. Abra a pasta na tela da pessoa (Windows: `explorer "<pasta>"`; Mac: `open "<pasta>"`) e diga o caminho completo.
 2. Diga: "Agora vou pedir uma coisa importante. **Feche esta janela da ferramenta e abra de novo**, só que desta vez
-   escolhendo a pasta **Fabrica-de-Conteudo** (que acabei de abrir na sua tela). Na ferramenta, procure o botão **Abrir
-   pasta** (ou *Open folder*), clique nele e escolha essa pasta."
-3. Diga como saber que deu certo: "O nome **Fabrica-de-Conteudo** aparece no alto da janela."
+   escolhendo a pasta **<nome que a pessoa escolheu>** (que acabei de abrir na sua tela). Na ferramenta, procure o botão
+   **Abrir pasta** (ou *Open folder*), clique nele e escolha essa pasta."
+3. Diga como saber que deu certo: "O nome **<nome da pasta>** aparece no alto da janela."
 4. Peça que, na janela nova, ela escreva exatamente: **/fabrica** e aperte Enter. Diga que dali em diante a própria
    Fábrica conversa com ela.
+
+Mesmo que a Fábrica esteja dentro de outra pasta, a ferramenta precisa ser aberta na pasta da própria Fábrica: avise isso.
 
 Se a ferramenta dela não tiver o botão ou ela se perder, ofereça a alternativa: "Se preferir, eu abro para você" e, se a
 ferramenta tiver um comando para isso (por exemplo `code "<pasta>"` no VS Code), use-o.
