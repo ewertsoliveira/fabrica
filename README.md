@@ -12,8 +12,10 @@ em português simples. **Você não precisa ler nenhum arquivo.**
 
 ```
 Instale a Fábrica de Conteúdo no meu computador. Me guie passo a passo, em português simples, como se eu nunca tivesse
-usado um computador. O endereço é: https://github.com/ewertsoliveira/fabrica.git
-Baixe a Fábrica, abra o arquivo INSTALAR.md e siga o roteiro. Se faltar o Git, comece me ajudando a instalá-lo.
+usado um computador. O endereço da Fábrica é: https://github.com/ewertsoliveira/fabrica.git
+ANTES de baixar qualquer coisa, leia o roteiro de instalação neste link e siga-o à risca:
+https://raw.githubusercontent.com/ewertsoliveira/fabrica/main/INSTALAR.md
+Não baixe a Fábrica nem crie nenhuma pasta antes de eu escolher onde guardá-la.
 ```
 
 Depois de instalada, comece por [`CORE.md`](./CORE.md). A origem e a licença estão em [`NOTICE.md`](./NOTICE.md) e

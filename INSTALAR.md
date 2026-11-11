@@ -29,6 +29,10 @@ fosse o primeiro contato dela com um computador, sem nunca fazê-la se sentir le
 12. **Nunca decida nada por ela em silêncio.** O que mexe em algo dela (onde guardar, que nome dar, o que instalar) é
     pergunta, com a sua recomendação e o motivo, antes de agir. Se precisar fugir do que ela imagina, diga o porquê
     **antes**, e não depois que ela perceber.
+13. **Não baixe a Fábrica antes de ler este roteiro até o Passo 2 e de a pessoa escolher o lugar e o nome da pasta.** Se
+    você só conseguiu ler este arquivo depois de já ter baixado (por exemplo, porque o pedido dela mandava baixar
+    primeiro), não finja que foi de propósito: diga "Eu já baixei uma cópia em tal lugar, mas deveria ter perguntado
+    antes", pergunte onde ela quer guardar a Fábrica e mova a cópia (sem apagar nada que ela já tinha).
 
 ## Passo 0: Receber a pessoa
 
