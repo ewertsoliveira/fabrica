@@ -1,7 +1,10 @@
 {
-  "versao": "0.7.0",
-  "data": "2026-11-11",
+  "versao": "0.7.1",
+  "data": "2026-11-12",
   "novidades": [
+    "Programas de vídeo instalados junto com a Fábrica, sempre na versão mais nova (ffmpeg, Tesseract, transcrição da fala e os modelos): nenhuma linha para no meio por falta de programa, e cada Reels confere e atualiza tudo antes de começar",
+    "Contas primeiro: todo login e cadastro (inclusive a chave gratuita das fotos sem marca d'água) acontece na instalação, antes de qualquer trabalho",
+    "Correção: os modelos de vídeo com textura (Luz de Vela, Adesivo, Caderno, Recorte, Retrô, Visor e os vindos do carrossel) não falham mais numa instalação nova",
     "Post estático de feed: a Fábrica agora monta post de uma imagem só, no tamanho do feed, em qualquer estilo da biblioteca, com o mesmo conferidor de qualidade dos carrosséis",
     "Ao montar uma linha, a Fábrica pede a sua identidade visual antes de mostrar os estilos, e mostra os estilos na tela Estilos, com o original e a sua marca lado a lado, inclusive o vídeo de cada um",
     "Instalação guiada: a IA lê o programa de instalação antes de rodar e, se a ferramenta pedir permissão, só pede à pessoa o clique em Permitir, em vez de deixá-la escolher entre opções técnicas",

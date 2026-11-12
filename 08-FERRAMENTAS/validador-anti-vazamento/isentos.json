@@ -556,5 +556,8 @@
   ],
   "README.md": [
     "url"
+  ],
+  "_fabrica/core/ferramentas.js": [
+    "url"
   ]
 }
