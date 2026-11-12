@@ -33,8 +33,8 @@ O que você pediu precisa do agente (por exemplo, criar a marca do zero, ler o m
 ## O que ele faz, em 3 passos
 
 1. **Os posts do mês aparecem dia a dia**, na ordem em que vão ao ar.
-2. **Veja cada post:** a legenda e a arte dele (aprovada ou ainda aguardando aprovação).
-3. **Copie a legenda** direto da tela, na hora de publicar.
+2. **Veja a arte de cada post:** as lâminas do carrossel, a capa e o vídeo aparecem no próprio post. Toque numa imagem para ver em tamanho grande (com setas para passar) e use os botões para baixar a imagem, todas as imagens de uma vez (num ZIP, com a legenda) ou o vídeo.
+3. **Copie o que precisar:** em "Roteiro e legenda", cada campo tem o seu botão de copiar. No vídeo são quatro: o roteiro falado (para gravar), a descrição visual, o roteiro com descrição visual (para colar no agente de edição do vídeo) e a legenda (para publicar).
 
 ## Enviar ao cliente
 
@@ -43,6 +43,7 @@ O botão **Enviar ao cliente** cria um arquivo só com os posts da empresa que e
 1. Antes de criar, o sistema confere se algum post cita o nome de outra empresa. Se citar, o arquivo **não é criado** e a tela diz qual post e qual nome. Corrija o post e tente de novo.
 2. Se estiver tudo certo, o arquivo é criado na **pasta envios da empresa**, e a tela mostra o link para abrir.
 3. Para mandar, anexe esse arquivo em um e-mail ou mensagem. Ele abre em qualquer navegador e não precisa de internet.
+4. **As artes vão dentro do arquivo:** o cliente vê cada imagem em tamanho grande, baixa as imagens e o vídeo e copia a legenda. Um vídeo grande demais vai num arquivo à parte, na mesma pasta, e a tela diz qual mandar junto.
 
 Cada envio cria um arquivo novo. Os anteriores não são apagados nem trocados.
 

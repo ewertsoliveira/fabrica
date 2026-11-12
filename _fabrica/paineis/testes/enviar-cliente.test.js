@@ -109,9 +109,17 @@ t('o arquivo da aurora tem os posts dela, as cores dela e nenhum termo da boreal
   const normal = semAcento(html.replace(/&amp;/g, '&'));
   for (const termo of empresaMod.termos('boreal', r)) assert.ok(!normal.includes(semAcento(termo)), 'termo da boreal no arquivo: ' + termo);
   assert.ok(!html.includes('Luz natural'));
+  // o único script é o visualizador fixo da Fábrica (o mesmo em todo arquivo, sem nenhum dado), no fim da página
+  const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
+  assert.strictEqual(scripts.length, 1, 'um script só');
+  assert.strictEqual(scripts[0][0].indexOf('<script>'), 0, 'script sem src nem atributo');
+  const fixo = ['zip-simples.js', 'cliente-visor.js'].map((n) => fs.readFileSync(path.join(__dirname, '..', n), 'utf8').replace(/<\/script/gi, '<\\/script')).join('\n');
+  assert.strictEqual(scripts[0][1].trim(), fixo.trim(), 'o script é exatamente o visualizador da Fábrica');
+  for (const proibido of ['http://', 'https://', 'localhost', '/api/', 'fetch(', 'XMLHttpRequest', 'import(', 'sendBeacon', 'WebSocket']) assert.ok(!fixo.includes(proibido), 'o visualizador cita ' + proibido);
+  const semScript = html.replace(scripts[0][0], '');
   // só o que é do post: nada interno, nada deste computador, nada que dependa do servidor
   for (const interno of ['a-post-1', 'a-peca-1', 'roteiro interno', 'dica interna', 'empresas/', 'publicacoes', r, r.split(path.sep).join('/'), os.homedir(), 'localhost', '/api/', '<script', 'http://', 'https://', '<link']) {
-    assert.ok(!html.includes(interno), 'o arquivo do cliente cita ' + interno);
+    assert.ok(!semScript.includes(interno), 'o arquivo do cliente cita ' + interno);
   }
   for (const palavra of ['gaveta', 'disposicao', 'indice', 'legado']) assert.ok(!semAcento(html).includes(palavra), 'palavra interna: ' + palavra);
   assert.ok(/<style>/.test(html), 'estilo dentro do próprio arquivo');
@@ -301,6 +309,86 @@ t('empresa inválida, sem posts ou com arquivo quebrado: nada é gerado', async 
   for (const c of ['aurora', 'boreal', 'cedro']) assert.deepStrictEqual(listaEnvios(r, c), [], c);
   assert.ok(!fs.existsSync(path.join(r, 'empresas', '..', 'envios')));
   assert.deepStrictEqual(fs.readdirSync(tmp), []);
+});
+
+// ---------- a arte dentro do arquivo ----------
+
+// Arquivos "de imagem" e "de vídeo" com conteúdo próprio (o arquivo do cliente só os carrega em base64).
+const escBin = (r, rel, conteudo) => { const arq = path.join(r, ...rel.split('/')); fs.mkdirSync(path.dirname(arq), { recursive: true }); fs.writeFileSync(arq, conteudo); };
+const b64 = (s) => Buffer.from(s).toString('base64');
+
+function raizComArte() {
+  const r = raizDuas();
+  const c = dados.caminhos(r, 'aurora');
+  // carrossel do post de 12/11, ainda sem aprovação: as lâminas na pasta de entrega, fora de ordem alfabética
+  for (const n of ['lamina-01', 'lamina-02', 'lamina-10']) escBin(r, `empresas/aurora/saidas/c2/entrega/${n}.png`, 'PNG ' + n);
+  escBin(r, 'empresas/aurora/saidas/c2/entrega/miniaturas-100px.png', 'PNG miniaturas');
+  esc(r, 'empresas/aurora/saidas/c2/preview.html', '<!doctype html>');
+  // vídeo do post de 01/12 e uma imagem da boreal que um post da aurora tenta usar
+  escBin(r, 'empresas/aurora/saidas/v3/reels.mp4', 'MP4 do reels da aurora');
+  escBin(r, 'empresas/boreal/saidas/x/segredo.png', 'PNG da boreal');
+  const pecas = dados.lerJson(c.pecas, []);
+  pecas.push({ id: 'a-peca-2', name: 'Carrossel: água', path: 'empresas/aurora/saidas/c2/preview.html', pasta: 'empresas/aurora/saidas/c2/entrega', tipo: 'carrossel', postId: 'a-post-2' });
+  pecas.push({ id: 'a-peca-3', name: 'Reels: feira', path: 'empresas/aurora/saidas/v3/reels.mp4', video: 'empresas/aurora/saidas/v3/reels.mp4', tipo: 'video', postId: 'a-post-3' });
+  dados.gravarJson(c.pecas, pecas);
+  const posts = POSTS_AURORA.map((p) => (p.id === 'a-post-1' ? { ...p, images: ['empresas/boreal/saidas/x/segredo.png', '../fora.png'] } : p));
+  dados.gravarJson(c.posts, posts);
+  return r;
+}
+
+t('a arte vai dentro do arquivo: imagens na ordem das lâminas, sem miniatura, vídeo junto, nada de outra empresa', async () => {
+  const r = raizComArte();
+  const tmp = novaPasta('tmp');
+  const res = await enviarCliente().enviar({ raiz: r, empresa: 'aurora', hoje: HOJE, pastaTemporaria: tmp });
+  assert.strictEqual(res.ok, true, JSON.stringify(res));
+  assert.strictEqual(res.comArte, 2, 'o carrossel e o vídeo');
+  assert.deepStrictEqual(res.anexos, []);
+  const html = fs.readFileSync(res.arquivo, 'utf8');
+  const posicoes = ['lamina-01', 'lamina-02', 'lamina-10'].map((n) => html.indexOf(b64('PNG ' + n)));
+  assert.ok(posicoes.every((x) => x > 0), 'as três lâminas estão no arquivo');
+  assert.ok(posicoes[0] < posicoes[1] && posicoes[1] < posicoes[2], 'na ordem das lâminas (2 antes de 10)');
+  assert.ok(!html.includes(b64('PNG miniaturas')), 'a miniatura de conferência não vai');
+  assert.ok(html.includes('data:video/mp4;base64,' + b64('MP4 do reels da aurora')), 'o vídeo vai dentro');
+  assert.ok(!html.includes(b64('PNG da boreal')), 'imagem de outra empresa nunca entra');
+  for (const n of ['12-11 Água ao longo do dia - 01.png', '12-11 Água ao longo do dia - 03.png', '01-12 Feira da semana.mp4']) assert.ok(html.includes(`data-nome="${n}"`), 'nome para baixar: ' + n);
+  assert.ok(html.includes('Arte para aprovar'), 'arte pronta ainda sem aprovação');
+  assert.ok(html.includes('Arte aprovada'), 'o post aprovado continua aprovado');
+  assert.ok(!html.includes('<!--arte-'), 'nenhuma marca sobrando');
+  const semScript = html.replace(/<script>[\s\S]*<\/script>/, '');
+  for (const interno of ['empresas/', 'saidas', 'a-peca-2', 'reels.mp4', 'lamina-01.png', 'preview.html']) assert.ok(!semScript.includes(interno), 'cita ' + interno);
+  // responder pelo WhatsApp: só nos posts com arte para aprovar, com a mensagem pronta; nenhum outro link para fora
+  const zap = [...semScript.matchAll(/href="(https:\/\/[^"]*)"/g)].map((m) => m[1].replace(/&amp;/g, '&'));
+  assert.strictEqual(zap.length, 4, 'Aprovar e Pedir ajuste nos dois posts com arte para aprovar (não no aprovado)');
+  assert.ok(zap.every((u) => u.startsWith('https://api.whatsapp.com/send?text=')), zap.join('\n'));
+  assert.ok(zap.includes('https://api.whatsapp.com/send?text=' + encodeURIComponent('Aprovo o post de 12/11 (LinkedIn): Água ao longo do dia.')), zap[0]);
+  assert.ok(zap.some((u) => decodeURIComponent(u.split('text=')[1]) === 'Quero um ajuste no post de 01/12 (YouTube): Feira da semana. Ajuste que eu quero:'));
+  assert.strictEqual((semScript.match(/https?:\/\//g) || []).length, 4, 'nenhum outro endereço de fora');
+});
+
+t('a conferência lê o texto dos posts, não as imagens: o envio com arte continua recusando termo de outra empresa', async () => {
+  const r = raizComArte();
+  const c = dados.caminhos(r, 'aurora');
+  dados.gravarJson(c.posts, dados.lerJson(c.posts, []).map((p) => (p.id === 'a-post-2' ? { ...p, caption: 'Com o ateliê do farol.' } : p)));
+  const res = await enviarCliente().enviar({ raiz: r, empresa: 'aurora', hoje: HOJE, pastaTemporaria: novaPasta('tmp') });
+  assert.strictEqual(res.ok, false);
+  assert.strictEqual(res.termo, 'ateliê do farol');
+  assert.deepStrictEqual(listaEnvios(r, 'aurora'), []);
+});
+
+t('vídeo grande demais vai ao lado do arquivo, com o nome do envio, e post antigo não leva a arte', async () => {
+  const r = raizComArte();
+  const res = await enviarCliente().enviar({ raiz: r, empresa: 'aurora', hoje: '2026-11-20', pastaTemporaria: novaPasta('tmp'), limiteVideo: 5 });
+  assert.strictEqual(res.ok, true, JSON.stringify(res));
+  assert.strictEqual(res.anexos.length, 1);
+  assert.strictEqual(path.basename(res.anexos[0]), 'cronograma-aurora-2026-11-20-video-1.mp4');
+  assert.strictEqual(fs.readFileSync(res.anexos[0], 'utf8'), 'MP4 do reels da aurora');
+  const html = fs.readFileSync(res.arquivo, 'utf8');
+  assert.ok(!html.includes('data:video/mp4'), 'o vídeo não vai dentro');
+  assert.ok(html.includes('cronograma-aurora-2026-11-20-video-1.mp4'), 'o arquivo diz o nome do vídeo à parte');
+  // 12/11 é mais de 7 dias antes de 20/11: a arte do carrossel não vai
+  assert.ok(!html.includes(b64('PNG lamina-01')), 'arte de post antigo fica de fora');
+  assert.ok(html.includes('Post de mais de uma semana atrás'), 'e o arquivo explica');
+  assert.deepStrictEqual(listaEnvios(r, 'aurora'), ['cronograma-aurora-2026-11-20-video-1.mp4', 'cronograma-aurora-2026-11-20.html']);
 });
 
 // ---------- linha de comando ----------

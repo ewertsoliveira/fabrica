@@ -6,6 +6,9 @@
   "LICENSE.md": [
     "url"
   ],
+  "_fabrica/paineis/enviar-cliente.js": [
+    "url"
+  ],
   "06-MARCA-E-FOTOS/marca.exemplo.yaml": [
     "fonte"
   ],
@@ -514,7 +517,8 @@
     "hex"
   ],
   "_fabrica/paineis/testes/enviar-cliente.test.js": [
-    "hex"
+    "hex",
+    "url"
   ],
   "_fabrica/paineis/testes/biblioteca.test.js": [
     "hex"

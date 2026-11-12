@@ -112,6 +112,20 @@ t('cronograma: lê só pelo servidor, liga ao Laboratório com a mesma empresa e
   assert.ok(/'cronograma\.html\?empresa=' \+ encodeURIComponent\(/.test(ler(path.join(PAINEIS, 'laboratorio.html'))));
 });
 
+t('cronograma: a arte de cada post para ver grande e baixar, e o roteiro em campos com copiar (R-13)', () => {
+  const h = ler(path.join(PAINEIS, 'cronograma.html'));
+  assert.ok(/<script src="roteiro-video\.js"><\/script>/.test(h) && /RoteiroVideo\.camposDoPost\(p\.bruto\)/.test(h), 'os campos vêm do roteiro-video.js');
+  assert.ok(/tela\.dados\.midias/.test(h) && /dados\.json\.midias/.test(h), 'as artes vêm do /api/dados');
+  assert.ok(/<dialog class="visor" id="visor"/.test(h), 'o visualizador');
+  for (const frase of ["'Ver em tamanho grande'", "'Baixar o vídeo'", "'Baixar a imagem'", "'Baixar todas (ZIP)'", "'Baixar esta imagem'", "'Roteiro do vídeo e legenda'"]) assert.ok(h.includes(frase), 'falta ' + frase);
+  assert.ok(/'\/api\/baixar-artes\?empresa=' \+ encodeURIComponent\(seletor\.atual\(\)\)/.test(h), 'o ZIP vem do servidor, sempre com a empresa da tela');
+  assert.ok(/ArrowLeft/.test(h) && /ArrowRight/.test(h), 'setas do teclado no visualizador');
+  assert.ok(/\/\^\\\/\[\^\/\]\/\.test\(a\.url\)/.test(h), 'só endereço da própria Fábrica vira imagem ou vídeo');
+  const roteiro = require(path.join(PAINEIS, 'roteiro-video.js'));
+  const campos = roteiro.camposDoPost({ script: '0:00–0:03 Gancho: Oi.\nNa tela: SELO', caption: 'Leg.' }).map((c) => c.rotulo);
+  assert.deepStrictEqual(campos, ['Roteiro falado', 'Descrição visual', 'Roteiro com descrição visual', 'Legenda'], 'os quatro campos da R-13');
+});
+
 const ESTILOS = path.join(PAINEIS, 'estilos.html');
 // Só o código da tela (sem os comentários), para os testes que procuram uma palavra no que roda.
 const semComentarios = (h) => h.replace(/<!--[\s\S]*?-->/g, '').replace(/\/\*[\s\S]*?\*\//g, '').split('\n').map((l) => l.replace(/(^|\s)\/\/.*$/, '$1')).join('\n');
@@ -651,8 +665,10 @@ t('nenhum arquivo de dados lido por caminho e nada de fora do computador', () =>
     assert.ok(!/https?:\/\//.test(texto), `${nome} aponta para fora do computador`);
     assert.ok(!/<link[^>]+stylesheet/i.test(texto), `${nome} carrega folha de estilo de fora`);
     const scripts = [...texto.matchAll(/<script[^>]*\ssrc="([^"]+)"/g)].map((m) => m[1]);
-    // os scripts são os da própria pasta: o seletor comum e, no Laboratório e no Cronograma, o cartão do estilo (Tarefa 12)
-    const permitidos = ['empresa-seletor.js'].concat(['laboratorio.html', 'cronograma.html'].includes(nome) ? ['cartao-estilo.js'] : []);
+    // os scripts são os da própria pasta: o seletor comum e, no Laboratório e no Cronograma, o cartão do estilo (Tarefa 12);
+    // no Cronograma, também o roteiro em campos (R-13), que só monta textos
+    const permitidos = ['empresa-seletor.js'].concat(['laboratorio.html', 'cronograma.html'].includes(nome) ? ['cartao-estilo.js'] : [])
+      .concat(nome === 'cronograma.html' ? ['roteiro-video.js'] : []);
     assert.ok(scripts.every((s) => permitidos.includes(s)), `${nome} carrega script de fora: ${scripts}`);
   }
 });

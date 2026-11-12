@@ -203,7 +203,7 @@
   /* ---- calendário e lista ---- */
   .quadro {
     display: grid;
-    grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr);
+    grid-template-columns: minmax(0, 1.25fr) minmax(360px, 1fr);
     gap: 28px;
     padding: 0 28px 48px;
     align-items: start;
@@ -303,6 +303,96 @@
     overflow-wrap: anywhere;
   }
   .lista-vazia { padding: 18px; border: 1px dashed var(--linha); border-radius: 12px; color: var(--texto-2); margin: 0; }
+  .gancho { margin: 4px 0 0; font-size: 14px; color: var(--texto-2); overflow-wrap: anywhere; }
+
+  /* ---- a arte do post: miniaturas, vídeo e botões de ver e baixar ---- */
+  .arte { margin-top: 12px; padding: 10px; border-radius: 12px; background: var(--fundo-2); }
+  .arte + .arte { margin-top: 8px; }
+  .arte-cabeca { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 10px; margin: 0 0 8px; font-size: 13px; }
+  .arte-cabeca strong { font-weight: 600; overflow-wrap: anywhere; }
+  .arte-cabeca span { color: var(--texto-2); }
+  .miniaturas { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+  .miniatura {
+    position: relative; flex: none;
+    height: 140px; padding: 0; border: 1px solid var(--linha); border-radius: 6px; overflow: hidden;
+    background: var(--mesa); cursor: zoom-in;
+  }
+  .miniatura img, .miniatura video { display: block; height: 100%; width: auto; max-width: 180px; object-fit: cover; pointer-events: none; }
+  .miniatura video { width: 79px; }
+  .miniatura .num {
+    position: absolute; left: 4px; top: 4px; padding: 0 5px; border-radius: 4px;
+    font-size: 11px; font-weight: 700; background: color-mix(in srgb, var(--escuro) 72%, transparent); color: var(--sobre-escuro);
+  }
+  .miniatura .play {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    font-size: 26px; color: #fff; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+  }
+  .miniatura:hover { border-color: var(--acento); }
+  .arte-acoes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .arte-vazia { margin: 10px 0 0; padding: 10px 12px; border: 1px dashed var(--linha); border-radius: 10px; font-size: 13px; color: var(--texto-2); }
+
+  /* ---- roteiro e legenda em campos, cada um com o seu botão de copiar (R-13) ---- */
+  .roteiro { margin-top: 10px; }
+  .roteiro > summary { cursor: pointer; font-size: 14px; font-weight: 600; color: var(--texto); padding: 4px 0; }
+  .roteiro > summary span { font-weight: 500; color: var(--texto-2); }
+  .campo-roteiro { margin-top: 10px; }
+  .campo-cabeca { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .campo-cabeca h4 { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+  .campo-ajuda { margin: 2px 0 0; font-size: 12px; color: var(--texto-2); }
+  .copiar {
+    position: relative; flex: none; width: 34px; height: 34px; padding: 0;
+    border: 1px solid var(--linha); border-radius: 8px; background: var(--claro); color: var(--texto); cursor: pointer;
+  }
+  .copiar:hover { background: var(--fundo-2); border-color: var(--acento); }
+  /* o ícone: duas folhas, a de trás só com o canto aparecendo */
+  .copiar::before, .copiar::after { content: ''; position: absolute; width: 11px; height: 13px; border: 2px solid currentColor; border-radius: 3px; }
+  .copiar::before { left: 8px; top: 7px; border-right-color: transparent; border-bottom-color: transparent; }
+  .copiar::after { left: 12px; top: 11px; background: inherit; }
+  .copiar:hover::after { background: var(--fundo-2); }
+  .copiar.copiado { background: var(--acento); border-color: var(--acento); color: var(--sobre-acento); }
+  .copiar.copiado::before { content: '✓'; position: static; display: grid; place-items: center; width: auto; height: auto; border: 0; font-size: 18px; font-weight: 700; line-height: 32px; }
+  .copiar.copiado::after { display: none; }
+  .campo-texto {
+    margin: 6px 0 0; padding: 10px 12px; max-height: 320px; overflow: auto;
+    white-space: pre-wrap; overflow-wrap: anywhere;
+    font: 13.5px/1.55 var(--letra-texto); background: var(--fundo-2); border-radius: var(--raio);
+  }
+  .campo-roteiro.campo-junto .campo-texto { font-family: var(--letra-mono); font-size: 12.5px; }
+
+  /* ---- o visualizador: a arte grande, uma por vez, com setas e download ---- */
+  .visor {
+    width: min(1100px, calc(100vw - 24px)); max-width: none; height: min(92vh, 1000px); max-height: none;
+    padding: 0; border: 0; border-radius: 16px; overflow: hidden;
+    background: var(--escuro); color: var(--sobre-escuro);
+  }
+  .visor::backdrop { background: color-mix(in srgb, var(--escuro) 78%, transparent); }
+  .visor[open] { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
+  .visor-cabeca { display: flex; align-items: center; gap: 12px; padding: 12px 14px 10px 18px; }
+  .visor-titulo { flex: 1; min-width: 0; }
+  .visor-titulo h2 { margin: 0; font: 600 17px/1.25 var(--letra-titulo); overflow-wrap: anywhere; }
+  .visor-titulo p { margin: 2px 0 0; font-size: 13px; opacity: 0.75; }
+  .visor .botao { background: transparent; color: var(--sobre-escuro); border-color: color-mix(in srgb, var(--sobre-escuro) 35%, transparent); }
+  .visor .botao:hover { background: color-mix(in srgb, var(--sobre-escuro) 12%, transparent); }
+  .visor .botao-principal { background: var(--acento); border-color: var(--acento); color: var(--sobre-acento); }
+  .visor-fechar { width: 38px; height: 38px; padding: 0; justify-content: center; font-size: 20px; }
+  .visor-palco { position: relative; display: flex; align-items: center; justify-content: center; min-height: 0; overflow: hidden; padding: 0 64px; }
+  .visor-palco img, .visor-palco video { display: block; max-width: 100%; max-height: 100%; min-height: 0; object-fit: contain; border-radius: 6px; background: #000; }
+  .visor-seta {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;
+    background: color-mix(in srgb, var(--sobre-escuro) 16%, transparent); color: var(--sobre-escuro); font-size: 24px; line-height: 1;
+  }
+  .visor-seta:hover { background: color-mix(in srgb, var(--sobre-escuro) 28%, transparent); }
+  .visor-seta[disabled] { opacity: 0.25; cursor: default; }
+  .visor-seta.antes { left: 12px; }
+  .visor-seta.depois { right: 12px; }
+  .visor-rodape { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 10px 14px 14px; }
+  .visor-trilho { display: flex; gap: 6px; overflow-x: auto; min-width: 0; flex: 1 1 260px; }
+  .visor-trilho button { flex: none; height: 54px; padding: 0; border: 2px solid transparent; border-radius: 5px; overflow: hidden; background: #000; cursor: pointer; opacity: 0.6; }
+  .visor-trilho button[aria-current="true"] { border-color: var(--acento); opacity: 1; }
+  .visor-trilho img, .visor-trilho video { display: block; height: 100%; width: auto; pointer-events: none; }
+  .visor-trilho video { width: 30px; object-fit: cover; }
+  .visor-baixar { display: flex; flex-wrap: wrap; gap: 8px; }
 
   /* ---- vazio e erro ---- */
   .vazio {
@@ -342,6 +432,11 @@
     .envio { margin: 0 16px 18px; padding: 14px 16px; }
     .quadro { padding: 0 16px 36px; }
     .empresa-seletor-lista { max-width: 180px; }
+    .visor { width: 100vw; height: 100dvh; border-radius: 0; }
+    .visor-palco { padding: 0 6px; }
+    .visor-seta { width: 38px; height: 38px; font-size: 20px; }
+    .visor-seta.antes { left: 6px; }
+    .visor-seta.depois { right: 6px; }
   }
   /* Em tela estreita o calendário dá lugar à lista, que já traz tudo dia a dia. */
   @media (max-width: 640px) {
@@ -375,9 +470,11 @@
 </main>
 
 <div class="recado" id="recado" role="status" hidden></div>
+<dialog class="visor" id="visor" aria-labelledby="visor-titulo"></dialog>
 
 <script src="empresa-seletor.js"></script>
 <script src="cartao-estilo.js"></script>
+<script src="roteiro-video.js"></script>
 <script>
 'use strict';
 (function () {
@@ -515,6 +612,7 @@
       posts: lista(dados.json.posts),
       pecas: lista(dados.json.pecas),
       aprovacoes: dados.json.aprovacoes && typeof dados.json.aprovacoes === 'object' ? dados.json.aprovacoes : {},
+      midias: dados.json.midias && typeof dados.json.midias === 'object' ? dados.json.midias : {},
     };
     desenhar();
   }
@@ -534,6 +632,9 @@
     }
   }
 
+  // Um arquivo de arte vindo do servidor: nome e endereço da própria Fábrica (começa com "/", nunca de fora).
+  const arquivoOk = (a) => !!a && typeof a === 'object' && typeof a.nome === 'string' && typeof a.url === 'string' && /^\/[^/]/.test(a.url);
+
   // ---- os posts com a arte ligada a cada um ----
   // Uma peça vale para o post da aprovação dela (se aprovada) ou para o post que ela mesma indica, como no Laboratório.
   function montarPosts() {
@@ -548,11 +649,23 @@
       const reg = aprovacoes[id];
       if (reg && typeof reg === 'object' && !pecas.some((p) => p.id === id)) ligar(reg.postId, { nome: reg.nome || 'Peça aprovada', aprovadaEm: reg.aprovadoEm || '' });
     });
+    const midias = tela.dados.midias || {};
     return posts.map((p, ordem) => {
       const ligadas = artes[p.id] || [];
-      const estado = ligadas.some((a) => a.aprovadaEm !== null) ? 'ok' : ligadas.length ? 'espera' : 'sem';
+      const grupos = (Array.isArray(midias[p.id]) ? midias[p.id] : []).filter((g) => g && typeof g === 'object')
+        .map((g) => ({
+          id: typeof g.id === 'string' ? g.id : '',
+          nome: typeof g.nome === 'string' ? g.nome : 'Arte',
+          aprovada: !!g.aprovada,
+          imagens: (Array.isArray(g.imagens) ? g.imagens : []).filter(arquivoOk),
+          video: arquivoOk(g.video) ? g.video : null,
+          previa: typeof g.previa === 'string' && g.previa.startsWith('/') ? g.previa : null,
+        }));
+      const temArte = grupos.some((g) => g.imagens.length || g.video);
+      const estado = ligadas.some((a) => a.aprovadaEm !== null) ? 'ok' : ligadas.length || temArte ? 'espera' : 'sem';
       return {
-        ordem, estado, artes: ligadas,
+        ordem, estado, artes: ligadas, grupos, bruto: p, id: p.id,
+        gancho: typeof p.hook === 'string' ? p.hook.trim() : '',
         data: partesData(p.date),
         rede: (typeof p.platformLabel === 'string' && p.platformLabel.trim()) || PLATAFORMAS[p.platform] || p.platform || 'Rede a definir',
         sigla: { insta: 'IG', yt: 'YT', linkedin: 'IN', blog: 'Blog' }[p.platform] || 'Post',
@@ -652,18 +765,22 @@
   }
 
   function desenharPost(p) {
-    const arte = p.artes.length
+    // A linha "Arte: ..." só quando nenhum quadro de arte aparece (o quadro já diz o nome e se está aprovada).
+    const arte = p.artes.length && !p.grupos.some((g) => g.imagens.length || g.video || g.previa)
       ? el('p', { classe: 'post-peca' }, ['Arte: '].concat(p.artes.flatMap((a, i) => [
         i ? '; ' : '',
         el('strong', { texto: a.nome }),
         a.aprovadaEm !== null ? (dataBr(a.aprovadaEm) ? ', aprovada em ' + new Date(a.aprovadaEm).toLocaleDateString('pt-BR') : ', aprovada') : ', aguardando aprovação no Laboratório',
       ])))
-      : el('p', { classe: 'post-peca', texto: 'Ainda sem arte ligada a este post.' });
-    const legenda = p.legenda ? el('details', {}, [
-      el('summary', { texto: 'Legenda' }),
-      el('p', { classe: 'legenda', texto: p.legenda }),
-      el('button', { classe: 'botao botao-pequeno', type: 'button', texto: 'Copiar legenda', onclick: () => copiar(p.legenda) }),
-    ]) : null;
+      : null;
+    const comArte = p.grupos.filter((g) => g.imagens.length || g.video);
+    const semPrevia = p.grupos.filter((g) => !g.imagens.length && !g.video && g.previa);
+    const blocos = comArte.map((g) => desenharArte(p, g));
+    semPrevia.forEach((g) => blocos.push(el('p', { classe: 'arte-vazia' }, [
+      'A arte "' + g.nome + '" ainda não tem as imagens prontas para baixar. ',
+      el('a', { href: g.previa, target: '_blank', rel: 'noopener', texto: 'Abrir a prévia' }), '.',
+    ])));
+    if (!blocos.length) blocos.push(el('p', { classe: 'arte-vazia', texto: p.artes.length ? 'As imagens desta arte ainda não foram encontradas. Abra o Laboratório para ver a prévia.' : 'Ainda sem arte ligada a este post.' }));
     return el('li', { classe: 'post', id: 'post-' + p.ordem }, [
       el('div', { classe: 'post-data' }, p.data
         ? [el('b', { texto: String(p.data.dia) }), el('span', { texto: curto(p.data.quando) })]
@@ -671,10 +788,130 @@
       el('div', {}, [
         el('p', { classe: 'post-meta' }, [el('span', { classe: 'rede', texto: p.rede }), el('span', { classe: 'estado ' + p.estado, texto: ESTADOS[p.estado] })]),
         el('h3', { texto: p.titulo }),
+        p.gancho && p.gancho !== p.titulo ? el('p', { classe: 'gancho', texto: 'Gancho: ' + p.gancho }) : null,
         arte,
-        legenda,
-      ]),
+      ].concat(blocos, [desenharRoteiro(p)])),
     ]);
+  }
+
+  // ---- a arte: miniaturas que abrem o visualizador, e os botões de baixar ----
+  // Os itens de um grupo, na ordem: o vídeo primeiro (é a peça principal do Reels), depois as imagens.
+  const itensDe = (g) => (g.video ? [{ tipo: 'video', ...g.video }] : []).concat(g.imagens.map((i) => ({ tipo: 'imagem', ...i })));
+
+  function desenharArte(p, g) {
+    const itens = itensDe(g);
+    const imagens = g.imagens.length;
+    const resumo = [g.video ? 'vídeo' : '', imagens ? (imagens === 1 ? '1 imagem' : imagens + ' imagens') : ''].filter(Boolean).join(' e ');
+    const miniaturas = el('div', { classe: 'miniaturas' }, itens.map((it, i) => el('button', {
+      classe: 'miniatura', type: 'button', title: 'Ver ' + it.nome + ' em tamanho grande',
+      'aria-label': 'Ver ' + (it.tipo === 'video' ? 'o vídeo' : 'a imagem ' + (i + 1 - (g.video ? 1 : 0))) + ' de ' + p.titulo,
+      onclick: () => abrirVisor(p, g, i),
+    }, it.tipo === 'video'
+      ? [el('video', { src: it.url + '#t=0.5', preload: 'metadata', muted: true, playsinline: true }), el('span', { classe: 'play', 'aria-hidden': 'true', texto: '▶' })]
+      : [el('img', { src: it.url, alt: '', loading: 'lazy' }), imagens > 1 ? el('span', { classe: 'num', texto: String(i + 1 - (g.video ? 1 : 0)) }) : null])));
+    const acoes = el('div', { classe: 'arte-acoes' }, [
+      el('button', { classe: 'botao botao-pequeno', type: 'button', texto: 'Ver em tamanho grande', onclick: () => abrirVisor(p, g, 0) }),
+      g.video ? el('a', { classe: 'botao botao-pequeno', href: g.video.url, download: g.video.nome, texto: 'Baixar o vídeo' }) : null,
+      imagens === 1 ? el('a', { classe: 'botao botao-pequeno', href: g.imagens[0].url, download: nomeParaBaixar(p, g.imagens[0], 0, 1), texto: 'Baixar a imagem' }) : null,
+      imagens > 1 ? el('a', { classe: 'botao botao-pequeno', href: enderecoDoZip(p, g), download: '', texto: 'Baixar as ' + imagens + ' imagens (ZIP)' }) : null,
+      g.previa ? el('a', { classe: 'botao botao-pequeno', href: g.previa, target: '_blank', rel: 'noopener', texto: 'Prévia no Instagram' }) : null,
+      // aguardando aprovação: o atalho leva ao Laboratório da mesma empresa, onde a arte é aprovada
+      !g.aprovada && tela.temLaboratorio ? el('a', { classe: 'botao botao-pequeno', href: 'laboratorio.html?empresa=' + encodeURIComponent(seletor.atual()), texto: 'Aprovar no Laboratório' }) : null,
+    ]);
+    return el('section', { classe: 'arte', 'aria-label': 'Arte: ' + g.nome }, [
+      el('p', { classe: 'arte-cabeca' }, [el('strong', { texto: g.nome }), el('span', { texto: resumo + (g.aprovada ? ' · aprovada' : ' · aguardando aprovação') })]),
+      miniaturas,
+      acoes,
+    ]);
+  }
+
+  // O nome do arquivo baixado: "13-11 A lei nova do MEI - 02.png" (data, título e a ordem), sem caractere proibido.
+  function nomeParaBaixar(p, arq, i, total) {
+    const ext = (/\.[a-z0-9]+$/i.exec(arq.nome) || ['.png'])[0].toLowerCase();
+    const dia = p.data ? dois(p.data.dia) + '-' + dois(p.data.mes) + ' ' : '';
+    const titulo = p.titulo.replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, ' ').trim().slice(0, 60);
+    return dia + titulo + (total > 1 ? ' - ' + dois(i + 1) : '') + ext;
+  }
+
+  // O .zip com todas as imagens da arte e a legenda é montado pelo servidor, que confere que tudo é desta empresa.
+  function enderecoDoZip(p, g) {
+    return '/api/baixar-artes?empresa=' + encodeURIComponent(seletor.atual()) + '&post=' + encodeURIComponent(p.id) + '&arte=' + encodeURIComponent(g.id);
+  }
+
+  // ---- o visualizador ----
+  const visor = { p: null, g: null, i: 0 };
+  function abrirVisor(p, g, i) {
+    visor.p = p; visor.g = g; visor.i = i;
+    desenharVisor();
+    const d = $('visor');
+    if (!d.open) d.showModal();
+  }
+  function irNoVisor(passo) {
+    const total = itensDe(visor.g).length;
+    const novo = visor.i + passo;
+    if (novo < 0 || novo >= total) return;
+    visor.i = novo;
+    desenharVisor();
+  }
+  function desenharVisor() {
+    const { p, g } = visor;
+    const itens = itensDe(g);
+    const it = itens[visor.i];
+    const imagens = g.imagens.length;
+    const posImagem = it.tipo === 'imagem' ? visor.i - (g.video ? 1 : 0) : -1;
+    const contador = it.tipo === 'video' ? 'Vídeo' : imagens > 1 ? 'Imagem ' + (posImagem + 1) + ' de ' + imagens : 'Imagem';
+    const d = $('visor');
+    d.textContent = '';
+    d.appendChild(el('div', { classe: 'visor-cabeca' }, [
+      el('div', { classe: 'visor-titulo' }, [el('h2', { id: 'visor-titulo', texto: p.titulo }), el('p', { texto: g.nome + ' · ' + contador })]),
+      el('button', { classe: 'botao visor-fechar', type: 'button', 'aria-label': 'Fechar', texto: '×', onclick: () => d.close() }),
+    ]));
+    d.appendChild(el('div', { classe: 'visor-palco' }, [
+      it.tipo === 'video'
+        ? el('video', { src: it.url, controls: true, playsinline: true, preload: 'metadata' })
+        : el('img', { src: it.url, alt: p.titulo + ', ' + contador.toLowerCase() }),
+      itens.length > 1 ? el('button', { classe: 'visor-seta antes', type: 'button', 'aria-label': 'Anterior', texto: '‹', disabled: visor.i === 0, onclick: () => irNoVisor(-1) }) : null,
+      itens.length > 1 ? el('button', { classe: 'visor-seta depois', type: 'button', 'aria-label': 'Próxima', texto: '›', disabled: visor.i === itens.length - 1, onclick: () => irNoVisor(1) }) : null,
+    ]));
+    const nomeBaixar = it.tipo === 'video' ? it.nome : nomeParaBaixar(p, it, posImagem, imagens);
+    d.appendChild(el('div', { classe: 'visor-rodape' }, [
+      itens.length > 1 ? el('div', { classe: 'visor-trilho' }, itens.map((x, k) => el('button', {
+        type: 'button', 'aria-label': x.tipo === 'video' ? 'Vídeo' : 'Imagem ' + (k + 1 - (g.video ? 1 : 0)), 'aria-current': k === visor.i ? 'true' : 'false',
+        onclick: () => { visor.i = k; desenharVisor(); },
+      }, [x.tipo === 'video' ? el('video', { src: x.url + '#t=0.5', preload: 'metadata', muted: true }) : el('img', { src: x.url, alt: '' })]))) : el('div', {}),
+      el('div', { classe: 'visor-baixar' }, [
+        el('a', { classe: 'botao botao-principal', href: it.url, download: nomeBaixar, texto: it.tipo === 'video' ? 'Baixar o vídeo' : imagens > 1 ? 'Baixar esta imagem' : 'Baixar a imagem' }),
+        imagens > 1 ? el('a', { classe: 'botao', href: enderecoDoZip(p, g), download: '', texto: 'Baixar todas (ZIP)' }) : null,
+      ]),
+    ]));
+    const atual = d.querySelector('.visor-trilho [aria-current="true"]');
+    if (atual) atual.scrollIntoView({ block: 'nearest', inline: 'center' });
+  }
+  $('visor').addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); irNoVisor(-1); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); irNoVisor(1); }
+  });
+  $('visor').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.close(); }); // clique fora fecha
+  $('visor').addEventListener('close', () => { $('visor').textContent = ''; }); // para o vídeo ao fechar
+
+  // ---- roteiro e legenda: um campo por destino, cada um com o seu botão de copiar (R-13) ----
+  // O ícone de copiar (duas folhas) e o de copiado (✓) são desenhados no CSS (.copiar e .copiar.copiado).
+
+  function desenharRoteiro(p) {
+    const campos = RoteiroVideo.camposDoPost(p.bruto);
+    if (!campos.length) return null;
+    const video = campos.some((c) => c.chave === 'junto');
+    const titulo = video ? 'Roteiro do vídeo e legenda' : campos.length === 1 && campos[0].chave === 'legenda' ? 'Legenda' : 'Roteiro e legenda';
+    return el('details', { classe: 'roteiro' }, [
+      el('summary', {}, [titulo + ' ', el('span', { texto: '(' + (campos.length === 1 ? '1 campo' : campos.length + ' campos') + ' para copiar)' })]),
+    ].concat(campos.map((c) => {
+      const botao = el('button', { classe: 'copiar', type: 'button', title: 'Copiar: ' + c.rotulo.toLowerCase(), 'aria-label': 'Copiar ' + c.rotulo.toLowerCase() });
+      botao.addEventListener('click', () => copiar(c.texto, c.rotulo, botao));
+      return el('div', { classe: 'campo-roteiro campo-' + c.chave }, [
+        el('div', { classe: 'campo-cabeca' }, [el('div', {}, [el('h4', { texto: c.rotulo }), c.ajuda ? el('p', { classe: 'campo-ajuda', texto: c.ajuda }) : null]), botao]),
+        el('pre', { classe: 'campo-texto', texto: c.texto }),
+      ]);
+    })));
   }
 
   function destacar(ordem) {
@@ -685,8 +922,15 @@
     setTimeout(() => alvo.classList.remove('destaque'), 1800);
   }
 
-  async function copiar(texto) {
-    try { await navigator.clipboard.writeText(texto); recado('Legenda copiada.'); } catch (e) { recado('Não consegui copiar. Selecione a legenda e copie à mão.'); }
+  async function copiar(texto, rotulo, botao) {
+    try {
+      await navigator.clipboard.writeText(texto);
+      recado('Copiado: ' + (rotulo || 'Legenda').toLowerCase() + '.');
+      if (botao) {
+        botao.classList.add('copiado');
+        setTimeout(() => botao.classList.remove('copiado'), 1800);
+      }
+    } catch (e) { recado('Não consegui copiar. Selecione o texto e copie à mão.'); }
   }
 
   // ---- enviar ao cliente ----
@@ -709,7 +953,14 @@
         el('h3', { texto: 'Cronograma pronto para o cliente' }),
         el('p', {}, ['Arquivo: ', el('a', { href: e.endereco, target: '_blank', rel: 'noopener', texto: nome })]),
         el('p', {}, ['O arquivo está em ', el('span', { classe: 'caminho', texto: pasta }), '.']),
-        el('p', { classe: 'discreto', texto: 'É um arquivo só, com os posts e as cores de ' + seletor.nome() + '. Mande para o cliente: ele abre em qualquer navegador.' }),
+        el('p', { classe: 'discreto', texto: 'É um arquivo só, com os posts e as cores de ' + seletor.nome()
+          + (e.comArte ? ', e as artes de ' + (e.comArte === 1 ? '1 post' : e.comArte + ' posts') + ' dentro dele, para o cliente ver em tamanho grande e baixar' : '')
+          + (e.megas ? ' (' + String(e.megas).replace('.', ',') + ' MB)' : '') + '. Mande para o cliente: ele abre em qualquer navegador.' }),
+        e.anexos.length ? el('p', {}, [
+          el('strong', { texto: 'Mande junto: ' }),
+          e.anexos.map((a) => a.split(/[\\/]/).pop()).join(', '),
+          ' (vídeo grande demais para ir dentro do arquivo; está na mesma pasta).',
+        ]) : null,
       ]),
       el('a', { classe: 'botao', href: e.endereco, target: '_blank', rel: 'noopener', texto: 'Abrir o arquivo' }),
     ]);
@@ -728,7 +979,11 @@
     if (r === null || seletor.atual() !== codigo) return; // a pessoa trocou de empresa: a tela já é de outra
     tela.enviando = false;
     tela.envio = r && r.ok
-      ? { ok: true, arquivo: String(r.json.arquivo || ''), endereco: String(r.json.endereco || '') }
+      ? {
+        ok: true, arquivo: String(r.json.arquivo || ''), endereco: String(r.json.endereco || ''),
+        comArte: Number(r.json.comArte) || 0, megas: Number(r.json.megas) || 0,
+        anexos: Array.isArray(r.json.anexos) ? r.json.anexos.filter((a) => typeof a === 'string') : [],
+      }
       : { ok: false, erro: erroDe(r) };
     desenhar();
     if (tela.envio.ok) recado('Arquivo do cliente pronto.');

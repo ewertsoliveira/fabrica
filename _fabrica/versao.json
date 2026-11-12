@@ -1,7 +1,11 @@
 {
-  "versao": "0.7.3",
+  "versao": "0.8.0",
   "data": "2026-11-12",
   "novidades": [
+    "Cronograma com a arte de cada post: lâminas, capa e vídeo aparecem no próprio post, abrem em tamanho grande e baixam uma a uma, todas de uma vez (num ZIP, com a legenda) ou o vídeo",
+    "Cronograma com o roteiro em campos, cada um com o seu botão de copiar: no vídeo, o roteiro falado, a descrição visual, o roteiro com descrição visual (para colar no agente de edição) e a legenda",
+    "Enviar ao cliente leva as artes dentro do arquivo: o cliente vê cada imagem em tamanho grande, baixa as imagens e o vídeo e copia a legenda, sem precisar de outro arquivo",
+    "No arquivo do cliente, cada post com arte para aprovar ganha os botões Aprovar e Pedir ajuste, que abrem o WhatsApp com a mensagem pronta",
     "A Fábrica agora explica o que vai fazer antes de fazer: o que vai acontecer, por que, com o quê, o que você vai ver e o que vai decidir, sem nomes internos como \"quadros A/B/C\", \"modelo de edição\" ou \"camada de produção\". Vale para todas as linhas, inclusive as que você criar",
     "Reels (e toda peça com visual): antes de qualquer prévia, a Fábrica mostra o que a sua empresa já tem de identidade visual (cores, letras, logo, estilo e peças já feitas) e pergunta se o vídeo vai usar essa identidade, com uma recomendação. Toda prévia diz se está com as suas cores e letras",
     "Programas de vídeo instalados junto com a Fábrica, sempre na versão mais nova (ffmpeg, Tesseract, transcrição da fala e os modelos): nenhuma linha para no meio por falta de programa, e cada Reels confere e atualiza tudo antes de começar",

@@ -351,6 +351,9 @@ function dadoDeArquivo(abs) {
   return `data:${tipo};base64,${buf.toString('base64')}`;
 }
 const caminhoAbsoluto = (arquivo) => (path.isAbsolute(arquivo) ? arquivo : path.join(marca.RAIZ, arquivo));
+// A logo que vem do marca.yaml é relativa à pasta da empresa (gaveta) ou à raiz (pasta antiga): quem resolve é o
+// marca.caminho, como as letras. A logo passada em `opcoes.logo` continua relativa à raiz.
+const caminhoDaLogo = (arquivo, opcoes) => (opcoes.logo !== undefined ? caminhoAbsoluto(arquivo) : (marca.caminho(arquivo) || caminhoAbsoluto(arquivo)));
 function srcFoto(arquivo, opcoes) {
   if (!arquivo) return '';
   if (/^(https?:|data:|file:)/.test(arquivo)) return arquivo;
@@ -431,7 +434,7 @@ function lamina(estilo, conteudo, ctx, opcoes = {}) {
   const logoArq = opcoes.logo !== undefined ? opcoes.logo : marca.pega('pecas.logo', '');
   const pontos = opcoes.logoAparece || marca.pega('pecas.logo-aparece-em', ['capa', 'fecho']);
   const logo = logoArq && pontos.includes(ctx.papel)
-    ? `<img class="logo-marca" src="${/^data:/.test(logoArq) ? logoArq : (opcoes.embutir ? dadoDeArquivo(caminhoAbsoluto(logoArq)) : pathToFileURL(caminhoAbsoluto(logoArq)).href)}" alt="">` : '';
+    ? `<img class="logo-marca" src="${/^data:/.test(logoArq) ? logoArq : (opcoes.embutir ? dadoDeArquivo(caminhoDaLogo(logoArq, opcoes)) : pathToFileURL(caminhoDaLogo(logoArq, opcoes)).href)}" alt="">` : '';
   // barra, arraste e contador são do carrossel: o post fixado e a capa de Reels são peças de uma lâmina só
   const nav = formato === 'carrossel' ? car.navegacao : {};
   const fim = ctx.indice === ctx.total - 1;

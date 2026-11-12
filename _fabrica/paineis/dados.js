@@ -153,7 +153,7 @@ function validarPost(p) {
   if (!texto(p.date) || !dataValida(p.date)) erros.push('date: obrigatória, no formato AAAA-MM-DD (por exemplo 2026-10-16)');
   if (!PLATAFORMAS.includes(p.platform)) erros.push(`platform: obrigatória, uma destas: ${PLATAFORMAS.join(', ')}`);
   if (!texto(p.title)) erros.push('title: obrigatório (texto)');
-  for (const campo of ['week', 'dateLabel', 'platformLabel', 'cta', 'hook', 'previewUrl', 'script', 'caption', 'tips', 'presenter']) {
+  for (const campo of ['week', 'dateLabel', 'platformLabel', 'cta', 'hook', 'previewUrl', 'script', 'caption', 'tips', 'presenter', 'video', 'cabecalho', 'geral']) {
     if (p[campo] !== undefined && typeof p[campo] !== 'string') erros.push(`${campo}: precisa ser texto`);
   }
   if (p.images !== undefined && (!Array.isArray(p.images) || p.images.some((n) => typeof n !== 'string'))) erros.push('images: precisa ser uma lista de textos');
@@ -161,4 +161,4 @@ function validarPost(p) {
   return erros;
 }
 
-module.exports = { raiz, caminhos, lerJson, gravarJson, TIPOS, PLATAFORMAS, validarPeca, validarPost, pertenceAEmpresa };
+module.exports = { raiz, caminhos, lerJson, gravarJson, TIPOS, PLATAFORMAS, validarPeca, validarPost, pertenceAEmpresa, caminhoRelativoSeguro };

@@ -9,6 +9,9 @@
 // Toda resposta de /api devolve "empresa" (o código a que o pedido se referiu, ou null), para a tela descartar uma
 // resposta que chegou depois de a pessoa já ter trocado de empresa.
 //
+// O Cronograma com as artes: GET /api/dados traz `midias` (as imagens, o vídeo e a prévia de cada post, só arquivos da
+// empresa, ver midias.js) e GET /api/baixar-artes?empresa=&post=&arte= devolve o .zip com as imagens de uma arte e a legenda.
+//
 // O caminho do usuário (etapa 8), sempre para a empresa do pedido e sem gravar ativa.json:
 //   GET  /api/caminho?empresa=   { para, intencao, marca: { definida, origem }, estilo: { id, nome } | null, pendentes, passo }
 //   GET  /api/pedidos?empresa=   { pedidos: [{ tipo (em palavras), dataLocal, estado, resumo, estilo (nome) }], ilegiveis } (nunca o nome do
@@ -76,6 +79,7 @@ const MIME_TYPES = {
   '.zip': 'application/zip',
   '.mp4': 'video/mp4',
   '.webm': 'video/webm',
+  '.mov': 'video/quicktime',
   '.wasm': 'application/wasm',
 };
 
@@ -1130,10 +1134,14 @@ const rotasGet = {
   '/api/dados': (r, url, ctx) => {
     ctx.codigo = empresaDoPedido(r, empresaDaUrl(url));
     const c = caminhos(r, ctx.codigo);
+    const pecas = lerLista(c.pecas, [], 'lista');
+    const aprovacoes = lerLista(c.aprovacoes, {}, 'objeto');
+    const posts = lerLista(c.posts, [], 'lista');
     return {
-      pecas: lerLista(c.pecas, [], 'lista'), aprovacoes: lerLista(c.aprovacoes, {}, 'objeto'),
-      posts: lerLista(c.posts, [], 'lista'), config: lerLista(c.config, CONFIG_PADRAO, 'objeto'),
+      pecas, aprovacoes, posts, config: lerLista(c.config, CONFIG_PADRAO, 'objeto'),
       publicacoes: path.relative(r, c.publicacoes).split(path.sep).join('/'),
+      // as artes de cada post (imagens, vídeo e prévia), só arquivos desta empresa que existem (midias.js)
+      midias: require('./midias').midiasDosPosts(r, ctx.codigo, { posts, pecas, aprovacoes }),
     };
   },
 };
@@ -1146,6 +1154,34 @@ function rotaGet(r, url, res) {
     return jsonRes(res, 200, corpo, ctx.codigo);
   } catch (e) {
     return responderErro(res, e, ctx.codigo);
+  }
+}
+
+// ---- Baixar as imagens de uma arte num .zip (botão "Baixar as N imagens" do Cronograma) ----
+// GET /api/baixar-artes?empresa=<codigo>&post=<id do post>&arte=<id da arte, como em /api/dados midias>
+// Devolve o .zip (imagens com nome legível e a legenda) para o navegador baixar. Só arquivos da empresa do pedido.
+function rotaBaixarArtes(r, url, res) {
+  let codigo = null;
+  try {
+    codigo = empresaDoPedido(r, empresaDaUrl(url));
+    const q = new URLSearchParams(url.split('?')[1] || '');
+    const postId = q.get('post');
+    const arteId = q.get('arte');
+    if (!postId || !arteId || q.getAll('post').length > 1 || q.getAll('arte').length > 1) throw recusa(400, 'Diga o post e a arte.');
+    const c = caminhos(r, codigo);
+    const listas = { posts: lerLista(c.posts, [], 'lista'), pecas: lerLista(c.pecas, [], 'lista'), aprovacoes: lerLista(c.aprovacoes, {}, 'objeto') };
+    const zip = require('./midias').zipDaArte(r, codigo, listas, postId, arteId);
+    if (!zip) throw recusa(404, 'Não encontrei as imagens desta arte. Recarregue a página.');
+    res.writeHead(200, {
+      'Content-Type': 'application/zip',
+      'Content-Length': zip.dados.length,
+      'Content-Disposition': `attachment; filename="artes.zip"; filename*=UTF-8''${encodeURIComponent(zip.nome)}`,
+      'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff',
+    });
+    return res.end(zip.dados);
+  } catch (e) {
+    return responderErro(res, e, codigo);
   }
 }
 
@@ -1310,6 +1346,7 @@ function criarServidor(r, opcoes = {}) {
     if (req.method === 'POST' && Object.prototype.hasOwnProperty.call(ROTAS_DO_CAMINHO, url)) return rotaDoCaminho(r, req, res, opcoes, url);
     if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405, { 'Content-Type': 'text/plain; charset=utf-8' }); return res.end('405 Método não aceito'); }
 
+    if (url === '/api/baixar-artes') return rotaBaixarArtes(r, req.url, res);
     if (Object.prototype.hasOwnProperty.call(rotasGet, url)) return rotaGet(r, req.url, res);
     if (url === '/' || url === '') {
       let destino;
