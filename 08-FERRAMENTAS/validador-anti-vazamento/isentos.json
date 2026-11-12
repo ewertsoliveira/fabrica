@@ -494,6 +494,10 @@
     "hex",
     "url"
   ],
+  "_fabrica/core/identidade.test.js": [
+    "hex",
+    "fonte"
+  ],
   "_fabrica/paineis/modelos/Abrir Laboratório de Design.bat": [
     "handle"
   ],

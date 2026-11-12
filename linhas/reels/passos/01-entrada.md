@@ -18,11 +18,13 @@ Nada de vídeo começa com programa faltando ou velho, e nenhum login ou cadastr
 1. Rodar `node _fabrica/core/ambiente.js` e `node _fabrica/core/ferramentas.js --verificar`.
 2. Se algo do grupo "Para Reels (vídeo)" faltar, ou o `--verificar` disser **PRECISA**, rodar
    `node _fabrica/core/ferramentas.js` (instala e atualiza ffmpeg, Tesseract, whisper e modelos para a versão mais nova;
-   nenhum desses downloads pede login) **antes** de seguir. Dizer o que vai baixar e pedir o "sim".
+   nenhum desses downloads pede login) **antes** de seguir. Dizer o que vai baixar em linguagem simples (L-01), por
+   exemplo: "Antes de editar, preciso atualizar os programas que cortam, legendam e montam o vídeo. São downloads
+   gratuitos, sem cadastro, e levam alguns minutos. Posso baixar?", e pedir o "sim".
 3. Se o Tesseract mudou de versão, registrar no relatório e conferir os quadros de teste antes de confiar nos modelos.
-4. Só depois da conferência passar (todos "OK") seguir para a chamada 0. Se não passar, **parar e dizer o que falta**;
-   nunca abrir a entrevista de estilo nem pedir o vídeo com o ambiente incompleto.
-5. Contas: se for preciso entrar ou criar conta em qualquer serviço, é agora, antes da chamada 0, e a pessoa entra
+4. Só depois da conferência passar (todos "OK") seguir para a abertura. Se não passar, **parar e dizer o que falta**
+   em palavras simples; nunca abrir a entrevista de estilo nem pedir o vídeo com o ambiente incompleto.
+5. Contas: se for preciso entrar ou criar conta em qualquer serviço, é agora, antes da abertura, e a pessoa entra
    sozinha no navegador (nunca pedir senha ou chave na conversa).
 
 ## Contexto para o responsável
@@ -44,26 +46,71 @@ ainda não gravou, ou que quer o texto do vídeo, avise que roteiro é outra lin
 `/fabricar` para montar uma) e pergunte se ela prefere seguir por lá. Não puxe pergunta sobre público, cuidados ou
 desenhos antes de saber que é edição e de ter o arquivo do vídeo.
 
-**Ordem do passo:** abertura, depois a chamada 1 (o vídeo), depois a chamada 0 (estilo) e só então a chamada 2. A
-numeração é histórica; a ordem acima é a que vale.
+Logo depois, diga em linguagem simples **o caminho inteiro**, para a pessoa saber o que vem (regra L-01,
+`05-ESTRATEGIA/nucleo-de-conteudo/regras/13-explicar-o-processo.md`), por exemplo: "Vai ser assim: você me passa o
+vídeo, eu te mostro a identidade visual que encontrei e você me diz se quer usar, eu preparo o vídeo e te mostro como
+vai ficar antes de montar, e no fim você aprova o vídeo pronto. Nada é publicado sem o seu OK."
 
-## Chamada 0: estilo de vídeo (uma vez por empresa; roda depois da chamada 1)
+**Ordem do passo:** pré-voo, abertura, depois a chamada 1 (o vídeo), depois a chamada de identidade visual, depois a chamada 0
+(o jeito dos vídeos) e só então a chamada 2. A numeração é histórica; a ordem acima é a que vale.
+
+**Sem nome interno com a pessoa (L-03):** nada de "chamada", "checkpoint", "quadros A/B/C", "camada de produção",
+"modelo de edição" ou nome de arquivo como explicação. As perguntas abaixo já trazem as palavras que valem.
+
+## Chamada de identidade visual (em todo vídeo; roda depois da chamada 1)
+
+Rode `node _fabrica/core/identidade.js <codigo do run>` (só lê): ele resume o que a empresa já tem (cores, letras,
+logo, estilo escolhido, peças já feitas, se o jeito dos vídeos já foi definido) e dá a recomendação. Mostre o resumo
+à pessoa como ele vem (é escrito para ela) e explique antes de perguntar, em uma ou duas frases: **"Identidade visual é
+o conjunto de cores, letras e logo que faz as suas peças serem reconhecidas como suas. Eu posso montar o vídeo com
+ela, para ficar com a mesma cara dos seus outros conteúdos."**
+
+Então **uma pergunta**, "Quer que este vídeo use a sua identidade visual?", com a recomendação em primeiro lugar:
+
+- **Já tem identidade** (recomendação `usar-identidade`):
+  1. **"Sim, usar a minha identidade" (recomendada).** Descrição: as cores e as letras do resumo, e onde já foram
+     usadas ("as mesmas dos seus 4 carrosséis"). Todas as prévias e o vídeo saem com elas.
+  2. **"Ver os estilos prontos com as cores originais deles".** Abra a tela Estilos do painel
+     (`node _fabrica/paineis/servidor.js garantir` e `estilos.html?empresa=<codigo>`), onde cada estilo aparece no
+     original e na sua marca lado a lado, com o vídeo. A pessoa escolhe um estilo e se quer as cores originais dele.
+  3. **"Ajustar a minha identidade antes".** Siga o "Fluxo de marca" da skill `fabrica` e volte a esta pergunta.
+- **Não tem identidade** (`criar-identidade` ou `usar-estilo`):
+  1. **"Criar a minha identidade agora (uns 5 minutos)" (recomendada).** Explique que ela escolhe cores e letras
+     olhando, e que a identidade vale para todos os conteúdos. Siga o "Fluxo de marca" e volte.
+  2. **"Usar um estilo pronto, com as cores dele"** (com estilo escolhido: **"Usar o estilo <nome>, com as cores
+     dele"**). Mesma tela Estilos do item 2 acima. Avise que dá para transformar o estilo na identidade da empresa
+     depois.
+
+Grave a resposta em `entrada.md` (campo **Identidade visual**). Daqui em diante, **toda prévia diz em uma frase o que
+está usando** ("estas imagens já estão com as suas cores e letras" ou "estas estão com as cores originais do estilo
+Cartilha"). No vídeo seguinte, a pergunta volta, mas basta mostrar o resumo e confirmar.
+
+## Chamada 0: o jeito dos vídeos (uma vez por empresa; roda depois da identidade visual)
 
 Conferir se existe o `estilo-de-video.md` da empresa do run (caminho `estiloDeVideo` dos caminhos que o runner
 passou; se faltarem, `node _fabrica/core/empresa.js caminhos <codigo do run> --linha reels --json`).
 
-- **Existe:** mostrar o resumo em uma linha (formato do rosto padrão, tom e aviso fixo) e seguir. Não perguntar de novo.
-- **Não existe:** **uma única pergunta**, com a recomendação em primeiro lugar:
-  1. **"Edição rápida com o visual da sua marca" (recomendada).** Cria o `estilo-de-video.md` na hora, a partir do
-     `marca.yaml` e dos padrões do exemplo (`06-MARCA-E-FOTOS/estilo-de-video.exemplo.md`): você em tela cheia quando só
-     fala, cartão com desenho quando há elemento, tom meio a meio, cuidados padrão da área (sem promessa de resultado,
-     sem valor como garantia, sem parecer fiscal individual). Marcar no arquivo "Padrão rápido, sem entrevista, em
-     AAAA-MM-DD". Os quadros de teste aparecem na aprovação do plano (passo 5), onde a pessoa já olha o resultado.
-  2. **"Personalizar com perguntas (uns 5 minutos)".** Roda a entrevista de `dados/entrevista-de-estilo.md`, com
-     prévias e recomendação (V-09, D-01). O arquivo só é gravado depois da escolha e do OK nos quadros de teste.
+- **Existe:** dizer em uma frase como os vídeos dela costumam ficar (onde ela aparece, ritmo e o aviso fixo) e seguir.
+  Não perguntar de novo.
+- **Não existe:** explique antes, em linguagem simples: **"Agora falta decidir o jeito dos seus vídeos: onde você
+  aparece na tela, se as coisas entram devagar ou rápido e o que nunca pode ser dito na sua área. Isso vale para todos
+  os próximos vídeos."** Depois, **uma única pergunta**, com a recomendação em primeiro lugar:
+  1. **"Eu decido pelo padrão, e você vê antes de eu montar" (recomendada).** Descrição: você em tela cheia quando só
+     fala e num cartão com um desenho em cima quando eu mostrar alguma coisa; ritmo nem lento nem rápido; os cuidados
+     de sempre da sua área; tudo com a identidade escolhida acima. Antes de montar, eu te mostro imagens do seu
+     próprio vídeo para você aprovar.
+     Para a linha: cria o `estilo-de-video.md` na hora, a partir do `marca.yaml` e dos padrões do exemplo
+     (`06-MARCA-E-FOTOS/estilo-de-video.exemplo.md`): tela cheia quando só fala, cartão com desenho quando há elemento,
+     tom meio a meio, cuidados padrão da área (sem promessa de resultado, sem valor como garantia, sem parecer fiscal
+     individual). Marcar no arquivo "Padrão rápido, sem entrevista, em AAAA-MM-DD". As imagens de teste aparecem na
+     aprovação do plano (passo 5).
+  2. **"Quero escolher eu mesmo (6 perguntas, uns 5 minutos)".** Descrição: duas das perguntas são de olhar: eu monto
+     imagens paradas do seu próprio vídeo, já com a identidade escolhida, e você compara. Roda a entrevista de
+     `dados/entrevista-de-estilo.md`, com prévias e recomendação (V-09, D-01, L-01). O arquivo só é gravado depois da
+     escolha e do OK nas imagens de teste.
 
-  Quem escolher a rápida pode personalizar depois ("quero mudar o estilo"): nova entrevista, e o arquivo anterior fica
-  guardado com a data. Cuidados específicos da área (a pergunta 6 da entrevista) o responsável pode acrescentar a
+  Quem escolher o padrão pode mudar depois ("quero mudar o jeito dos vídeos"): nova entrevista, e o arquivo anterior
+  fica guardado com a data. Cuidados específicos da área (a pergunta 6 da entrevista) o responsável pode acrescentar a
   qualquer momento; sem eles vale o padrão acima.
 
 ## Chamada 1: o vídeo
@@ -86,14 +133,19 @@ passou; se faltarem, `node _fabrica/core/empresa.js caminhos <codigo do run> --l
 Feita depois da chamada 1, para poder recomendar com base no vídeo. Ler `dados/camadas-de-producao.md` e
 a `biblioteca-de-modelos.md` da empresa ativa (caminho `dadosLinha`).
 
-5. **Qual camada de produção?** Mostrar a recomendação e o motivo em uma linha, mas listar as três (Expresso, Padrão,
-   Vitrine, definidas em `dados/camadas-de-producao.md`).
-6. **Qual modelo de edição?** Uma opção por modelo **aprovado** da biblioteca. A opção recomendada vem primeiro.
+5. **Quanto trabalho vai neste vídeo?** (para a linha: a camada de produção). Opções em palavras do dia a dia, cada
+   uma com o que a pessoa ganha e quanto demora: "Rápido" (Expresso), "Normal" (Padrão) e "Caprichado" (Vitrine),
+   definidas em `dados/camadas-de-producao.md`. Mostrar a recomendação e o motivo em uma linha.
+6. **Qual jeito de montar o vídeo?** (para a linha: o modelo de edição). Uma opção por modelo **aprovado** da
+   biblioteca, cada uma descrita pelo que a pessoa vê ("você num cartão, com desenhos em cima"), nunca só pelo nome
+   do modelo. A opção recomendada vem primeiro.
    Modelos em teste não são aprovados: só entram se o responsável escrever o nome em "Outro".
    **Empresa com estilo escolhido:** rode `node _fabrica/core/estilo-da-linha.js <codigo do run>` (só lê). Se ele mostrar
-   um modelo de Reels, a primeira opção, recomendada, é "O modelo do seu estilo (<nome do estilo>)": o modelo de edição
-   desse estilo (`formatos.reels.modelo`; num estilo próprio, o do estilo em que ele se baseia), já com as cores e as
-   letras da marca da empresa. Sem estilo escolhido, ou sem modelo de Reels no estilo, as opções de sempre.
+   um modelo de Reels, a primeira opção, recomendada, é "O jeito do seu estilo (<nome do estilo>)": o modelo de edição
+   desse estilo (`formatos.reels.modelo`; num estilo próprio, o do estilo em que ele se baseia), com as cores e as
+   letras da marca da empresa (`usarMarca: true`) ou, se a pessoa escolheu as cores originais do estilo na chamada de
+   identidade visual, com as cores originais (`usarMarca: false`). Sem estilo escolhido, ou sem modelo de Reels no
+   estilo, as opções de sempre.
    Quando a pessoa trocar o estilo neste pedido, ou não usar nenhum, isso vale também para o registro da peça no
    Laboratório: o JSON da peça leva o estilo usado, ou `"estilo": null` (passo 6, item 7).
 
@@ -106,15 +158,18 @@ a `biblioteca-de-modelos.md` da empresa ativa (caminho `dadosLinha`).
 **Estado:** {cru | pré-editado}
 **Assunto e apresentador:** {frase}
 **Observações:** {texto livre ou "nenhuma"}
+**Identidade visual:** {a da empresa | cores originais do estilo <nome>}
 **Estilo de vídeo:** {estilo-de-video.md da empresa ativa, aprovado em AAAA-MM-DD}
 **Camada de produção:** {Expresso | Padrão | Vitrine}
 **Modelo de edição:** {nome}
-**Modelo do estilo da empresa:** {código do modelo, com "usarMarca: true" | "não"}
+**Modelo do estilo da empresa:** {código do modelo, com "usarMarca: true" (identidade da empresa) ou "usarMarca: false" (cores originais do estilo) | "não"}
 **Data:** {AAAA-MM-DD}
 ```
 
 ## Regras
 
+- **Sem a resposta da identidade visual gravada em `entrada.md`, nenhuma prévia é gerada.** A pessoa sempre sabe, antes
+  de olhar, se as imagens estão com a identidade dela (L-04).
 - **Sem `estilo-de-video.md` aprovado, a linha não planeja.** A entrevista (chamada 0) é feita uma vez e vale para os
   vídeos seguintes.
 - **Sem as duas respostas (camada e modelo) gravadas em `entrada.md`, a linha não edita nada.** Se o responsável pular,

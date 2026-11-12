@@ -1,7 +1,9 @@
 {
-  "versao": "0.7.2",
+  "versao": "0.7.3",
   "data": "2026-11-12",
   "novidades": [
+    "A Fábrica agora explica o que vai fazer antes de fazer: o que vai acontecer, por que, com o quê, o que você vai ver e o que vai decidir, sem nomes internos como \"quadros A/B/C\", \"modelo de edição\" ou \"camada de produção\". Vale para todas as linhas, inclusive as que você criar",
+    "Reels (e toda peça com visual): antes de qualquer prévia, a Fábrica mostra o que a sua empresa já tem de identidade visual (cores, letras, logo, estilo e peças já feitas) e pergunta se o vídeo vai usar essa identidade, com uma recomendação. Toda prévia diz se está com as suas cores e letras",
     "Programas de vídeo instalados junto com a Fábrica, sempre na versão mais nova (ffmpeg, Tesseract, transcrição da fala e os modelos): nenhuma linha para no meio por falta de programa, e cada Reels confere e atualiza tudo antes de começar",
     "Contas primeiro: todo login e cadastro (inclusive a chave gratuita das fotos sem marca d'água) acontece na instalação, antes de qualquer trabalho",
     "Correção: os modelos de vídeo com textura (Luz de Vela, Adesivo, Caderno, Recorte, Retrô, Visor e os vindos do carrossel) não falham mais numa instalação nova",

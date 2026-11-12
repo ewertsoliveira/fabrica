@@ -18,14 +18,25 @@ Regras de base: **V-09** (`05-ESTRATEGIA/nucleo-de-conteudo/regras/11-video.md`)
 - Para mudar de estilo: nova entrevista, e o arquivo anterior é guardado com a data no nome.
 
 ## Antes de perguntar (a linha prepara)
-1. Ler o `marca.yaml` da empresa ativa (caminho `marca`): cor, fonte e logo já respondem parte do estilo. Sem ele, usar o exemplo e avisar.
-2. Gerar **três quadros de exemplo** dos layouts, com um vídeo real da empresa se houver, ou com o vídeo de amostra e a
-   declaração de que é exemplo (D-02):
+1. Usar a **identidade visual escolhida** na chamada de identidade visual do passo 1 (campo **Identidade visual** de
+   `entrada.md`): a da empresa (`marca.yaml`, caminho `marca`) ou as cores originais do estilo escolhido. Nunca gere as
+   imagens sem essa resposta (L-04).
+2. Gerar **três imagens paradas** do vídeo (para a linha: quadros dos layouts), com o vídeo real da empresa se houver,
+   ou com o vídeo de amostra e a declaração de que é exemplo (D-02):
    - **A, você em tela cheia**, só com legenda.
    - **B, você num cartão, com os desenhos em cima** (modelo Palco, `08-FERRAMENTAS/tesseract/modelos/`).
    - **C, só o desenho**: o cartão sai e a ilustração ocupa a tela.
-3. Gerar um quadro de cada tom (calmo e enérgico) com a mesma frase.
+3. Gerar duas imagens do ritmo (calmo e enérgico) com a mesma frase.
 4. Reunir tudo numa única página aberta com letras A, B, C (D-01, itens 4 e 5) e dar o caminho no mesmo turno.
+
+## Como explicar à pessoa (antes de mostrar a página; L-01)
+Ela não sabe o que é um "quadro" nem o que está sendo comparado. Antes da página, diga com palavras simples, por
+exemplo: **"Vou te mostrar imagens paradas do seu próprio vídeo, como fotos de um momento dele. Todas já estão com
+<as suas cores e letras | as cores originais do estilo X>, então você não está escolhendo cores. Você vai escolher duas
+coisas: onde você aparece na tela (três jeitos, A, B e C) e o ritmo (as coisas entram devagar ou rápido). Uso o seu
+vídeo para você ver como você fica de verdade, por exemplo se o cartão corta o seu rosto."** Na página, cada imagem tem
+uma frase do que muda e repete o que é igual entre todas (L-02). Nunca escreva "quadros A/B/C" ou "calmo × enérgico"
+sozinhos (L-03).
 
 ## As perguntas (uma chamada, no máximo seis)
 
@@ -65,3 +76,7 @@ Use sempre a coluna da esquerda com o responsável. A da direita é para a linha
 | "O fim com um convite" | chamada para ação (CTA) |
 | "Uma frase que fecha o raciocínio" | frase-síntese |
 | "O aviso pequeno no alto" | aviso fixo de ilustração ou simulação (V-05) |
+| "Uma imagem parada do vídeo, como foto de um momento dele" | quadro (frame) de exemplo ou de teste |
+| "O ritmo: as coisas entram devagar ou rápido" | tom calmo × enérgico |
+| "O jeito dos seus vídeos" / "guardar para os próximos vídeos" | `estilo-de-video.md` / gravar o arquivo de estilo |
+| "A sua identidade visual (cores, letras e logo)" | `marca.yaml` / contrato de marca |

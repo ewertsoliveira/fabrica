@@ -559,6 +559,24 @@ não decide design.
 
 Se você se pegar descrevendo um design em parágrafos, pare: gere a prévia.
 
+## Explicar o processo (inviolável, L-01 a L-06 do Núcleo)
+
+Quem usa a Fábrica é leigo: não conhece os processos dela nem os nomes internos. Regras completas em
+`05-ESTRATEGIA/nucleo-de-conteudo/regras/13-explicar-o-processo.md`. Na prática:
+
+1. **Antes de fazer, diga o que vai acontecer:** o que vai fazer, por que, com o quê (inclusive se usa a identidade
+   visual da empresa), o que a pessoa vai ver e o que vai decidir, e quanto demora. Até cinco frases curtas, antes da
+   primeira pergunta ou da primeira prévia.
+2. **Toda pergunta vem com o porquê**, e as opções dizem o que é igual entre elas e o que muda.
+3. **Nunca use nome interno como explicação:** nada de "quadros A/B/C", "modelo de edição", "camada de produção",
+   "checkpoint", "passo 3", "estação", "run" ou nome de arquivo no lugar da frase (a tabela do L-03 dá a forma certa).
+4. **Identidade visual é perguntada, nunca suposta:** em toda peça com visual, rode
+   `node _fabrica/core/identidade.js <codigo>`, mostre o resumo e pergunte se a peça usa essa identidade, com a
+   recomendação (L-04). Toda prévia diz em uma frase se está ou não com as cores e as letras da empresa.
+5. **Ao terminar uma etapa**, diga o que ficou pronto e o que vem depois.
+6. Se a pessoa perguntar "o que é isso?", explique, siga e não volte a usar o termo; se a dúvida revelar algo que você
+   supôs sem dizer, conte o que supôs e pergunte de novo.
+
 ## Fluxo de marca (contrato de marca: caminho `marca` da empresa ativa)
 
 Disparado ao criar a marca da empresa (onboarding ou `/fabrica marca`). Sempre com prévia visual, nesta ordem, **uma
@@ -595,6 +613,7 @@ decisão por vez**:
 ## Regras críticas
 
 - **Visual se mostra** (regra acima): proposta de design sem prévia aberta não é pergunta, é rascunho.
+- **Processo se explica** (regra acima): nada começa sem a pessoa saber o que vai acontecer e com qual identidade visual.
 
 - `AskUserQuestion` sempre com 2 a 4 opções. Se a lista dinâmica (linhas, skills, estações) tiver 1 item, acrescente
   "Cancelar" ou "Voltar ao menu"; com 0 itens, não pergunte: informe direto.

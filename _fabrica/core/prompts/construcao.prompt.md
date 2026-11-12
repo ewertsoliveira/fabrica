@@ -180,6 +180,13 @@ saida: saida/{arquivo}      # quando a resposta precisa ser gravada para o passo
 Corpo: o que apresentar (com o caminho de qualquer arquivo a revisar), as perguntas (por pergunta estruturada, 2 a 4
 opções com exemplo) e o **formato da resposta a salvar**.
 
+Todo checkpoint começa com a **fala de abertura** (regra L-01, `05-ESTRATEGIA/nucleo-de-conteudo/regras/13-explicar-o-processo.md`):
+o que vai acontecer, por que, com o quê, o que a pessoa vai ver e decidir, escrita como a pessoa vai ler, sem nome
+interno. Cada pergunta diz por que é feita e o que muda com a resposta (L-02). O primeiro checkpoint de uma linha que
+produz peça com visual (imagem, carrossel, post, capa ou vídeo) traz a **pergunta da identidade visual** (L-04): roda
+`node _fabrica/core/identidade.js <codigo do run>`, mostra o resumo e pergunta se a peça usa essa identidade, com a
+recomendação; a resposta vai para o formato da resposta a salvar e vale para todas as prévias da produção.
+
 ---
 
 ## Etapa C: Validação
@@ -238,6 +245,17 @@ algo visual (cor, tipografia, capa, layout, modelo de vídeo, arte):
 
 **Exceção:** o passo que aplica uma escolha já feita com prévia (o `design` de uma linha de carrossel aplica o estilo
 escolhido na Fase G.4 do Desenho) só precisa do primeiro veto e de mostrar a primeira lâmina aberta.
+
+Se falhar: acrescente o que falta e reconfira (máximo 2 tentativas).
+
+### Portão 2e: Processo explicado (BLOQUEANTE)
+
+Regras L-01 a L-04 (`05-ESTRATEGIA/nucleo-de-conteudo/regras/13-explicar-o-processo.md`). Para cada checkpoint:
+- [ ] Começa com a fala de abertura (o que vai acontecer, por que, com o quê, o que a pessoa decide)
+- [ ] Nenhuma fala para a pessoa usa nome interno sozinho ("checkpoint", "passo N", "estação", "quadro", nome de
+      arquivo, nome de modelo sem descrição)
+- [ ] Se a linha produz peça com visual, o primeiro checkpoint pergunta a identidade visual com `identidade.js` e grava
+      a resposta
 
 Se falhar: acrescente o que falta e reconfira (máximo 2 tentativas).
 

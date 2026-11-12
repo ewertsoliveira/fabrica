@@ -287,6 +287,12 @@ enquanto a conferência da pasta do run não sair 0.
 
 2. **Ler o arquivo do passo** por inteiro.
 
+2a. **Anunciar o passo à pessoa (regra L-01, `regras/13-explicar-o-processo.md`).** Antes de executar, diga em até
+   cinco frases curtas, sem nome interno (nada de "passo 3", "estação", "checkpoint" ou nome de arquivo): o que vai
+   acontecer agora, por que, com o quê (o vídeo, o texto e se usa a identidade visual da empresa), o que ela vai ver ou
+   decidir e quanto demora, quando passar de um minuto. Ao concluir o passo, uma frase com o que ficou pronto e o que
+   vem depois (L-05).
+
 3. **Executar conforme o tipo:**
 
    **`tipo: estacao`, `execucao: subagente`**
@@ -321,7 +327,8 @@ enquanto a conferência da pasta do run não sair 0.
 
    **`tipo: checkpoint`**
    - Apresentar o que o passo manda, **sempre com o caminho de qualquer arquivo que a pessoa precise ver**.
-   - Fazer as perguntas por `AskUserQuestion` (nunca em texto solto), como a skill `fabrica` exige.
+   - Fazer as perguntas por `AskUserQuestion` (nunca em texto solto), como a skill `fabrica` exige. Cada pergunta diz
+     por que está sendo feita e o que muda com a resposta; as opções dizem o que é igual entre elas e o que muda (L-02).
    - Esperar. Salvar a resposta em `saida` (etapa 1 do caminho), no formato que o passo define.
 
 4. **Validação da saída (obrigatória).** Para cada arquivo que o passo declara em `saida`, rode (com o caminho
@@ -363,6 +370,7 @@ enquanto a conferência da pasta do run não sair 0.
 0. estado (<estadoLinha>)
 1. validação da entrada
 2. ler o passo
+2a. anunciar à pessoa o que vai acontecer (L-01), sem nome interno
 2b. (só em script que entrega ou copia para fora da pasta do run) conferência entre empresas ANTES de executar
 3. executar (estacao subagente | estacao inline | script | checkpoint)
 4. validação da saída

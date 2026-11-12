@@ -47,7 +47,8 @@ Os demais `dados/` são do modelo e ficam na linha.
    **Modelo do estilo da empresa** (`entrada.md` traz o código do modelo): a seção 2 escreve o pedido do modelo para o
    passo 4 (formato no `08-FERRAMENTAS/tesseract/modelos/README.md`): `video`, `palavras`, `trecho`, `chamada`,
    `destaques`, `broll` e **`"usarMarca": true`** (as cores e letras vêm do `marca.yaml` da empresa do run, nunca escritas
-   no pedido); `rosto.layout` = o arranjo que `node _fabrica/core/estilo-da-linha.js <codigo do run>` mostrar, se mostrar.
+   no pedido). Só quando `entrada.md` diz **Identidade visual: cores originais do estilo**, o pedido vai com
+   `"usarMarca": false` e sem `marca` (as cores originais do estilo, escolhidas pela pessoa); `rosto.layout` = o arranjo que `node _fabrica/core/estilo-da-linha.js <codigo do run>` mostrar, se mostrar.
    Regras de vídeo do responsável, conferidas aqui: **a pessoa fica em cena junto com a imagem de destaque** (o modelo só
    tem arranjos com a pessoa no quadro: miniatura, círculo, divisão, lado a lado, recorte); **nada sobre o rosto** (texto,
    cartão ou ícone; o título fica abaixo do queixo); **cada item de `broll` dura no mínimo 4 s** (`fim - ini >= 4`; os
@@ -97,5 +98,6 @@ ficar (V-01) em uma frase; algum texto de tela tiver vocabulário vetado, promes
 gráfico sem ligação com uma palavra da fala, ou mockup que encosta no rosto em algum enquadramento; fato que a fala não
 sustenta (data, país, número) aparecer na tela sem estar marcado como decisão do responsável; faltar a tabela de cenas
 quando há elemento na tela, ou ela reprovar em `conferir-tabela-de-cenas.js`; ilustração ou simulação sem o aviso fixo
-do estilo da empresa (V-05); com o modelo do estilo da empresa, pedido sem `"usarMarca": true`, com cor ou letra escrita
-à mão, ou com um item de `broll` de menos de 4 s.
+do estilo da empresa (V-05); com o modelo do estilo da empresa, pedido cujo `"usarMarca"` não bate com a **Identidade
+visual** de `entrada.md` (`true` para a identidade da empresa, `false` para as cores originais do estilo), com cor ou
+letra escrita à mão, ou com um item de `broll` de menos de 4 s.

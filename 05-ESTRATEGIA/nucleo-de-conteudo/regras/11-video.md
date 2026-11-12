@@ -156,5 +156,5 @@ decisão que depende dele é feita assim:
 5. A resposta dele vira parâmetro no arquivo de estilo do cliente, e a
    pergunta não se repete nas peças seguintes.
 
-Reforça D-01 (`regras/12-decisao-visual.md`). O roteiro dessa conversa e o glossário em linguagem simples estão em
+Reforça D-01 (`regras/12-decisao-visual.md`) e é o caso de vídeo das regras L-01 a L-06 (`regras/13-explicar-o-processo.md`), que valem para a Fábrica inteira. O roteiro dessa conversa e o glossário em linguagem simples estão em
 `dados/entrevista-de-estilo.md` da linha de Reels; o resultado fica no `estilo-de-video.md` da empresa ativa.
