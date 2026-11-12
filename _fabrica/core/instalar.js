@@ -47,19 +47,6 @@ const PASSOS = [
     },
   },
   {
-    // Tudo do vídeo entra AQUI, na instalação, sempre na versão mais nova (ffmpeg, Tesseract, whisper, modelos).
-    // Assim nenhuma linha de produção para no meio por falta de programa. Nenhum destes downloads pede login.
-    texto: 'Instalando as ferramentas de vídeo na versão mais nova: ffmpeg, Tesseract e transcrição da fala (são ~800 MB; pode levar de 5 a 15 minutos)',
-    obrigatorio: true,
-    roda: () => {
-      if (process.platform !== 'win32') return { ok: true, nota: 'o vídeo da Fábrica só funciona no Windows por enquanto; nada a instalar neste computador' };
-      const r = spawnSync(process.execPath, [path.join(RAIZ, '_fabrica', 'core', 'ferramentas.js')], { cwd: RAIZ, encoding: 'utf8', timeout: 30 * 60 * 1000, maxBuffer: 1 << 26 });
-      const linhas = String(r.stdout || '').split(/\r?\n/).filter((l) => /^(FERRAMENTA|PROBLEMA)/.test(l));
-      linhas.forEach((l) => console.log('  ' + l));
-      return { ok: r.status === 0, erro: ultimas(r) };
-    },
-  },
-  {
     texto: 'Conferindo se está tudo no lugar',
     obrigatorio: true,
     roda: () => {
@@ -67,12 +54,7 @@ const PASSOS = [
       let j = null;
       try { j = JSON.parse(r.stdout); } catch { /* saída ilegível */ }
       if (!j) return { ok: false, erro: ultimas(r) };
-      // No Windows o vídeo também é obrigatório: é o que deixou uma linha parada no meio por falta de programa.
-      const grupos = process.platform === 'win32' ? ['obrigatorio', 'imagens', 'video'] : ['obrigatorio', 'imagens'];
-      // O acento no endereço da pasta foi escolha da pessoa no Passo 2 (INSTALAR.md): vira aviso, não falha.
-      const avisoCaminho = j.itens.some((i) => i.id === 'caminho' && !i.ok);
-      const faltam = j.itens.filter((i) => grupos.includes(i.grupo) && i.id !== 'caminho' && !i.ok).map((i) => i.nome);
-      if (!faltam.length && avisoCaminho) return { ok: true, nota: 'aviso: o endereço da pasta tem acento ou espaço; os vídeos podem não funcionar' };
+      const faltam = j.itens.filter((i) => i.grupo === 'obrigatorio' && !i.ok).map((i) => i.nome);
       return { ok: faltam.length === 0, erro: faltam.length ? 'ainda falta: ' + faltam.join(', ') : '' };
     },
   },

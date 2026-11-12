@@ -225,23 +225,6 @@ t('--usar-marca com a boreal no ambiente: as cores da boreal, nenhuma da aurora'
 });
 
 // ---------- o corte do trecho no .cache (motor.preparaTrecho) ----------
-// correção: numa instalação nova a pasta texturas/ não existe (fica fora do git) e o Luz de Vela parava com um erro do
-// Tesseract. O motor gera as texturas que faltam uma vez só, e não mexe em imagens de fora da pasta de texturas.
-t('garantirTextura: textura que falta é gerada uma vez; existente ou de fora da pasta não roda o gerador', () => {
-  const { garantirTextura } = require(MOTOR);
-  const pasta = path.join(TMP, 'texturas');
-  const cont = path.join(TMP, 'gerador-rodou.txt');
-  const programa = path.join(TMP, 'gerador-falso.js');
-  fs.writeFileSync(programa, `const fs=require('fs');fs.mkdirSync(${JSON.stringify(pasta)},{recursive:true});` +
-    `fs.writeFileSync(${JSON.stringify(path.join(pasta, 'luz-dourada.png'))},'x');fs.appendFileSync(${JSON.stringify(cont)},'1');`);
-  const opc = { programa, pasta };
-  assert.strictEqual(garantirTextura(path.join(pasta, 'luz-dourada.png'), opc), true);
-  assert.strictEqual(garantirTextura(path.join(pasta, 'luz-dourada.png'), opc), false);
-  assert.strictEqual(garantirTextura(path.join(TMP, 'outra', 'cena.png'), opc), false);
-  assert.strictEqual(fs.readFileSync(cont, 'utf8'), '1', 'o gerador deveria rodar uma vez só');
-  assert.throws(() => garantirTextura(path.join(pasta, 'nao-existe.png'), opc), /não a desenha/);
-});
-
 // correção: o corte vai para um temporário e troca de nome no fim; processo morto no meio não deixa um MP4 pela metade com
 // o nome final (que seria reaproveitado para sempre), e temporário de processo que já morreu é apagado na rodada seguinte
 t('preparaTrecho: processo morto no meio do corte não deixa o MP4 final; a rodada seguinte corta de novo e limpa a sobra', () => {

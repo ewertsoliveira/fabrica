@@ -10,8 +10,10 @@ Regras de base: **V-09** (`05-ESTRATEGIA/nucleo-de-conteudo/regras/11-video.md`)
 "transição" ou "motion".
 
 ## Quando roda
-- No **passo 1** da linha de Reels, **uma vez por empresa**: se o `estilo-de-video.md` da empresa ativa não existir, a
-  entrevista roda antes das perguntas do vídeo. Se existir, a linha só lê o arquivo e mostra o resumo em uma linha.
+- No **passo 1** da linha de Reels, **uma vez por empresa, e só se a pessoa escolher "Personalizar"**: sem o
+  `estilo-de-video.md`, a linha oferece primeiro a edição rápida com o visual da marca (ver `passos/01-entrada.md`) e só
+  roda esta entrevista se ela preferir personalizar. Quem só quer editar um vídeo não passa por aqui. Se o arquivo
+  existir, a linha só o lê e mostra o resumo em uma linha.
 - Quando o responsável reprovar o visual de uma peça e não souber dizer por quê.
 - Para mudar de estilo: nova entrevista, e o arquivo anterior é guardado com a data no nome.
 

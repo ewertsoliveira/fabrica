@@ -18,6 +18,8 @@ formato: instagram-reels
 # - Camada de produção e modelo de edição são perguntados SEMPRE no passo 1 (dados/camadas-de-producao.md).
 # - O estilo de vídeo da empresa ativa (caminho `estiloDeVideo` de `empresa.js caminhos`) é perguntado uma vez, ANTES da camada e do modelo,
 #   pela entrevista de dados/entrevista-de-estilo.md; existindo o arquivo, o passo 1 só o lê.
+#   Atenção: o passo 1 abre dizendo que a linha EDITA vídeo gravado (não escreve roteiro), pede o arquivo do vídeo
+#   primeiro e, sem estilo, oferece a edição rápida com a marca; a entrevista só roda se a pessoa pedir "Personalizar".
 # - O passo 2 não tem estação: execução inline do runner, rodando preparar-material.js. Para e pergunta se houver ambiguidade.
 # - O passo 3 grava um único plano.md (quatro lentes no mesmo documento).
 # - O modelo forte planeja e arquiteta; o leve executa. O passo 6 abre uma estação NOVA em modelo leve (lê estrutura.md),

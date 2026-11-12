@@ -27,7 +27,8 @@ sempre no passo 1. Detalhes em `dados/camadas-de-producao.md`.
 
 - O `marca.yaml` da sua empresa (cores, fontes, conta, vocabulário vetado, chamada padrão). Sem ele, os scripts usam a
   marca de exemplo e avisam.
-- O `estilo-de-video.md` da sua empresa, criado na primeira entrada pela entrevista de `dados/entrevista-de-estilo.md`
+- O `estilo-de-video.md` da sua empresa, criado na primeira entrada: pela edição rápida com o visual da marca
+  (recomendada) ou, se a pessoa pedir "Personalizar", pela entrevista de `dados/entrevista-de-estilo.md`
   (uma vez por empresa, com prévias). O responsável nunca precisa conhecer termos de vídeo.
 - A biblioteca de modelos e as preferências aprovadas da sua empresa (`biblioteca-de-modelos.md` e
   `preferencias-aprovadas.md`), que crescem a cada vídeo aprovado.

@@ -11,20 +11,6 @@ camada de produção e o modelo de edição**. As respostas orientam o script de
 
 Todas as perguntas vão por pergunta estruturada (nunca em texto solto), no máximo 4 por chamada, de 2 a 4 opções cada.
 
-## Pré-voo (antes de qualquer pergunta)
-
-Nada de vídeo começa com programa faltando ou velho, e nenhum login ou cadastro pode ficar para o meio do trabalho.
-
-1. Rodar `node _fabrica/core/ambiente.js` e `node _fabrica/core/ferramentas.js --verificar`.
-2. Se algo do grupo "Para Reels (vídeo)" faltar, ou o `--verificar` disser **PRECISA**, rodar
-   `node _fabrica/core/ferramentas.js` (instala e atualiza ffmpeg, Tesseract, whisper e modelos para a versão mais nova;
-   nenhum desses downloads pede login) **antes** de seguir. Dizer o que vai baixar e pedir o "sim".
-3. Se o Tesseract mudou de versão, registrar no relatório e conferir os quadros de teste antes de confiar nos modelos.
-4. Só depois da conferência passar (todos "OK") seguir para a chamada 0. Se não passar, **parar e dizer o que falta**;
-   nunca abrir a entrevista de estilo nem pedir o vídeo com o ambiente incompleto.
-5. Contas: se for preciso entrar ou criar conta em qualquer serviço, é agora, antes da chamada 0, e a pessoa entra
-   sozinha no navegador (nunca pedir senha ou chave na conversa).
-
 ## Contexto para o responsável
 
 **Caminhos da empresa do run:** use os caminhos que o runner passou; se faltarem,
@@ -36,20 +22,45 @@ nesta linha: `saidas` (a pasta dos `saida/...`), `memoria` (`runs.md`, `memories
 Mostrar em uma linha os modelos aprovados hoje (lidos de `biblioteca-de-modelos.md`, na pasta `dadosLinha` da empresa
 ativa) e o último Reels feito (`runs.md`, na pasta `memoria` da empresa ativa).
 
-## Chamada 0: estilo de vídeo (uma vez por empresa)
+## Abertura: o que esta linha faz (sempre, antes de qualquer pergunta)
 
-Antes da chamada 1, conferir se existe o `estilo-de-video.md` da empresa do run (caminho `estiloDeVideo` dos caminhos
-que o runner passou; se faltarem, `node _fabrica/core/empresa.js caminhos <codigo do run> --linha reels --json`).
+A primeira mensagem ao responsável diz, em duas frases e sem termo técnico: **"Aqui eu edito o vídeo que você já
+gravou: corto as pausas, ponho legenda, desenhos e a chamada final. Não escrevo roteiro."** Se a pessoa disser que
+ainda não gravou, ou que quer o texto do vídeo, avise que roteiro é outra linha (a de texto/roteiros da empresa, ou
+`/fabricar` para montar uma) e pergunte se ela prefere seguir por lá. Não puxe pergunta sobre público, cuidados ou
+desenhos antes de saber que é edição e de ter o arquivo do vídeo.
+
+**Ordem do passo:** abertura, depois a chamada 1 (o vídeo), depois a chamada 0 (estilo) e só então a chamada 2. A
+numeração é histórica; a ordem acima é a que vale.
+
+## Chamada 0: estilo de vídeo (uma vez por empresa; roda depois da chamada 1)
+
+Conferir se existe o `estilo-de-video.md` da empresa do run (caminho `estiloDeVideo` dos caminhos que o runner
+passou; se faltarem, `node _fabrica/core/empresa.js caminhos <codigo do run> --linha reels --json`).
 
 - **Existe:** mostrar o resumo em uma linha (formato do rosto padrão, tom e aviso fixo) e seguir. Não perguntar de novo.
-- **Não existe:** rodar a entrevista de `dados/entrevista-de-estilo.md` agora, **antes** de qualquer pergunta sobre o
-  vídeo. O responsável não conhece termos de vídeo: cada pergunta vai com prévia e recomendação (V-09, D-01). O arquivo
-  só é gravado depois da escolha e do OK nos quadros de teste.
+- **Não existe:** **uma única pergunta**, com a recomendação em primeiro lugar:
+  1. **"Edição rápida com o visual da sua marca" (recomendada).** Cria o `estilo-de-video.md` na hora, a partir do
+     `marca.yaml` e dos padrões do exemplo (`06-MARCA-E-FOTOS/estilo-de-video.exemplo.md`): você em tela cheia quando só
+     fala, cartão com desenho quando há elemento, tom meio a meio, cuidados padrão da área (sem promessa de resultado,
+     sem valor como garantia, sem parecer fiscal individual). Marcar no arquivo "Padrão rápido, sem entrevista, em
+     AAAA-MM-DD". Os quadros de teste aparecem na aprovação do plano (passo 5), onde a pessoa já olha o resultado.
+  2. **"Personalizar com perguntas (uns 5 minutos)".** Roda a entrevista de `dados/entrevista-de-estilo.md`, com
+     prévias e recomendação (V-09, D-01). O arquivo só é gravado depois da escolha e do OK nos quadros de teste.
+
+  Quem escolher a rápida pode personalizar depois ("quero mudar o estilo"): nova entrevista, e o arquivo anterior fica
+  guardado com a data. Cuidados específicos da área (a pergunta 6 da entrevista) o responsável pode acrescentar a
+  qualquer momento; sem eles vale o padrão acima.
 
 ## Chamada 1: o vídeo
 
-1. **Qual é o arquivo do vídeo?** Caminho completo ou nome do arquivo na pasta de vídeos crus da empresa. Opções: os 2
-   ou 3 vídeos mais recentes da pasta (por data de modificação) e "Outro caminho".
+1. **Qual é o arquivo do vídeo?** Rode `node _fabrica/core/empresa.js midias <codigo do run> --json`: ele cria, se
+   faltarem, as pastas de mídia da empresa e devolve `videos` (onde a pessoa solta os vídeos gravados). Opções: os 2 ou
+   3 vídeos mais recentes dessa pasta (por data de modificação) e "Outro caminho" (a pessoa pode colar o caminho de um
+   vídeo que está em outro lugar; a linha o usa sem mover nem apagar).
+   **Pasta vazia e sem caminho:** não peça "o caminho do vídeo". Diga, em linguagem simples: "Coloque o vídeo nesta
+   pasta: <caminho de `videos`>. Já abri ela para você. Avise quando estiver lá." e abra a pasta no explorador de
+   arquivos do sistema (Windows: `explorer "<pasta>"`; Mac: `open "<pasta>"`; Linux: `xdg-open "<pasta>"`).
 2. **Em que estado ele está?**
    - **Cru**, direto da câmera: o script corta as pausas, acelera a fala, ajusta a cor e aplica a transição nas viradas.
    - **Já pré-editado**: pausas cortadas e velocidade ajustada. A linha só aplica o modelo.

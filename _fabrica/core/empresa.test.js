@@ -148,7 +148,7 @@ t('criar gaveta preserva o legado', () => {
   const depois = hashes(rAntiga);
   for (const [arq, h] of Object.entries(antes)) assert.strictEqual(depois[arq], h, `${arq} mudou`);
   const novos = Object.keys(depois).filter((a) => !(a in antes));
-  assert.deepStrictEqual(novos, ['empresas/indice.json']);
+  assert.deepStrictEqual(novos.sort(), ['empresas/aurora/midias/LEIA-ME.txt', 'empresas/indice.json']);
   assert.ok(fs.statSync(path.join(rAntiga, 'empresas', 'aurora')).isDirectory());
 
   const indice = JSON.parse(fs.readFileSync(path.join(rAntiga, 'empresas', 'indice.json'), 'utf8'));
@@ -595,6 +595,24 @@ t('atalho migrar', () => {
   assert.ok(!/Cannot find module/.test(x.erro), x.erro);
   assert.match(x.erro, /migrar\.js/, 'devia mostrar o uso do migrar.js:\n' + x.erro);
   assert.strictEqual(fs.existsSync(path.join(r, 'empresas')), false, 'o atalho sem argumentos não grava nada');
+});
+
+t('criar empresa já deixa as pastas de mídia; "midias" completa empresa antiga sem apagar nada', () => {
+  const r = pastaTemp();
+  empresa.criar('bela', 'Bela', r);
+  const m = path.join(r, 'empresas', 'bela', 'midias');
+  for (const p of ['videos', 'fotos', 'audios', 'documentos']) {
+    assert.ok(fs.statSync(path.join(m, p)).isDirectory(), `devia existir midias/${p}`);
+  }
+  assert.ok(fs.existsSync(path.join(m, 'LEIA-ME.txt')));
+  // Empresa antiga: sem a pasta; o comando cria e preserva o que a pessoa já tinha colocado.
+  fs.rmSync(m, { recursive: true });
+  escrever(r, 'empresas/bela/midias/videos/meu.mp4', 'x');
+  const x = spawnSync(process.execPath, [SCRIPT, 'midias', 'bela', '--json'], { env: { ...process.env, FABRICA_RAIZ: r }, encoding: 'utf8' });
+  assert.strictEqual(x.status, 0, x.stderr);
+  assert.strictEqual(JSON.parse(x.stdout).videos, path.join(m, 'videos'));
+  assert.strictEqual(fs.readFileSync(path.join(m, 'videos', 'meu.mp4'), 'utf8'), 'x');
+  assert.ok(fs.existsSync(path.join(m, 'documentos')));
 });
 
 console.log(`\n${n} testes passaram`);

@@ -186,7 +186,7 @@ const porLinha = (montar) => (linha) => montar(conferirLinha(linha));
 const CHAVES_DE_CAMINHO = Object.freeze([
   'gaveta', 'perfil', 'marca', 'pastaMarca', 'estiloDeVideo', 'estilosProprios', 'referencias', 'laboratorio',
   'cronograma', 'publicacoes', 'estilo', 'intencao', 'pedidos', 'historico', 'decisoes', 'termos',
-  'termosCompartilhados', 'previas', 'envios', 'saidasRaiz', 'memoriaRaiz', 'saidas', 'memoria', 'dadosLinha',
+  'termosCompartilhados', 'previas', 'envios', 'midias', 'saidasRaiz', 'memoriaRaiz', 'saidas', 'memoria', 'dadosLinha',
   'estadoLinha', 'investigacoes',
 ]);
 
@@ -222,6 +222,8 @@ function caminhosDe(codigo, disposicao, r = raiz()) {
     previas: path.join(G, 'previas'),
     // O que a Fábrica manda para o cliente (cronograma em HTML etc.): sempre dentro da pasta da empresa.
     envios: path.join(G, 'envios'),
+    // O que a pessoa traz para a Fábrica usar (vídeos, fotos, áudios, documentos), em subpastas: ver PASTAS_DE_MIDIA.
+    midias: path.join(G, 'midias'),
   };
   if (disposicao === 'legado') {
     const marca = path.join(r, '06-MARCA-E-FOTOS');
@@ -271,6 +273,33 @@ function caminhosDe(codigo, disposicao, r = raiz()) {
   };
 }
 
+// Pastas onde a pessoa solta o que quer usar. Nomes simples, sem acento (funcionam em qualquer sistema).
+const PASTAS_DE_MIDIA = Object.freeze({
+  videos: 'Vídeos gravados que serão editados (Reels, cortes)',
+  fotos: 'Fotos suas, do espaço, de produtos',
+  audios: 'Áudios e músicas',
+  documentos: 'Documentos, textos, PDFs, planilhas, tabelas de preço',
+});
+
+// Cria (se faltar) a pasta de mídias da empresa e as subpastas, e devolve os caminhos. Nunca apaga nem mexe no que já
+// está lá. Chamada na criação da empresa e pelo comando "midias" (empresas antigas ganham a pasta quando alguém pede).
+function prepararMidias(codigo, r = raiz()) {
+  const raizMidias = caminhos(codigo, r).midias;
+  const pastas = {};
+  for (const nome of Object.keys(PASTAS_DE_MIDIA)) {
+    pastas[nome] = path.join(raizMidias, nome);
+    fs.mkdirSync(pastas[nome], { recursive: true });
+  }
+  const leia = path.join(raizMidias, 'LEIA-ME.txt');
+  if (!fs.existsSync(leia)) {
+    const linhas = ['Coloque aqui o que a Fábrica vai usar. Cada coisa na sua pasta:', ''];
+    for (const [nome, texto] of Object.entries(PASTAS_DE_MIDIA)) linhas.push(`  ${nome}/  ${texto}`);
+    linhas.push('', 'Depois é só dizer o nome do arquivo na conversa. A Fábrica nunca apaga nem troca o que você coloca aqui.', '');
+    fs.writeFileSync(leia, linhas.join('\r\n'));
+  }
+  return { midias: raizMidias, ...pastas };
+}
+
 // Sem acento, em minúsculas, com espaço virando "-": a sugestão de código para um nome como "Clínica Bela Vista".
 function sugerirCodigo(texto) {
   return String(texto).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
@@ -309,6 +338,7 @@ function criar(codigo, nome, r = raiz()) {
     try { fs.rmdirSync(pasta); } catch { /* sobrou algo? deixa */ }
     throw e;
   }
+  prepararMidias(codigo, r);
   return nova;
 }
 
@@ -437,6 +467,21 @@ function principal(args) {
       }
       return 0;
     }
+    case 'midias': {
+      // midias [<codigo>] [--json]: cria as pastas de mídia da empresa (se faltarem) e mostra onde ficam.
+      const json = resto.includes('--json');
+      const pos = resto.filter((a) => a !== '--json');
+      if (pos.length > 1 || pos.some((a) => a.startsWith('--'))) return uso('Uso: midias [<codigo>] [--json].');
+      const codigo = pos[0] || ativa();
+      if (!codigo) {
+        console.error('Nenhuma empresa nesta pasta ainda.');
+        return 1;
+      }
+      const p = prepararMidias(codigo);
+      if (json) console.log(JSON.stringify({ codigo, ...p }, null, 2));
+      else for (const [chave, valor] of Object.entries(p)) console.log(`${chave}: ${valor}`);
+      return 0;
+    }
     case 'migrar':
       // Atalho: repassa os argumentos ao migrar.js, carregado só aqui (o leitor continua pequeno e sem depender dele).
       return require('./migrar').principal(resto);
@@ -446,7 +491,7 @@ function principal(args) {
 }
 
 // Exporta antes de rodar a linha de comando: o atalho "migrar" carrega o migrar.js, que usa este leitor.
-module.exports = { raiz, listar, ativa, caminhos, caminhosDe, CHAVES_DE_CAMINHO, criar, ativar, termos, sugerirCodigo };
+module.exports = { raiz, listar, ativa, caminhos, caminhosDe, CHAVES_DE_CAMINHO, criar, ativar, termos, sugerirCodigo, prepararMidias, PASTAS_DE_MIDIA };
 
 if (require.main === module) {
   try {

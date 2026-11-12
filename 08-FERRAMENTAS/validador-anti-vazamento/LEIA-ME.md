@@ -121,7 +121,6 @@ Isenções registradas, com o motivo:
 - `NOTICE.md` (termo-privado, além de url): o titular da obra derivada é o nome do autor, que consta da lista privada; é atribuição de autoria, não identidade de empresa.
 - `README.md` (url): o endereço do repositório-modelo, que a pessoa cola na IA para instalar.
 - `INSTALAR.md` e `_fabrica/core/ambiente.js` (url): endereços públicos dos programas gratuitos (Node, Git, Hugging Face) que o roteiro de instalação manda abrir.
-- `_fabrica/core/ferramentas.js` (url): endereços públicos de onde as ferramentas de vídeo são baixadas na versão mais nova (Tesseract e whisper.cpp no GitHub, modelos na Hugging Face e no GitHub do RVM); é o funcionamento do instalador.
 - `08-FERRAMENTAS/imagem-ia/gerar.js` (url): endereços dos serviços gratuitos de imagem por IA, que são o funcionamento da ferramenta.
 - `LICENSE.md` (url): texto oficial da PolyForm Shield 1.0.0, que traz o endereço da licença e um endereço de exemplo; precisa ficar sem alteração.
 - `_fabrica/core/visual.js` (hex, fonte, url, handle): o gerador de prévia traz cores e fontes de demonstração e o endereço do serviço de fontes; nenhum valor é de empresa.

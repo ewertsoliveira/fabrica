@@ -65,15 +65,13 @@ function conferir(raiz = RAIZ) {
 
   add('video', 'caminho', 'Pasta da Fábrica sem acento no nome (o vídeo precisa)', /^[ -~]*$/.test(raiz), '', 'Mover a Fábrica para uma pasta sem acento, por exemplo C:\\Fabrica-de-Conteudo');
   const ffmpeg = roda('ffmpeg', ['-version']);
-  add('video', 'ffmpeg', 'ffmpeg', ffmpeg, ffmpeg ? ffmpeg.split(/\r?\n/)[0] : '', 'Rodar: node _fabrica/core/ferramentas.js (no Windows instala o ffmpeg pelo winget)');
+  add('video', 'ffmpeg', 'ffmpeg', ffmpeg, ffmpeg ? ffmpeg.split(/\r?\n/)[0] : '', 'Instalar o ffmpeg (Windows: winget install Gyan.FFmpeg)');
   const ffprobe = roda('ffprobe', ['-version']);
   add('video', 'ffprobe', 'ffprobe (vem com o ffmpeg)', ffprobe, '', 'Vem junto com o ffmpeg');
   const tsrct = process.env.LOCALAPPDATA && existe(process.env.LOCALAPPDATA, 'Tesseract', 'bin', 'tsrct.cmd');
-  add('video', 'tesseract', 'Tesseract (montagem de vídeo)', tsrct, '', 'Rodar: node _fabrica/core/ferramentas.js (instala o Tesseract na versão mais nova)');
+  add('video', 'tesseract', 'Tesseract (montagem de vídeo)', tsrct, '', 'Instalar o Tesseract CLI (ver 08-FERRAMENTAS/tesseract/LEIA-ME.md)');
   const whisper = existe(raiz, '08-FERRAMENTAS', 'whisper-cpp', 'bin', 'Release', 'whisper-cli.exe') && existe(raiz, '08-FERRAMENTAS', 'whisper-cpp', 'modelos', 'ggml-large-v3-turbo-q5_0.bin');
-  add('video', 'whisper', 'whisper (transcrição da fala)', whisper, '', 'Rodar: node _fabrica/core/ferramentas.js (instala o whisper.cpp e o modelo na versão mais nova)');
-  const rvm = existe(raiz, '08-FERRAMENTAS', 'rvm', 'rvm_mobilenetv3_fp32.onnx');
-  add('video', 'rvm', 'Modelo da máscara da pessoa (RVM)', rvm, '', 'Rodar: node _fabrica/core/ferramentas.js');
+  add('video', 'whisper', 'whisper (transcrição da fala)', whisper, '', 'Instalar o whisper.cpp e o modelo large-v3-turbo-q5_0 em 08-FERRAMENTAS/whisper-cpp/');
   return itens;
 }
 

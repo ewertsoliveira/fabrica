@@ -10,18 +10,14 @@ Sem `marca.yaml`, os scripts usam `marca.exemplo.yaml` (empresa fictícia) e avi
 
 | Ferramenta | Para quê |
 |---|---|
-| Tesseract CLI (`tsrct`), a versão mais nova | montar, pré-visualizar e exportar (escrito na 0.3.1; a 0.6.0 exporta o mesmo vídeo, pixel a pixel) |
+| Tesseract CLI 0.3.1 (`tsrct`) | montar, pré-visualizar e exportar |
 | whisper.cpp + modelo `large-v3-turbo-q5_0` | transcrição com tempo por palavra |
 | ffmpeg e ffprobe | áudio, quadros, conferência |
 | Node 20+ | scripts |
 | `onnxruntime-node` e o modelo RVM (`rvm_mobilenetv3_fp32.onnx`) | máscara da pessoa (só se o vídeo usar texto atrás do corpo) |
 
-**Tudo isso é instalado pela própria instalação da Fábrica**, sempre na versão mais nova:
-`node _fabrica/core/ferramentas.js` (o `instalar.js` já chama; `--verificar` só compara o instalado com o mais novo).
-Nenhum desses downloads pede login. Os caminhos esperados (whisper em `08-FERRAMENTAS/whisper-cpp/`, RVM em
-`08-FERRAMENTAS/rvm/`, `tsrct` em `%LOCALAPPDATA%\Tesseract\bin`) estão no topo de `preparar-material.js`. Binários e
-modelos ficam fora do git. As texturas dos modelos (`modelos/texturas/`) também ficam fora do git: o motor as gera
-sozinho na primeira vez que um modelo pede uma.
+Os caminhos esperados (whisper em `08-FERRAMENTAS/whisper-cpp/`, RVM em `08-FERRAMENTAS/rvm/`, `tsrct` em
+`%LOCALAPPDATA%\Tesseract\bin`) estão no topo de `preparar-material.js`. Binários e modelos ficam fora do git.
 
 ## Peças desta pasta
 

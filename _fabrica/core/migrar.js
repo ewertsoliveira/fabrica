@@ -71,6 +71,7 @@ const CLASSIFICACAO = Object.freeze({
   termosCompartilhados: 'comum',
   previas: 'comum',
   envios: 'comum',
+  midias: 'comum',
   saidasRaiz: 'derivada',
   memoriaRaiz: 'derivada',
   saidas: 'migra',
