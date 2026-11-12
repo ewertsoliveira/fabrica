@@ -192,6 +192,25 @@ t('fixados: 3 PNG de 1080x1440, sem navegação, e a prévia mostra a grade do p
   const html = fs.readFileSync(path.join(saida, 'preview.html'), 'utf8');
   assert.ok(/grade3/.test(html) && /posts fixados/.test(html));
 });
+t('post estático: um PNG de 1080x1350, prévia de uma imagem e entrega sem passar por carrossel', () => {
+  const arq = escreve('post', { estilo: 'contraste', formato: 'post', legenda: LEGENDA, laminas: demo('contraste').slice(0, 1) });
+  const saida = path.join(TMP, 'post');
+  const p1 = gerar(arq, saida);
+  assert.ok(/Post estático pronto/.test(p1.saida) && !/as outras/.test(p1.saida), p1.saida);
+  const r = gerar(arq, saida, '--resto');
+  assert.ok(/APROVADO/.test(r.saida), r.saida);
+  assert.deepStrictEqual(png(path.join(saida, 'lamina-01.png')), { tipo: 'PNG', l: 1080, a: 1350 });
+  assert.ok(!existe(saida, 'lamina-02.png'));
+  const html = fs.readFileSync(path.join(saida, 'preview.html'), 'utf8');
+  assert.ok(/1 imagem/.test(html) && !/1 lâminas/.test(html));
+  const e = gerar(arq, saida, '--entregar');
+  assert.strictEqual(e.codigo, 0, e.saida);
+  assert.ok(existe(saida, 'entrega', 'lamina-01.png') && existe(saida, 'entrega', 'legenda.txt'));
+});
+t('post estático: mais de uma lâmina é recusado antes de renderizar', () => {
+  const r = gerar(escreve('post-2', { estilo: 'contraste', formato: 'post', laminas: demo('contraste').slice(0, 2) }), path.join(TMP, 'post2'));
+  assert.notStrictEqual(r.codigo, 0); assert.ok(/post estático é uma imagem só/.test(r.saida), r.saida);
+});
 t('capa de Reels: PNG de 1080x1920 com o texto na área segura; --formato pela linha de comando', () => {
   const arq = escreve('reels', demoF('primeira-pagina', 'reels').slice(0, 1));
   const saida = path.join(TMP, 'reels');

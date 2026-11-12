@@ -230,6 +230,31 @@ for (const id of ESTILOS) {
     assert.ok(!/nav-(barra|arraste|contador)/.test(html) && !/undefined|src=""/.test(html));
   });
 }
+// ---------- post estático de feed (uma imagem) ----------
+for (const id of ESTILOS) {
+  const e = molde.lerEstilo(id);
+  if (e.soReels) { t(`${id}: estilo só de capa de Reels recusa o post estático`, () => assert.throws(() => molde.laminas(e, [{ titulo: 'x' }], { formato: 'post' }), /só de capa de Reels/)); continue; }
+  t(`${id}: post estático é uma lâmina só, com o layout de capa e sem navegação`, () => {
+    const html = molde.laminas(e, [demo(id)[0]], { cores: 'sugestao', formato: 'post' }).join('\n');
+    assert.ok(!/undefined|NaN|\[object Object\]|src=""/.test(html), 'valor quebrado');
+    assert.deepStrictEqual(atributos(html, 'layout'), [((e.dados.formatos.post || {}).layout) || e.car.capa[0]]);
+    assert.deepStrictEqual(atributos(html, 'formato'), ['post']);
+    assert.deepStrictEqual(atributos(html, 'papel'), ['capa']);
+    assert.deepStrictEqual(atributos(html, 'total'), ['1']);
+    assert.ok(!/nav-(barra|arraste|contador)/.test(html), 'navegação numa peça de uma lâmina só');
+  });
+}
+t('calibração: o post estático recusa mais de uma lâmina e usa o canvas do feed da marca', () => {
+  const e = molde.lerEstilo('contraste');
+  assert.throws(() => molde.laminas(e, demo('contraste').slice(0, 2), { formato: 'post' }), /post estático é uma imagem só/);
+  assert.deepStrictEqual(molde.canvasDoFormato('post', { largura: 1080, altura: 1350 }, { topo: 90, base: 140 }), { canvas: { largura: 1080, altura: 1350 }, seg: { topo: 90, base: 140 } });
+});
+t('calibração: formatos.post.layout inexistente é apontado pelo validador', () => {
+  const e = molde.lerEstilo('contraste');
+  const dados = JSON.parse(JSON.stringify(e.dados));
+  dados.formatos.post = { layout: 'layout-que-nao-existe' };
+  assert.ok(molde.validarEstilo(dados, e.dir).some((m) => /post\.layout/.test(m)));
+});
 t('calibração: fixados com outra quantidade que 3 e formato desconhecido são recusados', () => {
   const e = molde.lerEstilo('contraste');
   assert.throws(() => molde.laminas(e, demoDe('contraste', 'fixados').slice(0, 2), { formato: 'fixados' }), /fixados são 3/);

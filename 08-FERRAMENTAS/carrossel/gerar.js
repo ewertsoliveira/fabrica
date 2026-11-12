@@ -5,8 +5,8 @@
 // Primeiro passo: renderiza só a PRIMEIRA lâmina e para (DG-18, C21). Com a primeira aprovada, o segundo passo
 // renderiza o resto, confere tudo e monta a prévia.
 //
-//   node 08-FERRAMENTAS/carrossel/gerar.js <conteudo.json> --saida <pasta> [--estilo id] [--cores original|marca] [--formato carrossel|fixados|reels]
-//   node 08-FERRAMENTAS/carrossel/gerar.js <conteudo.json> --saida <pasta> --resto     (só depois de aprovar a primeira)
+//   node 08-FERRAMENTAS/carrossel/gerar.js <conteudo.json> --saida <pasta> [--estilo id] [--cores original|marca] [--formato carrossel|post|fixados|reels]
+//   node 08-FERRAMENTAS/carrossel/gerar.js <conteudo.json> --saida <pasta> --resto    (só depois de aprovar a primeira)
 //   node 08-FERRAMENTAS/carrossel/gerar.js <conteudo.json> --saida <pasta> --entregar  (só depois de aprovar o preview, F3)
 //
 // conteudo.json: { "estilo": "id", "legenda": "...", "laminas": [ { kicker, titulo, subtitulo, corpo, ..., visual } ] }
@@ -41,8 +41,8 @@ function argumentos(argv) {
   }
   return a;
 }
-const AJUDA = `uso: node 08-FERRAMENTAS/carrossel/gerar.js <conteudo.json> --saida <pasta> [--estilo id] [--cores original|marca] [--formato carrossel|fixados|reels] [--resto | --entregar]
-  --formato: carrossel (padrão), fixados (os 3 posts fixados, 1080x1440) ou reels (capa de Reels, 1080x1920)
+const AJUDA = `uso: node 08-FERRAMENTAS/carrossel/gerar.js <conteudo.json> --saida <pasta> [--estilo id] [--cores original|marca] [--formato carrossel|post|fixados|reels] [--resto | --entregar]
+  --formato: carrossel (padrão), post (post estático de feed: UMA imagem, no tamanho do feed), fixados (os 3 posts fixados, 1080x1440) ou reels (capa de Reels, 1080x1920)
   sem --resto: renderiza só a primeira lâmina e para, para você aprovar
   com --resto: renderiza as demais, confere tudo e monta a prévia (só depois de aprovar a primeira)
   com --entregar: copia para <pasta>/entrega só o que saiu aprovado (só depois de aprovar o preview)`;
@@ -128,7 +128,7 @@ async function main() {
   const opRender = estilo.proprio ? { bloquearRede: true } : {};
   // formato: carrossel (padrão), fixados (3 posts 3:4) ou reels (capa 9:16); canvas e área segura vêm do formato
   const formato = a.formato || (!Array.isArray(j) && j.formato) || 'carrossel';
-  if (!molde.FORMATOS[formato]) throw new Error('--formato deve ser carrossel, fixados ou reels (veio "' + formato + '")');
+  if (!molde.FORMATOS[formato]) throw new Error('--formato deve ser carrossel, post, fixados ou reels (veio "' + formato + '")');
   if (estilo.soReels && formato !== 'reels') throw new Error('o estilo ' + estilo.id + ' é só de capa de Reels: use --formato reels');
   const cfg = conferir.cfgDoFormato(conferir.cfgDaMarca(), formato);
   const legenda = (!Array.isArray(j) && j.legenda) || '';
@@ -164,7 +164,9 @@ async function main() {
     const r = await conferir.conferirRender({ estilo, conteudos, html, cfg, apenas: [0], formato });
     fs.writeFileSync(estadoArq, JSON.stringify({ etapa: 'primeira', hash, hashPrimeira, total, estilo: estilo.id, cores, formato }, null, 2));
     console.log(conferir.relatorio(r.achados, r.aviso));
-    console.log(`\nPrimeira lâmina pronta: ${nome(0)}\nConfira a imagem. Estando certa, rode de novo com --resto para renderizar as outras ${total - 1}.`);
+    console.log(formato === 'post'
+      ? `\nPost estático pronto: ${nome(0)}\nConfira a imagem. Estando certa, rode de novo com --resto para conferir tudo e montar a prévia.`
+      : `\nPrimeira lâmina pronta: ${nome(0)}\nConfira a imagem. Estando certa, rode de novo com --resto para renderizar as outras ${total - 1}.`);
     return r.achados.length ? 1 : 0;
   }
 
@@ -191,7 +193,7 @@ async function main() {
     cor: cor.acento, tinta: molde.contraste(cor.acento, cor.claro) >= molde.contraste(cor.acento, cor.escuro) ? cor.claro : cor.escuro, conferencia: relatorio, estilo: estilo.dados.nome,
   };
   // carrossel: simulador de post; fixados e capa de Reels: como aparecem na grade do perfil (e a capa inteira, com as faixas da interface)
-  fs.writeFileSync(path.join(saida, 'preview.html'), formato === 'carrossel' ? gerarPreview(opPrevia) : gerarPreviewGrade({ ...opPrevia, formato }));
+  fs.writeFileSync(path.join(saida, 'preview.html'), formato === 'carrossel' || formato === 'post' ? gerarPreview(opPrevia) : gerarPreviewGrade({ ...opPrevia, formato }));
   fs.writeFileSync(estadoArq, JSON.stringify({ ...estado, hash, hashPrimeira, etapa: 'completo', aprovadoPeloConferidor: r.achados.length === 0 }, null, 2));
   console.log(relatorio);
   console.log(`\nPrévia: ${path.join(saida, 'preview.html')}\nMiniaturas de 100 px (DG-19): ${path.join(saida, 'miniaturas-100px.png')}`);

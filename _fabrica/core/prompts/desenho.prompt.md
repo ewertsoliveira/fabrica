@@ -215,6 +215,10 @@ passo `copy`, e o responsável a aprova no `aprovar-copy`.
 O responsável escolhe o **formato do carrossel** (editorial, lista, tutorial, mito e realidade, antes e depois, história,
 problema e solução) a cada peça, no `pedido`: o desenho não o fixa.
 
+**Post estático de feed** (uma imagem só) usa o mesmo pipeline e o mesmo gerador, com `--formato post`
+(`carrossel-compartilhado.md`, "Post estático de feed"). Linha que tem post estático no plano o inclui como peça
+normal: nunca o deixe de fora nem o troque por carrossel curto.
+
 ### Linhas que não são de conteúdo
 
 Pesquisador + analista + redator ou executor + revisor, sem criadores por plataforma.
@@ -252,25 +256,39 @@ desenho), cite os caminhos para ele poder abrir.
 
 ## Fase G.4: Estilo do carrossel (obrigatório em linha de carrossel)
 
-**Condição:** `carrossel.habilitado: true`. O estilo é decisão visual: **mostre, não descreva** (regra D-01). Antes de
-perguntar:
+**Condição:** `carrossel.habilitado: true` (ou linha que produz post estático, capa de Reels ou vídeo). O estilo é
+decisão visual: **mostre, não descreva** (regra D-01). **A marca vem antes do estilo:** quem já tem identidade visual
+escolhe o estilo vendo-o com as cores e as letras dela, nunca só com as cores de exemplo. Nesta ordem:
 
-1. Gere o catálogo **nas cores originais de cada estilo**, as que foram aprovadas: `node 04-LABORATORIO-DE-DESIGN/estilos/previa.js`
-   (sem `--marca`). A cor de um estilo aprovado nunca é trocada em silêncio: a primeira imagem que o responsável vê é a
-   original.
-2. **Abra** o `04-LABORATORIO-DE-DESIGN/estilos/catalogo.html` no navegador do responsável e dê o caminho clicável, na
-   mesma mensagem que oferece as opções.
-3. Ofereça de 2 a 4 estilos, com letra (A, B, C...) na ordem em que aparecem na página, cada um com o nome e **uma
-   linha** (o campo `linha` do `estilo.yaml`). Catálogo com mais de 4 estilos: os 3 mais próximos do tom da empresa mais
-   "ver os outros".
-4. **Diga com todas as letras que o estilo pode ser adaptado à paleta da empresa:** "Esses são os estilos com as cores
-   originais. Se você escolher um, posso mantê-lo assim ou aplicar as cores e fontes da sua marca por cima, sem mudar o
-   desenho." Tendo o contrato de marca da empresa ativa (caminho `marca`), ofereça mostrar a adaptação: `node 04-LABORATORIO-DE-DESIGN/estilos/previa.js --marca <id do estilo>`,
-   com o `catalogo.html` aberto e o título da prévia dizendo "teste de paleta". Sem o contrato de marca, diga que a adaptação
-   fica para quando a marca estiver preenchida.
-5. Pergunte por pergunta estruturada, em duas perguntas na mesma chamada: **o estilo** e **as cores** (originais do estilo
-   ou paleta da empresa). Só a escolha explícita grava `carrossel.estilo` e `carrossel.cores`; a prévia não altera nada
-   (D-01, item 7). Sem resposta sobre as cores, vale `original`.
+1. **Confira a marca da empresa:** `node 08-FERRAMENTAS/biblioteca/fila-marca.js estado <codigo> --json`. Se der
+   `sem-marca`, **ainda não mostre estilos.** Pergunte por pergunta estruturada:
+   "A <empresa> já tem identidade visual (logo, cores, letras)? (A) Já tem: vou abrir a tela Sua marca para você me
+   mandar o logo, as cores, as letras e, se tiver, o manual (recomendado) (B) Não tem: criamos juntos (C) Prefiro ver os
+   estilos agora e cuidar da marca depois".
+   - **A:** suba os painéis (`node _fabrica/paineis/servidor.js garantir`, que imprime o endereço) e abra
+     `<endereço>/_fabrica/paineis/marca.html?empresa=<codigo>` no navegador dela. Espere ela dizer que gravou (ou atenda o
+     pedido que a tela gerar, com o fluxo de `/fabrica continuar`). Com a cor ou a letra que ela já usa, ela pode também
+     ditar na conversa: siga o **Fluxo de marca** da skill `fabrica`, com o que ela tem como opção A.
+   - **B:** siga o **Fluxo de marca** da skill `fabrica` (paleta, tipografia, quadro, gravação).
+   - **C:** siga para o item 3 avisando que, sem a marca, os estilos aparecem só como modelo base.
+2. **Com a marca gravada, peça as prévias na marca:** `node 08-FERRAMENTAS/biblioteca/fila-marca.js pedir <codigo>` (a
+   gravação pelo painel ou por `escrever.js` já pede sozinha; rodar de novo não muda nada). As imagens ficam prontas
+   primeiro e os vídeos depois; diga isso.
+3. **Abra a tela de Estilos do painel**, não o catálogo estático: `<endereço>/_fabrica/paineis/estilos.html?empresa=<codigo>`
+   (endereço do `servidor.js garantir`), com o link na mesma mensagem que oferece as opções. É ela que mostra cada estilo
+   como **modelo base e na marca da empresa, lado a lado** (interruptor "Na minha marca" e, no detalhe de cada estilo,
+   "Base e marca lado a lado"), com o carrossel, os posts fixados, a capa de Reels e o **vídeo** de cada um. Explique em
+   uma frase como usar: "Ligue **Na minha marca** para ver cada estilo com as suas cores e letras; clique num estilo para
+   ver o original e o seu lado a lado, e o vídeo." Se as prévias na marca ainda estiverem sendo feitas, diga quantas
+   faltam (do `estado`) e que a tela se atualiza sozinha. **O `catalogo.html` (`previa.js`) só vale quando o painel não
+   puder ser aberto** (por exemplo, sem navegador); nesse caso, com marca, gere também `previa.js --marca <id>` de cada
+   opção, para a pessoa comparar as duas.
+4. Ofereça de 2 a 4 estilos, com letra (A, B, C...), cada um com o nome e **uma linha** (o campo `linha` do
+   `estilo.yaml`). Catálogo com mais de 4 estilos: os 3 mais próximos do tom da empresa mais "ver os outros".
+5. Pergunte por pergunta estruturada, em duas perguntas na mesma chamada: **o estilo** e **as cores** (na marca da
+   empresa, recomendada quando ela tem marca, ou as originais do estilo). Só a escolha explícita grava `carrossel.estilo`
+   e `carrossel.cores`; a prévia não altera nada (D-01, item 7). Sem resposta sobre as cores, vale `marca` quando a
+   empresa tem marca e `original` quando não tem.
 6. **Empresa que já escolheu um estilo** (`node _fabrica/core/estilo-da-linha.js <codigo>` mostra um): ele é a opção A,
    recomendada, com as cores da marca. Estilo próprio da empresa não vai para o `linha.yaml` (o portão só aceita o catálogo):
    grave o estilo do catálogo mais parecido; cada run usa o estilo da empresa assim mesmo (seção 2 de

@@ -96,9 +96,23 @@ Quando baixar, diga: "Pronto, a Fábrica está no seu computador. ✅" e continu
 
 ## Passo 3 de 5: Instalar os programas de apoio
 
-Entre na pasta da Fábrica e rode **`node _fabrica/core/instalar.js`**. Ele faz tudo sozinho e conta cada passo. Avise antes:
-"Agora vou instalar os programas que a Fábrica usa. **Demora de 5 a 15 minutos e pode parecer parado, é normal. Não feche
-nada.** Eu aviso quando terminar."
+Entre na pasta da Fábrica e rode **`node _fabrica/core/instalar.js`**. Ele faz tudo sozinho e conta cada passo.
+
+**Antes de rodar, leia o programa.** As ferramentas de IA bloqueiam, por segurança, programas vindos da internet que o
+assistente ainda não leu (já aconteceu: o assistente parou aqui e deixou a pessoa sem saber o que fazer). Então leia
+`_fabrica/core/instalar.js` e o `_fabrica/core/ambiente.js` (são curtos) e só depois rode. Ao ler, confirme que o programa
+só protege a pasta contra envio acidental (`atualizar.js proteger`), instala as dependências da Fábrica (`npm install`),
+baixa o navegador (`npx playwright install chromium`) e confere o computador. Conte isso à pessoa em uma frase, sem
+jargão: "Li o programa de instalação: ele só prepara a pasta da Fábrica, baixa o que ela usa e confere o computador. Não
+mexe em nenhum outro arquivo seu."
+
+**Se a ferramenta mesmo assim bloquear ou pedir permissão, não devolva a decisão técnica para a pessoa** (nada de
+"escolha entre 3 opções"). Explique e peça só o clique: "Apareceu um aviso de segurança da ferramenta pedindo permissão.
+É normal, e é bom: ela está te protegendo. Clique em **Permitir** (ou *Sim*). Depois me diga **permiti**." Se o
+bloqueio persistir, use "Se travar". Nunca tente contornar o bloqueio.
+
+Avise antes de rodar: "Agora vou instalar os programas que a Fábrica usa. **Demora de 5 a 15 minutos e pode parecer
+parado, é normal. Não feche nada.** Eu aviso quando terminar."
 
 Rode em segundo plano, com tempo longo (20 minutos), e relate o andamento em palavras suas, uma frase por etapa que
 terminar ("Já instalei os programas. Agora estou baixando o navegador da Fábrica."). Se terminar com `RESULTADO: tudo

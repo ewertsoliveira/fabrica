@@ -36,7 +36,7 @@ peça não foi renderizada por inteiro, se o conferidor reprovou ou se o conteú
 | `--cores marca` (padrão) \| `original` | cores e fontes do `marca.yaml` por cima do estilo, ou as originais aprovadas do estilo (`sugestao` é sinônimo de `original`). Use o mesmo valor nos três passos |
 | `--resto` | segundo passo, depois de aprovar a primeira lâmina |
 | `--entregar` | terceiro passo, depois de aprovar o preview: copia só o aprovado para `entrega/` |
-| `--formato carrossel` (padrão), `fixados` ou `reels` | o que montar: o carrossel (canvas.feed), os **3 posts fixados** (1080x1440, 3:4, layouts de `formatos.fixados`: apresentação, método e contratar) ou a **capa de Reels** (1080x1920; o texto fica entre y 250 e 1520, dentro do recorte 3:4 da grade, V-04). Também pode vir como `"formato"` no JSON |
+| `--formato carrossel` (padrão), `post`, `fixados` ou `reels` | o que montar: o carrossel (canvas.feed), o **post estático** (uma lâmina só, no canvas.feed, com o layout de capa do estilo ou `formatos.post.layout`; sem navegação), os **3 posts fixados** (1080x1440, 3:4, layouts de `formatos.fixados`: apresentação, método e contratar) ou a **capa de Reels** (1080x1920; o texto fica entre y 250 e 1520, dentro do recorte 3:4 da grade, V-04). Também pode vir como `"formato"` no JSON |
 
 ### O que sai na pasta
 

@@ -71,7 +71,8 @@ function lerEstilo(id, opcoes = {}) {
 // aplicativo e dentro do recorte 3:4 que a grade mostra, de y 240 a 1680), regra V-04 do Núcleo.
 const FORMATOS = {
   carrossel: { canvas: null, seg: null },
-  fixados: { canvas: { largura: 1080, altura: 1440 }, seg: null },
+  post: { canvas: null, seg: null }, // post estático de feed: UMA imagem no canvas.feed da marca (o mesmo tamanho do carrossel)
+  fixados:{ canvas: { largura: 1080, altura: 1440 }, seg: null },
   reels: { canvas: { largura: 1080, altura: 1920 }, seg: { topo: 250, base: 400 } },
 };
 const PAPEIS_FIXADOS = ['capa', 'miolo', 'fecho'];
@@ -265,6 +266,8 @@ function validarEstilo(e, dir, opcoes = {}) {
     exige(Array.isArray(e.kit.regras) && e.kit.regras.length && e.kit.regras.every((r) => typeof r === 'string' && r.trim()), 'kit.regras: lista de frases');
     if (e.kit.movimento) exige(Array.isArray(e.kit.movimento) && e.kit.movimento.every((m) => m && m.video && m.peca), 'kit.movimento: lista de { video, peca }');
   }
+  const po = e?.formatos?.post || {};
+  if (po.layout) exige(arquivoLayout(dir, po.layout), `layout "${po.layout}" (em post.layout) não existe no estilo nem em layouts/`);
   const rl = e?.formatos?.reels || {};
   if (rl.capa) exige(arquivoLayout(dir, rl.capa), `layout "${rl.capa}" (em reels.capa) não existe no estilo nem em layouts/`);
   const car = e?.formatos?.carrossel;
@@ -399,6 +402,8 @@ function layoutEFundos(estilo, ctx) {
   const car = estilo.car || {};
   if (ctx.formato === 'fixados') return { nome: (f.fixados || {})[CHAVES_FIXADOS[ctx.indice]] || escolherLayout(estilo, ctx.papel, ctx.indiceNoPapel), fundos: (f.fixados || {}).fundos || car.fundos };
   if (ctx.formato === 'reels') return { nome: (f.reels || {}).capa || car.capa[0], fundos: (f.reels || {}).fundos || car.fundos };
+  // post estático: o layout de capa do estilo (feito para parar a rolagem), salvo se o estilo declarar formatos.post.layout
+  if (ctx.formato === 'post') return { nome: (f.post || {}).layout || car.capa[0], fundos: (f.post || {}).fundos || car.fundos };
   return { nome: escolherLayout(estilo, ctx.papel, ctx.indiceNoPapel), fundos: car.fundos };
 }
 function lamina(estilo, conteudo, ctx, opcoes = {}) {
@@ -509,21 +514,22 @@ function arquivosDe(conteudo, opcoes = {}) {
 // apresentação (capa), método (miolo) e contratar (fecho). Capa de Reels: cada lâmina é uma capa.
 function laminas(estilo, conteudos, opcoes = {}) {
   const formato = opcoes.formato || 'carrossel';
-  if (!FORMATOS[formato]) throw new Error(`formato desconhecido: ${formato} (carrossel, fixados ou reels)`);
+  if (!FORMATOS[formato]) throw new Error(`formato desconhecido: ${formato} (carrossel, post, fixados ou reels)`);
   if (estilo.soReels && formato !== 'reels') throw new Error(`o estilo ${estilo.id} é só de capa de Reels: use o formato reels`);
+  if (formato === 'post' && conteudos.length !== 1) throw new Error(`o post estático é uma imagem só; o conteúdo tem ${conteudos.length} lâminas (para várias, use o carrossel)`);
   if (formato === 'fixados' && conteudos.length !== 3) throw new Error(`os fixados são 3 (apresentação, método, contratar); o conteúdo tem ${conteudos.length}`);
   mk.usarCores(opcoes.cores === 'sugestao' ? estilo.dados.sugestao.cores : null);
   const total = conteudos.length;
   const contagem = { capa: 0, miolo: 0, fecho: 0 };
   return conteudos.map((c, indice) => {
-    const papel = formato === 'reels' ? 'capa' : formato === 'fixados' ? PAPEIS_FIXADOS[indice] : indice === 0 ? 'capa' : indice === total - 1 ? 'fecho' : 'miolo';
+    const papel = formato === 'reels' || formato === 'post' ? 'capa' : formato === 'fixados' ? PAPEIS_FIXADOS[indice] : indice === 0 ? 'capa' : indice === total - 1 ? 'fecho' : 'miolo';
     return lamina(estilo, c, { indice, total, papel, formato, indiceNoPapel: contagem[papel]++ }, opcoes);
   });
 }
 // Canvas e área segura do formato, a partir dos do marca.yaml (o carrossel fica com os da marca).
 function canvasDoFormato(formato, canvasMarca, segMarca) {
   const f = FORMATOS[formato || 'carrossel'];
-  if (!f) throw new Error(`formato desconhecido: ${formato} (carrossel, fixados ou reels)`);
+  if (!f) throw new Error(`formato desconhecido: ${formato} (carrossel, post, fixados ou reels)`);
   return { canvas: f.canvas || canvasMarca, seg: f.seg || segMarca };
 }
 

@@ -4,7 +4,7 @@
 //   peça      DG-01 M-04 DG-04 DG-08 DG-09/I-15 M-02 DG-10 DG-15 DG-16 I-13 I-14 F-26 a F-29 F-53 T-12 T-13,
 //             contraste AA e texto fora do canvas (medidos no navegador, na peça renderizada de verdade)
 // Cada checagem é calibrada contra um caso feito para falhar em conferir.test.js (G-13).
-// Uso: node 08-FERRAMENTAS/carrossel/conferir.js <conteudo.json> [--estilo id] [--cores marca|sugestao] [--formato carrossel|fixados|reels]
+// Uso: node 08-FERRAMENTAS/carrossel/conferir.js <conteudo.json> [--estilo id] [--cores marca|sugestao] [--formato carrossel|post|fixados|reels]
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -75,6 +75,7 @@ const assinatura = (v) => (v ? `${v.tipo || ''}:${v.componente || v.nome || ''}`
 function conferirConteudo({ estilo, conteudos, legenda = '', cfg = cfgDaMarca(), formato = cfg.formato || 'carrossel' }) {
   const out = [];
   const car = estilo.car;
+  if (formato === 'post' && conteudos.length !== 1) out.push(achado('ESTILO', 0, `o post estático é uma imagem só e o conteúdo tem ${conteudos.length} lâminas (para várias, use o carrossel)`));
   if (formato === 'fixados' && conteudos.length !== 3) out.push(achado('ESTILO', 0, `os fixados são 3 (apresentação, método, contratar) e o conteúdo tem ${conteudos.length}`));
   if (formato === 'carrossel' && (conteudos.length < car.laminas.min || conteudos.length > car.laminas.max)) {
     out.push(achado('ESTILO', 0, `o estilo ${estilo.id} pede de ${car.laminas.min} a ${car.laminas.max} lâminas e o conteúdo tem ${conteudos.length}`));
@@ -386,7 +387,7 @@ if (require.main === module) {
     const args = process.argv.slice(2);
     const val = (k) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : null; };
     const arq = args.find((a) => !a.startsWith('--') && a !== val('--estilo') && a !== val('--cores') && a !== val('--formato'));
-    if (!arq) { console.error('uso: node conferir.js <conteudo.json> [--estilo id] [--cores marca|sugestao] [--formato carrossel|fixados|reels]'); process.exit(2); }
+    if (!arq) { console.error('uso: node conferir.js <conteudo.json> [--estilo id] [--cores marca|sugestao] [--formato carrossel|post|fixados|reels]'); process.exit(2); }
     const j = JSON.parse(fs.readFileSync(arq, 'utf8'));
     const conteudos = Array.isArray(j) ? j : j.laminas;
     const estilo = molde.lerEstilo(val('--estilo') || j.estilo);

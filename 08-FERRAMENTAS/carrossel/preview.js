@@ -66,7 +66,7 @@ button.chave[aria-pressed="true"]{background:var(--acento);color:var(--sobre);bo
 </style></head>
 <body>
 <main class="app">
-<div class="topo"><div><h1>${esc(o.titulo || 'Prévia do carrossel')}</h1><small>${o.pngs.length} lâminas${o.estilo ? ' · estilo ' + esc(o.estilo) : ''}</small></div><button class="chave" id="seg" type="button" aria-pressed="false">Mostrar área segura</button></div>
+<div class="topo"><div><h1>${esc(o.titulo || 'Prévia do carrossel')}</h1><small>${o.pngs.length === 1 ? '1 imagem' : o.pngs.length + ' lâminas'}${o.estilo ? ' · estilo ' + esc(o.estilo) : ''}</small></div><button class="chave" id="seg" type="button" aria-pressed="false">Mostrar área segura</button></div>
 <article class="post">
 <div class="cab"><span class="av">${esc(iniciais(o.nome || o.conta))}</span><div><b>${esc((o.conta || '').replace(/^@/, '') || o.nome || '')}</b><span>${esc(o.nome || '')}</span></div></div>
 <div class="vis"><span class="chip" id="chip">1/${o.pngs.length}</span>

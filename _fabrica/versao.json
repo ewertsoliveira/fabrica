@@ -1,7 +1,10 @@
 {
-  "versao": "0.6.4",
+  "versao": "0.7.0",
   "data": "2026-11-11",
   "novidades": [
+    "Post estático de feed: a Fábrica agora monta post de uma imagem só, no tamanho do feed, em qualquer estilo da biblioteca, com o mesmo conferidor de qualidade dos carrosséis",
+    "Ao montar uma linha, a Fábrica pede a sua identidade visual antes de mostrar os estilos, e mostra os estilos na tela Estilos, com o original e a sua marca lado a lado, inclusive o vídeo de cada um",
+    "Instalação guiada: a IA lê o programa de instalação antes de rodar e, se a ferramenta pedir permissão, só pede à pessoa o clique em Permitir, em vez de deixá-la escolher entre opções técnicas",
     "Instalação guiada: o pedido agora manda a IA ler o roteiro ANTES de baixar qualquer coisa, para ela perguntar onde guardar a Fábrica antes de criar a pasta",
     "Instalação guiada mais respeitosa: a IA agora pergunta onde e com que nome guardar a Fábrica, e só avisa (com o motivo) quando o nome da pasta tem acento, que atrapalha apenas os vídeos",
     "A Fábrica agora tem endereço público (github.com/ewertsoliveira/fabrica): qualquer pessoa instala sem precisar de convite, e as melhorias passam a vir de lá",

@@ -77,6 +77,17 @@ t('copy: as lâminas de demonstração de cada estilo passam (carrossel, fixados
     assert.deepStrictEqual(c.conferirConteudo({ estilo: e, conteudos: ler(id, 'demo-reels.json'), cfg, formato: 'reels' }), [], id + ' reels');
   }
 });
+t('copy: a primeira lâmina de demonstração de cada estilo passa como post estático', () => {
+  for (const id of molde.listarEstilos()) {
+    const e = estilo(id);
+    if (!e.soReels) assert.deepStrictEqual(c.conferirConteudo({ estilo: e, conteudos: demo(id).slice(0, 1), cfg, formato: 'post' }), [], id + ' post');
+  }
+});
+t('calibração: post estático com mais de uma lâmina reprova; com uma não segue a faixa do carrossel', () => {
+  const e = estilo('contraste');
+  assert.ok(regras(c.conferirConteudo({ estilo: e, conteudos: cinco({}).slice(0, 2), cfg, formato: 'post' })).includes('ESTILO'));
+  assert.ok(!regras(c.conferirConteudo({ estilo: e, conteudos: cinco({}).slice(0, 1), cfg, formato: 'post' })).includes('ESTILO'));
+});
 t('calibração: fixados com 2 lâminas reprovam; capa de Reels não segue a faixa de lâminas do carrossel', () => {
   const e = estilo('contraste');
   assert.ok(regras(c.conferirConteudo({ estilo: e, conteudos: cinco({}).slice(0, 2), cfg, formato: 'fixados' })).includes('ESTILO'));

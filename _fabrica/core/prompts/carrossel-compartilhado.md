@@ -103,9 +103,11 @@ Checkpoint de primeira entrada. Por pergunta estruturada, no máximo 4 por chama
 3. **Estilo e cores:** com estilo escolhido pela empresa (`node _fabrica/core/estilo-da-linha.js <codigo do run>`), a
    primeira opção, recomendada, é esse estilo com as cores da marca ("o seu estilo, <nome>"); sem ele, os da linha
    (`carrossel.estilo` e `carrossel.cores`). Nos dois casos, com a opção de trocar neste pedido. Trocar
-   mostra a prévia (D-01): `node 04-LABORATORIO-DE-DESIGN/estilos/previa.js` (cores originais) e, se o responsável quiser
-   ver a adaptação, `previa.js --marca <id>` (teste de paleta), com o `catalogo.html` aberto no navegador dele. Deixe
-   explícito que o estilo pode ser mantido como está ou adaptado à paleta da empresa.
+   mostra a prévia (D-01) na **tela de Estilos do painel** (`node _fabrica/paineis/servidor.js garantir` e
+   `<endereço>/_fabrica/paineis/estilos.html?empresa=<codigo do run>`), que mostra cada estilo como modelo base e na marca
+   da empresa, lado a lado, com o vídeo. Empresa sem marca gravada que já tem identidade visual: peça a marca antes
+   (Fase G.4 do Desenho, item 1). O `catalogo.html` (`previa.js`, e `previa.js --marca <id>`) só quando o painel não
+   puder ser aberto. Deixe explícito que o estilo pode ser mantido como está ou adaptado à paleta da empresa.
 4. **Fotos:** liste o que existe em `<pastaMarca>/fotos/` (o caminho `pastaMarca` da empresa ativa) e pergunte se alguma deve aparecer. Não há foto? Siga: o
    designer usa mockups, números e objetos do estilo.
 
@@ -173,6 +175,21 @@ Códigos de saída, que o passo declara em **"Exceções ao runner"**:
 
 Depois do passo 6 e antes do 8, **abra o `preview.html` no navegador do responsável** e dê o caminho clicável. O
 responsável decide olhando, nunca lendo uma descrição.
+
+### Post estático de feed (uma imagem só)
+
+O gerador também monta **post estático**: `--formato post` (ou `"formato": "post"` no `conteudo.json`), com **uma
+lâmina só**, no tamanho do feed da marca, com o layout de capa do estilo (ou `formatos.post.layout`, se o estilo
+declarar), sem barra, arraste nem contador. **Nunca deixe o post estático de fora de uma linha nem o transforme em
+carrossel curto**: quando a ideia cabe numa imagem, é post.
+
+A linha de post usa os mesmos nove passos, com estas diferenças:
+- `pedido`: o formato é **post estático** (os sete formatos de narrativa do F-22 são do carrossel);
+- `copy`: uma lâmina, com gancho, a mensagem inteira e a chamada (C-18: a chamada fica nela e na legenda), e o `visual`;
+- passos 4, 6 e 9: os mesmos comandos com `--formato post`; o passo 5 aprova a única imagem, e o 6 confere e monta a
+  prévia de post no simulador.
+
+Uma linha que produz os dois (carrossel e post) decide o formato de cada peça no `pedido`.
 
 ## 5b. O guia `instagram-feed` e o Núcleo
 
