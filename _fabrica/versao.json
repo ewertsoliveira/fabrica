@@ -1,7 +1,10 @@
 {
-  "versao": "0.7.1",
+  "versao": "0.7.2",
   "data": "2026-11-12",
   "novidades": [
+    "Programas de vídeo instalados junto com a Fábrica, sempre na versão mais nova (ffmpeg, Tesseract, transcrição da fala e os modelos): nenhuma linha para no meio por falta de programa, e cada Reels confere e atualiza tudo antes de começar",
+    "Contas primeiro: todo login e cadastro (inclusive a chave gratuita das fotos sem marca d'água) acontece na instalação, antes de qualquer trabalho",
+    "Correção: os modelos de vídeo com textura (Luz de Vela, Adesivo, Caderno, Recorte, Retrô, Visor e os vindos do carrossel) não falham mais numa instalação nova",
     "Pasta de mídias da empresa: a Fábrica cria empresas/<empresa>/midias com subpastas videos, fotos, audios e documentos para você soltar o que vai usar. Ao pedir o vídeo, a linha de Reels abre a pasta certa em vez de pedir um caminho. Empresas já instaladas ganham a pasta na próxima vez que a linha de Reels pedir o vídeo",
     "Reels: a linha agora começa dizendo que edita o vídeo que você já gravou (não escreve roteiro), pede o vídeo primeiro e oferece a edição rápida com o visual da sua marca, em vez de abrir com a entrevista de público, cuidados e desenhos. A entrevista continua disponível em \"Personalizar\"",
     "Post estático de feed: a Fábrica agora monta post de uma imagem só, no tamanho do feed, em qualquer estilo da biblioteca, com o mesmo conferidor de qualidade dos carrosséis",

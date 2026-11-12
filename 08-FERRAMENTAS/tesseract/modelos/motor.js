@@ -84,6 +84,20 @@ const laco = (cx, cy, rx, ry, voltas = 1.12, seed = 3) => {
   return { commands: cmds };
 };
 
+// ---------- texturas ----------
+// As texturas dos modelos (papel, fita, luz dourada...) são desenhadas pelo gerar-texturas.js e ficam fora do git. Numa
+// instalação nova a pasta texturas/ não existe; sem isto, os modelos que usam textura (Luz de Vela, Adesivo, Caderno,
+// Recorte, Retrô, Visor e os do caminho inverso) paravam com um erro do Tesseract sem explicação. Gera todas uma vez só.
+const PASTA_TEXTURAS = path.join(__dirname, 'texturas');
+const GERAR_TEXTURAS = path.join(__dirname, 'gerar-texturas.js');
+function garantirTextura(arquivo, { programa = GERAR_TEXTURAS, pasta = PASTA_TEXTURAS } = {}) {
+  const abs = path.resolve(arquivo);
+  if (fs.existsSync(abs) || path.dirname(abs) !== path.resolve(pasta)) return false;
+  execFileSync(process.execPath, [programa], { stdio: ['ignore', 'ignore', 'inherit'], timeout: 5 * 60 * 1000, windowsHide: true });
+  if (!fs.existsSync(abs)) throw new Error(`a textura ${path.basename(abs)} não existe e o gerar-texturas.js não a desenha`);
+  return true;
+}
+
 // ---------- projeto ----------
 class Projeto {
   constructor(saida, { largura = 1080, altura = 1920 } = {}) {
@@ -113,6 +127,7 @@ class Projeto {
   }
   importaImagem(assetId, arquivo) {
     if (this.tamImg[assetId]) return this.tamImg[assetId];
+    garantirTextura(arquivo);
     tsrct('project', 'import-asset', '-p', this.saida, '--file', path.resolve(arquivo), '--asset-id', assetId, '--kind', 'image');
     const buf = fs.readFileSync(arquivo);
     this.tamImg[assetId] = [buf.readUInt32BE(16), buf.readUInt32BE(20)];
@@ -335,4 +350,4 @@ function preparaTrecho(pedido, base) {
   };
 }
 
-module.exports = { Projeto, agrupa, preparaTrecho, EASE, hex, comAlfa, tf, faixa, s2ms, limpa, norm, elipse, retangulo, retArredondado, estrela, arco, laco, COMP };
+module.exports = { Projeto, garantirTextura, agrupa, preparaTrecho, EASE, hex, comAlfa, tf, faixa, s2ms, limpa, norm, elipse, retangulo, retArredondado, estrela, arco, laco, COMP };

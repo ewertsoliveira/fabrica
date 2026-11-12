@@ -11,6 +11,20 @@ camada de produção e o modelo de edição**. As respostas orientam o script de
 
 Todas as perguntas vão por pergunta estruturada (nunca em texto solto), no máximo 4 por chamada, de 2 a 4 opções cada.
 
+## Pré-voo (antes de qualquer pergunta)
+
+Nada de vídeo começa com programa faltando ou velho, e nenhum login ou cadastro pode ficar para o meio do trabalho.
+
+1. Rodar `node _fabrica/core/ambiente.js` e `node _fabrica/core/ferramentas.js --verificar`.
+2. Se algo do grupo "Para Reels (vídeo)" faltar, ou o `--verificar` disser **PRECISA**, rodar
+   `node _fabrica/core/ferramentas.js` (instala e atualiza ffmpeg, Tesseract, whisper e modelos para a versão mais nova;
+   nenhum desses downloads pede login) **antes** de seguir. Dizer o que vai baixar e pedir o "sim".
+3. Se o Tesseract mudou de versão, registrar no relatório e conferir os quadros de teste antes de confiar nos modelos.
+4. Só depois da conferência passar (todos "OK") seguir para a chamada 0. Se não passar, **parar e dizer o que falta**;
+   nunca abrir a entrevista de estilo nem pedir o vídeo com o ambiente incompleto.
+5. Contas: se for preciso entrar ou criar conta em qualquer serviço, é agora, antes da chamada 0, e a pessoa entra
+   sozinha no navegador (nunca pedir senha ou chave na conversa).
+
 ## Contexto para o responsável
 
 **Caminhos da empresa do run:** use os caminhos que o runner passou; se faltarem,
