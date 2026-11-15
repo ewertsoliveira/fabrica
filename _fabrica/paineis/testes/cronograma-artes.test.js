@@ -113,6 +113,76 @@ t('cenas gravadas no post valem mais que o script; peça sem fala tem estrutura 
   assert.strictEqual(Roteiro.ehVideo({ platformLabel: 'Instagram · Carrossel', script: '7 slides' }), false);
 });
 
+// ---------- o tipo de cada post (o cartão do calendário) ----------
+
+const Tipos = require(path.join(PAINEIS, 'tipos-de-post.js'));
+const tipo = (p) => Tipos.tipoDoPost(p).chave;
+
+t('tipos: nove tipos com cor, ícone e nome fixos, e o CSS de cada um', () => {
+  assert.deepStrictEqual(Tipos.TIPOS.map((x) => [x.chave, x.icone, x.nome]), [
+    ['reels', '🎬', 'Reels'], ['carrossel', '🖼️', 'Carrossel'], ['stories', '⭕', 'Stories'], ['whats', '💬', 'WhatsApp'],
+    ['anuncio', '📣', 'Anúncio'], ['longo', '▶️', 'Vídeo longo'], ['post', '📌', 'Post'], ['artigo', '📝', 'Artigo'], ['outro', '📄', 'Outro'],
+  ]);
+  for (const x of Tipos.TIPOS) for (const c of ['cor', 'fundo', 'tinta']) assert.ok(/^#[0-9A-F]{6}$/.test(x[c]), x.chave + ' ' + c);
+  assert.strictEqual(new Set(Tipos.TIPOS.map((x) => x.cor)).size, 9, 'uma cor por tipo');
+  const css = Tipos.cssDosTipos();
+  assert.strictEqual(css.length, 9);
+  const r = Tipos.TIPOS[0];
+  assert.strictEqual(css[0], `.tipo-reels { --tipo-cor: ${r.cor}; --tipo-fundo: ${r.fundo}; --tipo-tinta: ${r.tinta}; --tipo-texto: ${Tipos.TEXTO_DO_CARTAO}; }`);
+  assert.deepStrictEqual(Tipos.TIPOS_ESCOLHIDOS, dados.TIPOS_DE_POST, 'dados.js aceita os mesmos tipos');
+});
+
+t('tipoDoPost lê o rótulo e a plataforma na ordem combinada', () => {
+  const casos = [
+    [{ platform: 'insta', platformLabel: 'Instagram · Reels' }, 'reels'],
+    [{ platform: 'insta', platformLabel: 'Instagram · Carrossel' }, 'carrossel'],
+    [{ platform: 'insta', platformLabel: 'Instagram · Stories' }, 'stories'],
+    [{ platform: 'insta', platformLabel: 'Story do dia' }, 'stories'],
+    [{ platform: 'insta' }, 'post'],
+    [{ platform: 'insta', platformLabel: 'Instagram · Post fixado' }, 'post'],
+    [{ platform: 'insta', platformLabel: 'Imagem única' }, 'post'],
+    [{ platform: 'linkedin' }, 'post'],
+    [{ platform: 'linkedin', platformLabel: 'LinkedIn · Artigo' }, 'artigo'],
+    [{ platform: 'blog' }, 'artigo'],
+    [{ platform: 'yt' }, 'longo'],
+    [{ platform: 'yt', platformLabel: 'YouTube · Shorts' }, 'reels'], // shorts vem antes de youtube
+    [{ platform: 'insta', platformLabel: 'Vídeo longo' }, 'longo'],
+    [{ platformLabel: 'TikTok' }, 'reels'],
+    [{ platform: 'whats' }, 'whats'],
+    [{ platform: 'insta', platformLabel: 'Mensagem no grupo' }, 'whats'],
+    [{ platformLabel: 'Zap da semana' }, 'whats'],
+    [{ platform: 'ads' }, 'anuncio'],
+    [{ platform: 'insta', platformLabel: 'Anúncio · Reels' }, 'anuncio'], // anúncio vem antes de tudo
+    [{ platform: 'insta', platformLabel: 'Stories no grupo' }, 'stories'], // stories vem antes de grupo
+    [{ platform: 'insta', platformLabel: 'Reels em carrossel' }, 'reels'], // reels vem antes de carrossel
+    [{ platformLabel: 'E-mail' }, 'outro'],
+    [{}, 'outro'],
+    [null, 'outro'],
+    [{ platform: 42, platformLabel: ['Reels'] }, 'outro'],
+  ];
+  for (const [p, esperado] of casos) assert.strictEqual(tipo(p), esperado, JSON.stringify(p));
+  // palavra dentro de outra não conta: "postagem" não é "post", "adsorção" não é anúncio
+  assert.strictEqual(tipo({ platformLabel: 'Postagem especial' }), 'outro');
+  assert.strictEqual(tipo({ platformLabel: 'Adsorção' }), 'outro');
+});
+
+t('tipoDoPost: o campo tipo vale mais que o rótulo; tipo desconhecido cai na leitura do rótulo', () => {
+  assert.strictEqual(tipo({ tipo: 'stories', platform: 'insta', platformLabel: 'Instagram · Reels' }), 'stories');
+  assert.strictEqual(tipo({ tipo: 'anuncio', platform: 'insta' }), 'anuncio');
+  for (const chave of Tipos.TIPOS_ESCOLHIDOS) assert.strictEqual(tipo({ tipo: chave, platform: 'blog' }), chave);
+  assert.strictEqual(tipo({ tipo: 'outro', platform: 'insta', platformLabel: 'Instagram · Reels' }), 'reels', '"outro" não se escolhe');
+  assert.strictEqual(tipo({ tipo: 'Reels', platform: 'blog' }), 'artigo', 'só a chave exata');
+  const r = Tipos.tipoDoPost({ tipo: 'whats' });
+  assert.deepStrictEqual([r.nome, r.icone], ['WhatsApp', '💬']);
+});
+
+t('roteiro: o campo tipo também diz se a peça é de vídeo', () => {
+  assert.strictEqual(Roteiro.ehVideo({ tipo: 'reels' }), true);
+  assert.strictEqual(Roteiro.ehVideo({ tipo: 'longo', platform: 'insta' }), true);
+  assert.strictEqual(Roteiro.ehVideo({ tipo: 'carrossel', platformLabel: 'Instagram · Reels' }), false, 'o tipo vale mais que o rótulo');
+  assert.strictEqual(Roteiro.ehVideo({ tipo: 'whats' }), false);
+});
+
 // ---------- o zip ----------
 
 t('o zip abre com os arquivos certos, nomes com acento e nome repetido sem sobrescrever', () => {

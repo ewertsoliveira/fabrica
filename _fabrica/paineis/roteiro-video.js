@@ -107,10 +107,17 @@
     return blocos.join('\n\n');
   }
 
-  // É peça de vídeo? Tem cenas (gravadas ou no script), ou é Reels/vídeo pela rede ou pelo tipo da arte.
+  // Os valores do campo `tipo` do post (tipos-de-post.js) que são vídeo, e os que não são.
+  const TIPO_VIDEO = ['reels', 'longo', 'stories'];
+  const TIPO_SEM_VIDEO = ['carrossel', 'whats', 'anuncio', 'post', 'artigo'];
+
+  // É peça de vídeo? Tem cenas (gravadas ou no script); senão, o campo `tipo` do post decide; sem ele, é Reels/vídeo
+  // pela rede.
   function ehVideo(post, cenas) {
     const p = post || {};
     if ((cenas || cenasDoPost(p).cenas).length) return true;
+    if (TIPO_VIDEO.includes(p.tipo)) return true;
+    if (TIPO_SEM_VIDEO.includes(p.tipo)) return false;
     return /reels|v[ií]deo|stories|shorts|youtube/i.test(texto(p.platformLabel)) || p.platform === 'yt';
   }
 

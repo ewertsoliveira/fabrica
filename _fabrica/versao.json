@@ -1,7 +1,8 @@
 {
-  "versao": "0.8.2",
-  "data": "2026-11-13",
+  "versao": "0.8.3",
+  "data": "2026-11-15",
   "novidades": [
+    "Cronograma em calendário, com um cartão por tipo de post: o mês abre em largura total, e cada post tem a cor, o ícone e o nome do seu tipo (Reels, Carrossel, Stories, WhatsApp, Anúncio, Vídeo longo, Post, Artigo), iguais em toda empresa, com a legenda no alto dizendo quantos há no mês. Clique no post e a janela traz tudo dele, com \"Baixar tudo (.zip)\" no alto (antes, era preciso rolar uma lista longa para achar o que baixar). A lista continua em \"Lista\", no celular o calendário vira agenda, e o arquivo do cliente traz o mesmo calendário. Mensagem de WhatsApp e anúncio pago agora entram no cronograma como o que são, sem se passar por Instagram",
     "Escolha visual nunca mais por texto: a imagem da capa, as fotos, as cores ou o estilo aparecem já aplicados à peça, lado a lado com letras, antes de qualquer pergunta (antes, a escolha da imagem da capa podia vir só com a descrição dos quadros)",
     "Trava automática: se a Fábrica tentar perguntar algo de aparência sem mostrar a prévia, a pergunta é barrada e ela monta as opções primeiro",
     "A pergunta sobre usar a sua identidade visual abre antes a tela Estilos, com a identidade aplicada no carrossel, na capa e no vídeo",

@@ -375,6 +375,86 @@ t('a conferência lê o texto dos posts, não as imagens: o envio com arte conti
   assert.deepStrictEqual(listaEnvios(r, 'aurora'), []);
 });
 
+// ---------- o calendário por tipo (o mesmo da tela do Cronograma) ----------
+
+t('o arquivo abre no calendário de cada mês: legenda dos tipos com a conta do mês, um cartão por post e a lista', async () => {
+  const r = raizComArte();
+  const c = dados.caminhos(r, 'aurora');
+  // um post sem data, um de WhatsApp e um anúncio pago, com o campo tipo valendo mais que o rótulo
+  dados.gravarJson(c.posts, dados.lerJson(c.posts, []).concat([
+    { id: 'a-post-4', date: '2026-11-12', platform: 'whats', title: 'Lembrete da feira no grupo', caption: 'Amanhã tem feira!' },
+    { id: 'a-post-5', date: '2026-11-20', platform: 'ads', platformLabel: 'Instagram · Reels', title: 'Anúncio do cardápio' },
+    { id: 'a-post-6', date: '2026-11-21', platform: 'insta', platformLabel: 'Instagram · Reels', tipo: 'stories', title: 'Bastidores da cozinha' },
+    { id: 'a-post-7', platform: 'insta', title: 'Ideia ainda sem data' },
+  ]));
+  const res = await enviarCliente().enviar({ raiz: r, empresa: 'aurora', hoje: HOJE, pastaTemporaria: novaPasta('tmp') });
+  assert.strictEqual(res.ok, true, JSON.stringify(res));
+  const html = fs.readFileSync(res.arquivo, 'utf8');
+  const semScript = html.replace(/<script>[\s\S]*<\/script>/, '');
+  // um calendário por mês com post (novembro e dezembro), começando pelo primeiro dia da semana, e os cartões dos sem data em lista
+  assert.strictEqual((semScript.match(/<div class="calendario">/g) || []).length, 2, 'novembro e dezembro');
+  assert.ok(semScript.includes('<div class="semana-cab" aria-hidden="true"><span>dom</span><span>seg</span>'), 'a semana começa pelo primeiro dia (dom)');
+  assert.strictEqual((semScript.match(/<div class="cartoes-lista">/g) || []).length, 1, 'os posts sem data, em lista');
+  // novembro de 2026 começa no primeiro dia da semana: 30 dias, 5 semanas, nenhum dia de outro mês antes do dia 1
+  const novembro = semScript.slice(semScript.indexOf('<div class="calendario">'), semScript.indexOf('<ol class="posts">'));
+  assert.strictEqual((novembro.match(/<div class="dia[ "]/g) || []).length, 35);
+  assert.ok(/<div class="dias">\s*<div class="dia livre"><span class="dia-num"><b>1<\/b>/.test(novembro), 'dia 1 sem post fica apagado');
+  assert.strictEqual((novembro.match(/class="dia fora"/g) || []).length, 5, 'os dias de dezembro no fim da última semana');
+  // a legenda: os tipos que existem no cronograma inteiro, cada um com quantos posts há naquele mês
+  for (const [tipo, n] of [['post', 2], ['whats', 1], ['anuncio', 1], ['stories', 1], ['longo', 0]]) {
+    const nome = { post: 'Post', whats: 'WhatsApp', anuncio: 'Anúncio', stories: 'Stories', longo: 'Vídeo longo' }[tipo];
+    assert.ok(novembro.includes(`<li class="legenda-tipo tipo-${tipo}${n ? '' : ' sem-post'}"><i aria-hidden="true"></i>`), 'legenda sem ' + tipo);
+    assert.ok(novembro.includes(`${nome} · ${n}</li>`), `${nome} · ${n}`);
+  }
+  assert.ok(!novembro.includes('legenda-tipo tipo-reels'), 'tipo que não existe no cronograma não entra na legenda');
+  assert.ok(novembro.includes('<p class="legenda-nota">✓ arte aprovada · ⬇️ arte pronta para baixar · clique no post para abrir</p>'));
+  // os cartões: cor do tipo, nome do tipo, título e as marcas; cada um leva ao post na lista
+  const cartoes = [...semScript.matchAll(/<a class="cartao-post tipo-([a-z]+)" href="#post-(\d+)" data-post="\2">(.*?)<\/a>/g)];
+  assert.strictEqual(cartoes.length, 7, 'um cartão por post');
+  const cartao = (titulo) => cartoes.find((m) => m[3].includes(titulo));
+  assert.strictEqual(cartao('Lanches da tarde')[1], 'post');
+  assert.ok(cartao('Lanches da tarde')[3].includes('<span class="cartao-marcas">✓ aprovada</span>'), 'arte aprovada');
+  assert.ok(cartao('Água ao longo do dia')[3].includes('<span class="cartao-marcas">⬇️ arte pronta</span>'), 'arte pronta para baixar');
+  assert.strictEqual(cartao('Feira da semana')[1], 'longo');
+  assert.ok(cartao('Feira da semana')[3].includes('<span class="cartao-tipo"><span aria-hidden="true">▶️</span> Vídeo longo</span>'));
+  assert.strictEqual(cartao('Lembrete da feira')[1], 'whats');
+  assert.ok(!cartao('Lembrete da feira')[3].includes('cartao-marcas'), 'sem arte, sem marca');
+  assert.strictEqual(cartao('Anúncio do cardápio')[1], 'anuncio', 'a plataforma ads é anúncio, mesmo com rótulo de Reels');
+  assert.strictEqual(cartao('Bastidores')[1], 'stories', 'o campo tipo vale mais que o rótulo');
+  assert.strictEqual(cartao('Ideia ainda sem data')[1], 'post');
+  // cada cartão aponta para o post certo da lista, que tem o mesmo tipo
+  for (const m of cartoes) {
+    const li = new RegExp(`<li class="post tipo-${m[1]}" id="post-${m[2]}" data-quando="[^"]+">`).exec(semScript);
+    assert.ok(li, 'o cartão aponta para um post da lista: ' + m[3]);
+  }
+  assert.match(semScript, /data-quando="Q\w+-feira, 12 de novembro"/, 'a data por extenso (com o dia da semana) para a janela do post');
+  assert.ok(semScript.includes('data-quando="Data a definir"'));
+  assert.ok(semScript.includes('<span class="etiqueta-tipo"><span aria-hidden="true">💬</span> WhatsApp</span>'), 'o tipo também na lista');
+  assert.ok(semScript.includes('<span class="rede">WhatsApp</span>') && semScript.includes('<span class="rede">Instagram · Reels</span>'));
+  // "Calendário | Lista": escondidos até o visualizador ligar; as cores dos tipos são as fixas, as mesmas da tela
+  assert.ok(semScript.includes('<div class="vistas" role="group" aria-label="Como ver os posts" hidden><button type="button" data-vista="calendario" aria-pressed="true">Calendário</button><button type="button" data-vista="lista" aria-pressed="false">Lista</button></div>'));
+  for (const regra of require(path.join(__dirname, '..', 'tipos-de-post.js')).cssDosTipos()) assert.ok(semScript.includes(regra), regra);
+  assert.ok(/body\.vista-calendario \.posts, body\.vista-lista \.calendario, body\.vista-lista \.cartoes-lista \{ display: none; \}/.test(semScript), 'cada vista esconde a outra');
+  assert.ok(/@media \(max-width: 760px\) \{[^\n]*\.dias \{ display: block; \}/.test(semScript) && /\.dia\.livre, \.dia\.fora \{ display: none; \}/.test(semScript), 'tela estreita: agenda só com os dias que têm post');
+  // a janela do post é do visualizador fixo (sem dado nenhum); os links para fora continuam só os de responder
+  const visor = fs.readFileSync(path.join(__dirname, '..', 'cliente-visor.js'), 'utf8');
+  for (const parte of ["'⬇️ Baixar tudo (.zip)'", "'⬇️ Baixar o vídeo'", "'Copiar a legenda'", "'Fechar'", 'showModal()', "'vista-calendario'", "usar('calendario')", '.cartao-post[data-post]']) {
+    assert.ok(visor.includes(parte), 'o visualizador não tem ' + parte);
+  }
+  assert.strictEqual((semScript.match(/https?:\/\//g) || []).length, 4, 'só os links de responder (Aprovar e Pedir ajuste nos dois posts com arte para aprovar)');
+});
+
+t('a conferência continua citando o post certo quando o termo de outra empresa está no título (que agora também vai no cartão)', async () => {
+  const posts = POSTS_AURORA.map((p) => (p.id === 'a-post-2' ? { ...p, title: 'Dicas da Boreal Estúdio' } : p));
+  const r = raizDuas(posts);
+  const res = await enviarCliente().enviar({ raiz: r, empresa: 'aurora', hoje: HOJE, pastaTemporaria: novaPasta('tmp') });
+  assert.strictEqual(res.ok, false);
+  assert.strictEqual(res.motivo, 'vazamento');
+  assert.ok(res.erro.startsWith('O post de 12/11 cita “Boreal Estúdio”'), res.erro);
+  assert.ok(!/Há mais/.test(res.erro), 'o cartão e o post são o mesmo trecho, não dois: ' + res.erro);
+  assert.deepStrictEqual(listaEnvios(r, 'aurora'), []);
+});
+
 t('vídeo grande demais vai ao lado do arquivo, com o nome do envio, e post antigo não leva a arte', async () => {
   const r = raizComArte();
   const res = await enviarCliente().enviar({ raiz: r, empresa: 'aurora', hoje: '2026-11-20', pastaTemporaria: novaPasta('tmp'), limiteVideo: 5 });

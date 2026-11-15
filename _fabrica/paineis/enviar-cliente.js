@@ -12,6 +12,10 @@
 //
 // O arquivo do cliente traz só o que é do post: data, rede, tema, legenda (se houver), se a arte já foi aprovada e a
 // própria arte (imagens e vídeo dentro do arquivo, em base64, para ver em tamanho grande e baixar; ver montarArtes).
+// Como a tela do Cronograma, abre no calendário de cada mês, com a legenda dos tipos no topo e um cartão por post na cor
+// do tipo (tipos-de-post.js); clicar no cartão abre a janela do post (o visualizador, cliente-visor.js). "Lista" mostra os
+// posts um embaixo do outro. Sem o visualizador (navegador que bloqueia), o calendário e a lista aparecem juntos e o
+// cartão leva ao post na lista.
 // Nada de código interno, roteiro, caminho deste computador, link para o servidor local ou coisa de outra empresa. O
 // único script é o visualizador fixo da Fábrica (zip-simples.js + cliente-visor.js), sem dado nenhum e sem buscar nada.
 // Os únicos links para fora são os de responder (post com arte para aprovar): "Aprovar" e "Pedir ajuste" abrem o
@@ -38,11 +42,12 @@ const empresaMod = require('../core/empresa');
 const { dadosEmpresa } = require('./servidor');
 const { melhorContraste } = require('./empresa-seletor');
 const { midiasDosPosts } = require('./midias');
+const Tipos = require('./tipos-de-post');
 
 const VALIDAR = path.join(__dirname, '..', '..', '08-FERRAMENTAS', 'validador-anti-vazamento', 'validar.js');
 const ARQ_HTML = 'cronograma.html';
 const ARQ_TEXTO = 'conferencia.txt';
-const PLATAFORMAS = { insta: 'Instagram', yt: 'YouTube', linkedin: 'LinkedIn', blog: 'Blog' };
+const PLATAFORMAS = { insta: 'Instagram', yt: 'YouTube', linkedin: 'LinkedIn', blog: 'Blog', whats: 'WhatsApp', ads: 'Anúncio' };
 // Cores de reserva (papel sem cor na marca), as mesmas das telas.
 const CORES_PADRAO = { escuro: 'rgb(30, 32, 36)', claro: 'rgb(246, 244, 239)', acento: 'rgb(38, 102, 168)', neutro: 'rgb(132, 128, 120)' };
 const LETRA_TITULO = '"Iowan Old Style", "Palatino Linotype", Palatino, ui-serif, serif';
@@ -86,6 +91,9 @@ const formato = (op) => new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', ...o
 const nomeDoMes = (p) => maiuscula(formato({ month: 'long', year: 'numeric' }).format(p.quando));
 const diaDaSemana = (p) => formato({ weekday: 'short' }).format(p.quando).replace(/\.$/, '');
 const dataPorExtenso = (p) => formato({ day: 'numeric', month: 'long', year: 'numeric' }).format(p.quando);
+const diaPorExtenso = (p) => maiuscula(formato({ weekday: 'long', day: 'numeric', month: 'long' }).format(p.quando));
+// Arte de post de mais de DIAS_PARA_TRAS dias antes de hoje não vai no arquivo (o post já foi publicado).
+const limiteDaArte = (hoje) => (partesData(hoje) ? partesData(hoje).quando - DIAS_PARA_TRAS * 864e5 : -Infinity);
 
 // Cor em [r, g, b] a partir de #RRGGBB ou rgb(r, g, b); e a mistura de duas cores (t = quanto da primeira).
 function rgb(cor) {
@@ -126,6 +134,7 @@ function prepararPosts(posts, pecas, aprovacoes, midias = {}) {
     const grupos = (typeof p.id === 'string' && Array.isArray(midias[p.id]) ? midias[p.id] : []).filter((g) => g.imagens.length || g.video);
     return {
       data: partesData(p.date),
+      tipo: Tipos.tipoDoPost(p), // a cor, o ícone e o nome do cartão no calendário
       rede: texto(p.platformLabel) || PLATAFORMAS[p.platform] || texto(p.platform) || 'Rede a definir',
       titulo: texto(p.title) || 'Post sem título',
       legenda: typeof p.caption === 'string' ? p.caption.trim() : '',
@@ -153,6 +162,53 @@ function coresDaMarca(marca) {
     linha: misturar(c.neutro, c.claro, 0.35),
     fundo2: misturar(c.acento, c.claro, 0.08),
   };
+}
+
+// ---- o calendário (o mesmo da tela do Cronograma) ----
+
+const NOTA_DA_LEGENDA = '✓ arte aprovada · ⬇️ arte pronta para baixar · clique no post para abrir';
+
+// O cartão do post: borda e fundo na cor do tipo, o nome do tipo, o título e as marcas ("✓ aprovada", "⬇️ arte pronta"
+// quando a arte vai dentro do arquivo). É um link para o post na lista: com o visualizador, abre a janela do post.
+function cartaoDoPost(p, limite) {
+  const pronta = p.grupos.length > 0 && !(p.data && p.data.quando < limite);
+  const marcas = [p.aprovado ? '✓ aprovada' : '', pronta ? '⬇️ arte pronta' : ''].filter(Boolean).join(' · ');
+  return `<a class="cartao-post tipo-${p.tipo.chave}" href="#post-${p.ordem}" data-post="${p.ordem}">`
+    + `<span class="cartao-tipo"><span aria-hidden="true">${p.tipo.icone}</span> ${escapar(p.tipo.nome)}</span>`
+    + `<span class="cartao-titulo">${escapar(p.titulo)}</span>${marcas ? `<span class="cartao-marcas">${marcas}</span>` : ''}</a>`;
+}
+
+// A legenda no topo do calendário de um mês: cada tipo que existe no cronograma, com quantos posts há no mês.
+function legendaDoMes(postsDoMes, existentes) {
+  return '<div class="legenda-tipos"><ul class="legenda-lista">' + existentes.map((t) => {
+    const n = postsDoMes.filter((p) => p.tipo.chave === t.chave).length;
+    return `<li class="legenda-tipo tipo-${t.chave}${n ? '' : ' sem-post'}"><i aria-hidden="true"></i><span aria-hidden="true">${t.icone}</span>${escapar(t.nome)} · ${n}</li>`;
+  }).join('') + `</ul><p class="legenda-nota">${NOTA_DA_LEGENDA}</p></div>`;
+}
+
+// As linhas do calendário de um mês (uma linha por semana, começando pelo primeiro dia da semana), como pares [html, quem]: cada cartão
+// fica numa linha só, de quem é o post (para a conferência citar o post certo).
+function calendarioDoMes(g, existentes, limite) {
+  const [a, m] = g.chave.split('-').map(Number);
+  const inicio = new Date(Date.UTC(a, m - 1, 1)).getUTCDay();
+  const diasNoMes = new Date(Date.UTC(a, m, 0)).getUTCDate();
+  const total = Math.ceil((inicio + diasNoMes) / 7) * 7;
+  const linhas = [['<div class="calendario">'], [legendaDoMes(g.posts, existentes)]];
+  linhas.push(['<div class="semana-cab" aria-hidden="true">' + Array.from({ length: 7 }, (_, i) => `<span>${escapar(diaDaSemana({ quando: Date.UTC(2023, 0, 1 + i) }))}</span>`).join('') + '</div>']);
+  linhas.push(['<div class="dias">']);
+  for (let i = 0; i < total; i++) {
+    const quando = Date.UTC(a, m - 1, 1 + i - inicio);
+    const d = new Date(quando);
+    const fora = d.getUTCMonth() !== m - 1;
+    const doDia = fora ? [] : g.posts.filter((p) => p.data.quando === quando);
+    const num = `<span class="dia-num"><b>${d.getUTCDate()}</b><span class="dia-semana">${escapar(diaDaSemana({ quando }))}</span></span>`;
+    if (!doDia.length) { linhas.push([`<div class="dia ${fora ? 'fora' : 'livre'}">${num}</div>`]); continue; }
+    linhas.push([`<div class="dia">${num}<div class="dia-posts">`]);
+    for (const p of doDia) linhas.push([cartaoDoPost(p, limite), { tipo: 'post', post: p }]);
+    linhas.push(['</div></div>']);
+  }
+  linhas.push(['</div>'], ['</div>']);
+  return linhas;
 }
 
 // Monta o HTML (e a cópia em texto puro para a conferência). Cada post ocupa UMA linha do HTML e uma linha por campo
@@ -190,7 +246,9 @@ function montar({ empresa, marca, periodo, posts, hoje }) {
     'html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }',
     'body { margin: 0; background: var(--claro); color: var(--escuro); font: 16px/1.55 var(--letra-texto); }',
     '.capa { background: var(--escuro); color: var(--claro); padding: 48px 0 40px; }',
-    '.capa > div, main, footer { max-width: 760px; margin: 0 auto; padding-left: 24px; padding-right: 24px; }',
+    // largo para o calendário; a lista continua estreita, como sempre foi
+    '.capa > div, main, footer { max-width: 1120px; margin: 0 auto; padding-left: 24px; padding-right: 24px; }',
+    'body.vista-lista main { max-width: 808px; }',
     '.sobretitulo { margin: 0 0 10px; font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--acento); }',
     'h1 { margin: 0; font: 600 clamp(30px, 6vw, 44px)/1.08 var(--letra-titulo); letter-spacing: -0.01em; overflow-wrap: anywhere; }',
     '.resumo { margin: 14px 0 0; opacity: 0.8; font-size: 15px; }',
@@ -199,12 +257,12 @@ function montar({ empresa, marca, periodo, posts, hoje }) {
     '.mes h2 { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 6px; padding-bottom: 10px;',
     '  border-bottom: 2px solid var(--escuro); font: 600 24px/1.2 var(--letra-titulo); }',
     '.mes h2 span { font: 500 14px/1 var(--letra-texto); color: var(--texto-2); }',
-    '.posts { list-style: none; margin: 0; padding: 0; }',
+    '.posts { list-style: none; margin: 0; padding: 0; max-width: 760px; }',
     '.post { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 18px; padding: 20px 0; border-bottom: 1px solid var(--linha); break-inside: avoid; }',
-    '.dia { text-align: center; padding-top: 2px; }',
-    '.dia b { display: block; font: 600 32px/1 var(--letra-titulo); }',
-    '.dia span { display: block; margin-top: 4px; font-size: 13px; color: var(--texto-2); text-transform: capitalize; }',
-    '.dia.sem-data b { font-size: 20px; }',
+    '.post-data { text-align: center; padding-top: 2px; }',
+    '.post-data b { display: block; font: 600 32px/1 var(--letra-titulo); }',
+    '.post-data span { display: block; margin-top: 4px; font-size: 13px; color: var(--texto-2); text-transform: capitalize; }',
+    '.post-data.sem-data b { font-size: 20px; }',
     '.meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 6px; font-size: 13px; }',
     '.rede { font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--escuro); }',
     '.estado { padding: 2px 10px; border-radius: 999px; border: 1px solid var(--linha); color: var(--texto-2); font-weight: 600; }',
@@ -214,8 +272,61 @@ function montar({ empresa, marca, periodo, posts, hoje }) {
     'footer { padding-top: 24px; padding-bottom: 48px; font-size: 14px; color: var(--texto-2); }',
     'footer p { margin: 0 0 6px; }',
     '@media (max-width: 480px) { .capa { padding: 36px 0 30px; } .capa > div, main, footer { padding-left: 16px; padding-right: 16px; }',
-    '  .post { grid-template-columns: 48px minmax(0, 1fr); gap: 12px; } .dia b { font-size: 26px; } }',
-    '@media print { .capa { padding: 28px 0; } .mes { break-inside: auto; } .arte-acoes, .copiar-legenda { display: none !important; } }',
+    '  .post { grid-template-columns: 48px minmax(0, 1fr); gap: 12px; } .post-data b { font-size: 26px; } }',
+    '@media print { .capa { padding: 28px 0; } .mes { break-inside: auto; } .arte-acoes, .copiar-legenda, .vistas { display: none !important; }',
+    '  body.vista-calendario .posts, body.vista-lista .calendario, body.vista-lista .cartoes-lista { display: block !important; } }',
+    // os tipos de post: cor, ícone e nome fixos, iguais para toda empresa (não seguem a marca), os mesmos da tela
+    ...Tipos.cssDosTipos(),
+    '.etiqueta-tipo { display: inline-flex; align-items: center; gap: 4px; padding: 1px 9px 1px 7px; border-radius: 999px;',
+    '  background: var(--tipo-fundo); color: var(--tipo-tinta); box-shadow: inset 3px 0 0 var(--tipo-cor); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }',
+    // Calendário | Lista (os botões só aparecem com o visualizador funcionando)
+    '.vistas { display: inline-flex; margin: 24px 0 0; padding: 3px; border: 1px solid var(--linha); border-radius: 999px; background: var(--fundo-2); }',
+    '.vistas button { border: 0; border-radius: 999px; background: transparent; padding: 7px 18px; font: 600 14px/1.2 var(--letra-texto); color: var(--texto-2); cursor: pointer; }',
+    '.vistas button[aria-pressed="true"] { background: var(--claro); color: var(--escuro); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18); }',
+    'body.vista-calendario .posts, body.vista-lista .calendario, body.vista-lista .cartoes-lista { display: none; }',
+    // o calendário de cada mês: uma linha por semana, começando pelo primeiro dia da semana; dia sem post apagado
+    '.calendario { margin-top: 12px; border: 1px solid var(--linha); border-radius: 14px; overflow: hidden; background: var(--claro); }',
+    '.legenda-tipos { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; padding: 12px 14px; border-bottom: 1px solid var(--linha); }',
+    '.legenda-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; }',
+    '.legenda-tipo { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; }',
+    '.legenda-tipo i { flex: none; width: 14px; height: 14px; border-radius: 4px; background: var(--tipo-cor); }',
+    '.legenda-tipo.sem-post { font-weight: 500; color: var(--texto-2); } .legenda-tipo.sem-post i { opacity: 0.4; }',
+    '.legenda-nota { margin: 0; font-size: 13px; color: var(--texto-2); }',
+    '.semana-cab, .dias { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }',
+    '.semana-cab span { padding: 8px 8px 7px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--texto-2); background: var(--fundo-2); }',
+    '.dia { min-height: 120px; min-width: 0; padding: 6px; border-top: 1px solid var(--linha); border-left: 1px solid var(--linha); display: flex; flex-direction: column; gap: 6px; }',
+    '.dia:nth-child(7n + 1) { border-left: 0; }',
+    `.dia.livre, .dia.fora { background: ${misturar(cores.neutro, cores.claro, 0.07)}; }`,
+    '.dia.livre .dia-num { opacity: 0.5; } .dia.fora .dia-num { opacity: 0.28; }',
+    '.dia-num { display: flex; align-items: center; gap: 6px; padding: 2px 4px; font-size: 13px; font-weight: 600; }',
+    '.dia-semana { display: none; font-weight: 400; font-size: 12px; color: var(--texto-2); text-transform: capitalize; }',
+    '.dia-posts { display: flex; flex-direction: column; gap: 5px; min-width: 0; }',
+    // o cartão do post: borda esquerda e fundo suave na cor do tipo
+    '.cartao-post { display: flex; flex-direction: column; gap: 2px; min-width: 0; text-decoration: none; border-left: 4px solid var(--tipo-cor); border-radius: 6px;',
+    '  background: var(--tipo-fundo); color: var(--tipo-texto); padding: 5px 7px 6px 8px; font-size: 12.5px; line-height: 1.3; }',
+    '.cartao-post:hover { box-shadow: inset 0 0 0 1px var(--tipo-cor); }',
+    '.cartao-tipo { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--tipo-tinta); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }',
+    '.cartao-titulo { font-weight: 600; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }',
+    '.cartao-marcas { font-size: 11px; opacity: 0.78; }',
+    '.cartoes-lista { display: grid; gap: 8px; max-width: 680px; margin-top: 12px; } .cartoes-lista .cartao-post { padding: 9px 12px 10px; font-size: 15px; } .cartoes-lista .cartao-tipo { font-size: 11px; }',
+    // a janela do post (clique no cartão): tudo do post, com a barra de baixar fixa no alto
+    '.detalhe { width: min(820px, calc(100vw - 24px)); max-width: none; max-height: min(92vh, 1100px); padding: 0; border: 0; border-radius: 16px; overflow: hidden;',
+    '  background: var(--claro); color: var(--escuro); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35); }',
+    '.detalhe::backdrop { background: rgba(12, 12, 14, 0.55); }',
+    '.detalhe-caixa { max-height: min(92vh, 1100px); overflow: auto; overscroll-behavior: contain; }',
+    '.detalhe-barra { position: sticky; top: 0; z-index: 1; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px 18px;',
+    '  padding: 14px 20px; background: var(--claro); border-top: 6px solid var(--tipo-cor); border-bottom: 1px solid var(--linha); }',
+    '.detalhe-cabeca { flex: 1 1 260px; min-width: 0; }',
+    '.detalhe-quando { margin: 0 0 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 13px; color: var(--texto-2); }',
+    '.detalhe-cabeca h2 { margin: 0; font: 600 21px/1.25 var(--letra-titulo); overflow-wrap: anywhere; }',
+    '.detalhe-acoes { display: flex; flex-wrap: wrap; gap: 8px; }',
+    '.detalhe-corpo { padding: 0 20px 6px; } .detalhe-corpo .post { display: block; max-width: none; border-bottom: 0; padding: 14px 0; }',
+    '.detalhe-corpo .post-data, .detalhe-corpo .post h3, .detalhe-corpo .meta .etiqueta-tipo { display: none; }',
+    // tela estreita: o calendário vira agenda, só com os dias que têm post, um embaixo do outro
+    '@media (max-width: 760px) { .legenda-tipos { padding: 10px 12px; border-bottom: 0; } .semana-cab { display: none; } .dias { display: block; }',
+    '  .dia.livre, .dia.fora { display: none; } .dia { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 10px; min-height: 0; padding: 10px 12px; border-left: 0; }',
+    '  .dia-num { flex-direction: column; gap: 0; padding: 0; font-size: 17px; } .dia-semana { display: block; } .cartao-post { padding: 8px 10px 9px; font-size: 15px; } .cartao-tipo { font-size: 11px; }',
+    '  .detalhe { width: 100vw; max-height: 100dvh; border-radius: 0; } .detalhe-caixa { max-height: 100dvh; } .detalhe-barra { padding: 12px 16px; } .detalhe-corpo { padding: 0 16px 6px; } }',
     // as artes: miniaturas que abrem o visualizador, o vídeo e os botões de baixar
     '[hidden] { display: none !important; }',
     '.arte { margin: 12px 0 0; padding: 12px; border-radius: 12px; background: var(--fundo-2); }',
@@ -235,8 +346,11 @@ function montar({ empresa, marca, periodo, posts, hoje }) {
     '.responder .ajuste { border: 2px solid var(--escuro); color: var(--escuro); }',
     '@media print { .responder { display: none; } }',
     'body.visor-aberto { overflow: hidden; }',
-    '.visor { position: fixed; inset: 0; z-index: 10; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; background: rgba(12, 12, 14, 0.97); color: #fff; }',
-    '.visor[hidden] { display: none; }',
+    // o visualizador também é uma janela, aberta por cima da janela do post
+    '.visor { position: fixed; inset: 0; z-index: 10; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0;',
+    '  display: grid; grid-template-rows: auto minmax(0, 1fr) auto; background: rgba(12, 12, 14, 0.97); color: #fff; }',
+    '.visor:not([open]) { display: none; }',
+    '.visor::backdrop { background: transparent; }',
     '.visor-cabeca { display: flex; align-items: center; gap: 12px; padding: 12px 14px 8px 18px; }',
     '.visor-titulo { flex: 1; min-width: 0; display: flex; flex-direction: column; }',
     '.visor-titulo span { font-size: 13px; opacity: 0.75; }',
@@ -266,7 +380,13 @@ function montar({ empresa, marca, periodo, posts, hoje }) {
   linha('</div></header>');
   linha('<main>');
 
-  // Um grupo por mês; posts sem data no fim.
+  // "Calendário | Lista": os botões ficam escondidos até o visualizador ligá-los (sem ele, o calendário e a lista
+  // aparecem um embaixo do outro).
+  linha('<div class="vistas" role="group" aria-label="Como ver os posts" hidden><button type="button" data-vista="calendario" aria-pressed="true">Calendário</button>'
+    + '<button type="button" data-vista="lista" aria-pressed="false">Lista</button></div>');
+
+  // Um grupo por mês; posts sem data no fim. Cada mês abre com o calendário (a legenda traz os tipos que existem no
+  // cronograma inteiro) e depois a lista; os posts sem data ganham os cartões em lista, no lugar do calendário.
   const grupos = [];
   for (const p of posts) {
     const chave = p.data ? p.data.ano + '-' + p.data.mes : 'sem-data';
@@ -274,15 +394,25 @@ function montar({ empresa, marca, periodo, posts, hoje }) {
     if (!g) { g = { chave, titulo: p.data ? nomeDoMes(p.data) : 'Data a definir', posts: [] }; grupos.push(g); }
     g.posts.push(p);
   }
+  const existentes = Tipos.TIPOS.filter((t) => posts.some((p) => p.tipo.chave === t.chave));
+  const limite = limiteDaArte(hoje);
   for (const g of grupos) {
     linha('<section class="mes">');
     linha(`<h2>${escapar(g.titulo)} <span>${g.posts.length === 1 ? '1 post' : g.posts.length + ' posts'}</span></h2>`);
+    if (g.chave === 'sem-data') {
+      linha('<div class="cartoes-lista">');
+      for (const p of g.posts) linha(cartaoDoPost(p, limite), { tipo: 'post', post: p });
+      linha('</div>');
+    } else {
+      for (const [html, quem] of calendarioDoMes(g, existentes, limite)) linha(html, quem || null);
+    }
     linha('<ol class="posts">');
     for (const p of g.posts) {
       const quem = { tipo: 'post', post: p };
       const dia = p.data
-        ? `<div class="dia"><b>${Number(p.data.dia)}</b><span>${escapar(diaDaSemana(p.data))}</span></div>`
-        : '<div class="dia sem-data"><b>—</b><span>a definir</span></div>';
+        ? `<div class="post-data"><b>${Number(p.data.dia)}</b><span>${escapar(diaDaSemana(p.data))}</span></div>`
+        : '<div class="post-data sem-data"><b>—</b><span>a definir</span></div>';
+      const etiqueta = `<span class="etiqueta-tipo"><span aria-hidden="true">${p.tipo.icone}</span> ${escapar(p.tipo.nome)}</span>`;
       const legenda = p.legenda ? `<p class="legenda">${p.legenda.split(/\r?\n/).map(escapar).join('<br>')}</p>` : '';
       const paraAprovar = !p.aprovado && p.grupos && p.grupos.length > 0;
       const estado = p.aprovado ? 'Arte aprovada' : paraAprovar ? 'Arte para aprovar' : 'Em produção';
@@ -295,7 +425,8 @@ function montar({ empresa, marca, periodo, posts, hoje }) {
           + `<a class="ajuste" href="${escapar(zap(`Quero um ajuste no ${qual}. Ajuste que eu quero:`))}" target="_blank" rel="noopener">Pedir ajuste</a></p>`
         : '';
       // MARCA_ARTE: o lugar da arte do post. A conferência lê o arquivo com a marca; as imagens entram depois dela.
-      linha(`<li class="post">${dia}<div><p class="meta"><span class="rede">${escapar(p.rede)}</span>`
+      const quando = p.data ? diaPorExtenso(p.data) : 'Data a definir';
+      linha(`<li class="post tipo-${p.tipo.chave}" id="post-${p.ordem}" data-quando="${escapar(quando)}">${dia}<div><p class="meta">${etiqueta}<span class="rede">${escapar(p.rede)}</span>`
         + `<span class="estado${p.aprovado ? ' aprovado' : ''}">${estado}</span></p>`
         + `<h3>${escapar(p.titulo)}</h3>${MARCA_ARTE(p.ordem)}${legenda}${responder}</div></li>`, quem);
       paraConferir(p.rede, quem);
@@ -307,6 +438,7 @@ function montar({ empresa, marca, periodo, posts, hoje }) {
   }
   linha('</main>');
   linha('<footer>');
+  linha('<p>Cada post tem a cor e o ícone do seu tipo (Reels, Carrossel, Stories, WhatsApp, Anúncio...). Clique num post do calendário para abrir tudo dele: a arte, os botões para baixar e a legenda para copiar. Em “Lista”, os posts aparecem um embaixo do outro.</p>');
   linha('<p><b>Arte para aprovar:</b> a arte está pronta para você ver e aprovar. <b>Arte aprovada:</b> a arte já foi aprovada. <b>Em produção:</b> a arte ainda está sendo feita.</p>');
   linha('<p>Toque numa imagem para ver em tamanho grande. Cada arte tem os botões para baixar as imagens e o vídeo. Para responder, use “Aprovar” ou “Pedir ajuste”: abre o WhatsApp com a mensagem pronta para enviar.</p>');
   linha('<p>Datas e textos podem mudar até a publicação.</p>');
@@ -330,7 +462,7 @@ function nomeParaBaixar(p, nomeOriginal, i, total) {
 // O HTML das artes de cada post (posição no arquivo = marca do post), com as imagens e o vídeo em base64.
 // `anexos`: os vídeos grandes demais, que vão como arquivo à parte (o nome vem de `nomeAnexo(n)`).
 function montarArtes(r, posts, hoje, nomeAnexo, limiteVideo = LIMITE_VIDEO) {
-  const limiteData = partesData(hoje) ? partesData(hoje).quando - DIAS_PARA_TRAS * 864e5 : -Infinity;
+  const limiteData = limiteDaArte(hoje);
   const blocos = new Map();
   const anexos = [];
   let total = 0;
@@ -345,7 +477,10 @@ function montarArtes(r, posts, hoje, nomeAnexo, limiteVideo = LIMITE_VIDEO) {
     }
     const partes = [];
     const base = nomeParaBaixar(p, 'arte.zip', 0, 1).replace(/\.zip$/, '');
-    for (const g of p.grupos) {
+    // Post com mais de uma arte: cada uma ganha o seu número ("Arte 2"), que o botão de baixar da janela do post repete.
+    // O nome da peça não vai: ele não passou pela conferência entre empresas.
+    const varias = p.grupos.length > 1;
+    for (const [k, g] of p.grupos.entries()) {
       const itens = [];
       let video = '';
       if (g.video) {
@@ -367,8 +502,8 @@ function montarArtes(r, posts, hoje, nomeAnexo, limiteVideo = LIMITE_VIDEO) {
       if (imagens.length) itens.push(`<div class="miniaturas">${imagens.join('')}</div>`);
       if (imagens.length < g.imagens.length) itens.push('<p class="nota">Algumas imagens desta arte não couberam neste arquivo. Peça para recebê-las à parte.</p>');
       const resumo = [g.video ? 'vídeo' : '', imagens.length ? (imagens.length === 1 ? '1 imagem' : `${imagens.length} imagens`) : ''].filter(Boolean).join(' e ');
-      partes.push(`<section class="arte" data-titulo="${escapar(p.titulo)}" data-base="${escapar(base)}">`
-        + `<p class="arte-cabeca">${escapar(maiuscula(resumo))}${g.aprovada ? ' · aprovada' : ' · para aprovar'}</p>`
+      partes.push(`<section class="arte" data-titulo="${escapar(p.titulo)}" data-base="${escapar(base + (varias ? ' - arte ' + (k + 1) : ''))}">`
+        + `<p class="arte-cabeca">${varias ? `Arte ${k + 1} · ` : ''}${escapar(varias ? resumo : maiuscula(resumo))}${g.aprovada ? ' · aprovada' : ' · para aprovar'}</p>`
         + video + itens.join('') + '<div class="arte-acoes" hidden></div></section>');
     }
     blocos.set(p.ordem, partes.join(''));

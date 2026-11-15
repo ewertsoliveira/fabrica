@@ -1,6 +1,6 @@
 # Como abrir o Cronograma
 
-O Cronograma é a tela com os posts do mês, dia a dia, com tudo o que você precisa para publicar cada um.
+O Cronograma é a tela com os posts do mês num calendário, cada tipo de post com a sua cor, e tudo o que você precisa para publicar cada um.
 
 ## Como abrir
 
@@ -32,9 +32,9 @@ O que você pediu precisa do agente (por exemplo, criar a marca do zero, ler o m
 
 ## O que ele faz, em 3 passos
 
-1. **Os posts do mês aparecem dia a dia**, na ordem em que vão ao ar.
-2. **Veja a arte de cada post:** as lâminas do carrossel, a capa e o vídeo aparecem no próprio post. Toque numa imagem para ver em tamanho grande (com setas para passar) e use os botões para baixar a imagem, todas as imagens de uma vez (num ZIP, com a legenda) ou o vídeo.
-3. **Copie o que precisar:** em "Roteiro e legenda", cada campo tem o seu botão de copiar. No vídeo são quatro: o roteiro falado (para gravar), a descrição visual, o roteiro com descrição visual (para colar no agente de edição do vídeo) e a legenda (para publicar).
+1. **O mês aparece num calendário, com um cartão por post, na cor do tipo:** Reels 🎬, Carrossel 🖼️, Stories ⭕, WhatsApp 💬, Anúncio 📣, Vídeo longo ▶️, Post 📌, Artigo 📝 e Outro 📄, cada um com a sua cor. As cores são as mesmas em toda empresa, para você reconhecer o tipo de relance. A legenda no alto diz quantos posts de cada tipo há no mês. No cartão, **✓ aprovada** quer dizer que a arte já foi aprovada e **⬇️ arte pronta**, que ela já pode ser baixada. Dia sem post fica apagado. Prefere ver os posts um embaixo do outro? Use **Lista**, ao lado de **Enviar ao cliente**. No celular, o calendário vira uma agenda, só com os dias que têm post.
+2. **Clique no post e baixe a arte:** abre uma janela com tudo do post. No alto dela fica o botão **⬇️ Baixar tudo (.zip)**, com as imagens e a legenda num arquivo só. Quando a arte tem vídeo, aparece também **⬇️ Baixar o vídeo**. Se o post tem mais de uma arte, cada uma ganha o seu botão. Toque numa imagem para ver em tamanho grande, com setas para passar. Para fechar a janela, use **Fechar**, clique fora dela ou aperte Esc.
+3. **Copie o que precisar:** na janela, "Roteiro e legenda" já vem aberto, e cada campo tem o seu botão de copiar. No vídeo são quatro: o roteiro falado (para gravar), a descrição visual, o roteiro com descrição visual (para colar no agente de edição do vídeo) e a legenda (para publicar). No post sem arte (uma mensagem de WhatsApp, um stories), o botão **Copiar a legenda** fica no alto da janela.
 
 ## Enviar ao cliente
 
@@ -44,6 +44,7 @@ O botão **Enviar ao cliente** cria um arquivo só com os posts da empresa que e
 2. Se estiver tudo certo, o arquivo é criado na **pasta envios da empresa**, e a tela mostra o link para abrir.
 3. Para mandar, anexe esse arquivo em um e-mail ou mensagem. Ele abre em qualquer navegador e não precisa de internet.
 4. **As artes vão dentro do arquivo:** o cliente vê cada imagem em tamanho grande, baixa as imagens e o vídeo e copia a legenda. Um vídeo grande demais vai num arquivo à parte, na mesma pasta, e a tela diz qual mandar junto.
+5. **O cliente vê o mesmo calendário:** cada mês com a legenda dos tipos e os mesmos cartões coloridos. Clicando num post, ele abre a janela com a arte, os botões de baixar e os botões **Aprovar** e **Pedir ajuste**. Em **Lista**, os posts aparecem um embaixo do outro.
 
 Cada envio cria um arquivo novo. Os anteriores não são apagados nem trocados.
 

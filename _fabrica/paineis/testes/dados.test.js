@@ -96,6 +96,21 @@ t('validarPost aceita todas as plataformas e opcionais', () => {
   assert.deepStrictEqual(dados.validarPost({ ...postOk, week: 'Semana 1', caption: 'x', images: ['a.png'], tips: 'dica', cenas: [] }), []);
 });
 t('validarPost recusa images que não é lista', () => assert.ok(dados.validarPost({ ...postOk, images: 'a.png' }).length > 0));
+t('validarPost aceita mensagem de WhatsApp e anúncio pago como plataforma própria', () => {
+  for (const pl of ['insta', 'yt', 'linkedin', 'blog', 'whats', 'ads']) assert.ok(dados.PLATAFORMAS.includes(pl), 'falta a plataforma ' + pl);
+  assert.deepStrictEqual(dados.validarPost({ ...postOk, platform: 'whats', platformLabel: 'WhatsApp · Grupo' }), []);
+  assert.deepStrictEqual(dados.validarPost({ ...postOk, platform: 'ads', platformLabel: 'Anúncio · Meta' }), []);
+});
+t('validarPost aceita o campo opcional tipo, só com um dos tipos do calendário', () => {
+  assert.deepStrictEqual(dados.TIPOS_DE_POST, ['reels', 'carrossel', 'stories', 'whats', 'anuncio', 'longo', 'post', 'artigo']);
+  for (const tipo of dados.TIPOS_DE_POST) assert.deepStrictEqual(dados.validarPost({ ...postOk, tipo }), [], tipo);
+  assert.deepStrictEqual(dados.validarPost(postOk), [], 'sem tipo continua valendo');
+  for (const ruim of ['Reels', 'video', 'outro', '', 3, null, ['reels']]) {
+    const erros = dados.validarPost({ ...postOk, tipo: ruim });
+    assert.strictEqual(erros.length, 1, JSON.stringify(ruim));
+    assert.ok(erros[0].startsWith('tipo:') && erros[0].includes('reels, carrossel, stories, whats, anuncio, longo, post, artigo'), erros[0]);
+  }
+});
 
 t('lerJson de arquivo ausente devolve o padrão', () => {
   assert.deepStrictEqual(dados.lerJson(path.join(pasta, 'nao-existe.json'), ['x']), ['x']);

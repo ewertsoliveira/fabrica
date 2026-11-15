@@ -7,9 +7,11 @@
 <link rel="icon" href="data:,">
 <!--
   Tela do Cronograma da Fábrica de Conteúdo. Mostra os posts de UMA empresa (a escolhida no seletor) num calendário
-  do mês e numa lista, com a data, a rede, o estado e a arte ligada a cada post (e se ela já foi aprovada no
-  Laboratório). O botão "Enviar ao cliente" pede ao servidor o arquivo do cliente, que só é gerado se nenhum post
-  citar outra empresa.
+  do mês em largura total (a vista que abre) ou numa lista ("Calendário | Lista"). No calendário, cada post é um cartão
+  na cor do seu tipo (Reels, Carrossel, Stories, WhatsApp, Anúncio...; cores fixas, de tipos-de-post.js, que não seguem
+  a marca); clicar no cartão abre a janela do post, com a arte, o roteiro, a legenda e os botões de baixar. Em tela
+  estreita o calendário vira uma agenda, só com os dias que têm post. O botão "Enviar ao cliente" pede ao servidor o
+  arquivo do cliente, que só é gerado se nenhum post citar outra empresa.
   Todos os dados vêm do servidor local dos painéis (rotas /api/, sempre com a empresa); nenhum arquivo de dados é
   lido por caminho. As cores e as letras são as da marca da empresa escolhida (ou as de exemplo).
 -->
@@ -182,6 +184,16 @@
   .resumo { margin: 4px 0 0; color: var(--texto-2); font-size: 14px; }
   .barra-envio { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
   .barra-envio .discreto { font-size: 13px; }
+  .barra-botoes { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; }
+
+  /* ---- "Calendário | Lista": as duas vistas dos posts ---- */
+  .vistas { display: inline-flex; padding: 3px; border: 1px solid var(--linha); border-radius: 999px; background: var(--fundo-2); }
+  .vista {
+    border: 0; border-radius: 999px; background: transparent; cursor: pointer;
+    padding: 6px 16px; font-size: 14px; font-weight: 600; color: var(--texto-2);
+  }
+  .vista:hover { color: var(--texto); }
+  .vista[aria-pressed="true"] { background: var(--claro); color: var(--texto); box-shadow: 0 1px 3px color-mix(in srgb, var(--escuro) 20%, transparent); }
 
   /* ---- resultado do envio ---- */
   .envio {
@@ -200,20 +212,27 @@
   .caminho { font-family: var(--letra-mono); font-size: 13px; overflow-wrap: anywhere; }
   .discreto { color: var(--texto-2); font-size: 14px; }
 
-  /* ---- calendário e lista ---- */
-  .quadro {
-    display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(360px, 1fr);
-    gap: 28px;
-    padding: 0 28px 48px;
-    align-items: start;
-  }
+  /* ---- o calendário: a vista principal, em largura total, uma linha por semana (dom a sáb) ---- */
+  .quadro { padding: 0 28px 48px; }
   .calendario {
     border: 1px solid var(--linha);
     border-radius: 14px;
     overflow: hidden;
     background: var(--claro);
   }
+  /* a legenda no alto: um quadrado de cor por tipo que existe no cronograma, com quantos posts há no mês */
+  .legenda-tipos {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 8px 24px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--linha);
+  }
+  .legenda-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  .legenda-tipo { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .legenda-tipo i { flex: none; width: 14px; height: 14px; border-radius: 4px; background: var(--tipo-cor); }
+  .legenda-tipo.sem-post { font-weight: 500; color: var(--texto-2); }
+  .legenda-tipo.sem-post i { opacity: 0.4; }
+  .legenda-nota { margin: 0; font-size: 13px; color: var(--texto-2); }
   .semana-cab, .dias { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
   .semana-cab span {
     padding: 8px 8px 7px;
@@ -222,50 +241,64 @@
     background: var(--fundo-2);
   }
   .dia {
-    min-height: 112px;
+    min-height: 128px;
     min-width: 0;
     padding: 6px;
     border-top: 1px solid var(--linha);
     border-left: 1px solid var(--linha);
-    display: flex; flex-direction: column; gap: 4px;
+    display: flex; flex-direction: column; gap: 6px;
   }
   .dia:nth-child(7n + 1) { border-left: 0; }
-  .dia.fora { background: color-mix(in srgb, var(--neutro) 5%, var(--claro)); }
-  .dia.fora .dia-num { opacity: 0.45; }
-  .dia-num {
-    align-self: flex-start;
+  /* dia sem post (e dia de outro mês): apagado */
+  .dia.livre, .dia.fora { background: color-mix(in srgb, var(--neutro) 7%, var(--claro)); }
+  .dia.livre .dia-num { opacity: 0.5; }
+  .dia.fora .dia-num { opacity: 0.28; }
+  .dia-num { align-self: flex-start; display: flex; align-items: center; gap: 6px; }
+  .dia-num b {
     min-width: 26px; height: 26px; padding: 0 6px;
     display: grid; place-items: center;
     border-radius: 999px;
     font-size: 13px; font-weight: 600;
   }
-  .dia.hoje .dia-num { background: var(--escuro); color: var(--sobre-escuro); }
-  .chip {
-    display: block; width: 100%;
-    text-align: left;
-    border: 0; border-radius: 6px;
-    padding: 4px 7px 5px;
-    font-size: 12px; line-height: 1.25;
-    cursor: pointer;
-    background: var(--fundo-2);
-    color: var(--texto);
-  }
-  .chip-rede { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; opacity: 0.78; }
-  .chip-titulo { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
-  .chip.ok { background: var(--acento); color: var(--sobre-acento); }
-  .chip.espera { background: var(--claro); box-shadow: inset 0 0 0 1.5px var(--acento); }
-  .chip:hover { filter: brightness(0.96); }
-  .legenda-cores {
-    display: flex; flex-wrap: wrap; gap: 8px 18px;
-    padding: 10px 12px;
-    border-top: 1px solid var(--linha);
-    font-size: 13px; color: var(--texto-2);
-  }
-  .legenda-cores span { display: inline-flex; align-items: center; gap: 6px; }
-  .legenda-cores i { width: 14px; height: 14px; border-radius: 4px; display: inline-block; background: var(--fundo-2); }
-  .legenda-cores i.ok { background: var(--acento); }
-  .legenda-cores i.espera { background: var(--claro); box-shadow: inset 0 0 0 1.5px var(--acento); }
+  .dia-semana { display: none; font-size: 12px; color: var(--texto-2); text-transform: capitalize; }
+  .dia.hoje .dia-num b { background: var(--escuro); color: var(--sobre-escuro); }
+  .dia-posts { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .agenda-vazia { display: none; }
 
+  /* ---- o cartão do post: borda esquerda e fundo suave na cor do tipo (fixas, iguais para toda empresa) ---- */
+  .cartao-post {
+    display: flex; flex-direction: column; gap: 2px;
+    width: 100%; min-width: 0;
+    text-align: left;
+    border: 0; border-left: 4px solid var(--tipo-cor); border-radius: 6px;
+    background: var(--tipo-fundo); color: var(--tipo-texto);
+    padding: 5px 7px 6px 8px;
+    font-size: 12.5px; line-height: 1.3;
+    cursor: pointer;
+  }
+  .cartao-post:hover { box-shadow: inset 0 0 0 1px var(--tipo-cor); }
+  .cartao-tipo {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+    color: var(--tipo-tinta);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .cartao-titulo { font-weight: 600; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+  .cartao-marcas { font-size: 11px; opacity: 0.78; }
+  /* os posts sem data, abaixo do calendário, em lista */
+  .sem-data { margin-top: 26px; }
+  .sem-data h2 { margin: 0 0 10px; font: 600 18px/1.2 var(--letra-titulo); }
+  .cartoes-lista { display: grid; gap: 8px; max-width: 680px; }
+  .cartoes-lista .cartao-post { padding: 9px 12px 10px; font-size: 14px; }
+  .cartoes-lista .cartao-tipo { font-size: 11px; }
+  /* o tipo escrito na lista e na janela do post */
+  .etiqueta-tipo {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 1px 9px 1px 7px; border-radius: 999px;
+    background: var(--tipo-fundo); color: var(--tipo-tinta); box-shadow: inset 3px 0 0 var(--tipo-cor);
+    font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+  }
+
+  .lista { max-width: 920px; }
   .lista h2 { margin: 0 0 10px; font: 600 18px/1.2 var(--letra-titulo); }
   .posts { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
   .post {
@@ -274,12 +307,10 @@
     gap: 14px;
     padding: 14px 16px 14px 12px;
     border: 1px solid var(--linha);
+    border-left: 4px solid var(--tipo-cor, var(--linha));
     border-radius: 12px;
     background: var(--claro);
-    scroll-margin: 90px;
-    transition: box-shadow 0.3s;
   }
-  .post.destaque { box-shadow: 0 0 0 3px var(--acento); }
   .post-data { text-align: center; padding-top: 2px; }
   .post-data b { display: block; font: 600 26px/1 var(--letra-titulo); }
   .post-data span { display: block; margin-top: 3px; font-size: 12px; color: var(--texto-2); text-transform: capitalize; }
@@ -359,6 +390,31 @@
   }
   .campo-roteiro.campo-junto .campo-texto { font-family: var(--letra-mono); font-size: 12.5px; }
 
+  /* ---- a janela do post (clique no cartão): tudo do post, com a barra de baixar fixa no alto ---- */
+  .detalhe {
+    width: min(860px, calc(100vw - 24px)); max-width: none; max-height: min(92vh, 1100px);
+    padding: 0; border: 0; border-radius: 16px; overflow: hidden;
+    background: var(--claro); color: var(--texto);
+    box-shadow: 0 24px 60px color-mix(in srgb, var(--escuro) 35%, transparent);
+  }
+  .detalhe::backdrop { background: color-mix(in srgb, var(--escuro) 55%, transparent); }
+  /* quem rola é a caixa, não a janela: assim o clique fora (no fundo) é o único que cai na própria janela */
+  .detalhe-caixa { max-height: min(92vh, 1100px); overflow: auto; overscroll-behavior: contain; }
+  .detalhe-barra {
+    position: sticky; top: 0; z-index: 1;
+    display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px 18px;
+    padding: 14px 20px 14px;
+    background: var(--claro);
+    border-top: 6px solid var(--tipo-cor); border-bottom: 1px solid var(--linha);
+  }
+  .detalhe-cabeca { flex: 1 1 280px; min-width: 0; }
+  .detalhe-quando { margin: 0 0 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 13px; color: var(--texto-2); }
+  .detalhe-cabeca h2 { margin: 0; font: 600 21px/1.25 var(--letra-titulo); overflow-wrap: anywhere; }
+  .detalhe-acoes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .detalhe-corpo { padding: 14px 20px 24px; }
+  .detalhe-corpo .roteiro { margin-top: 14px; }
+  .detalhe-corpo .post-meta .etiqueta-tipo { display: none; } /* o tipo já está na barra do alto */
+
   /* ---- o visualizador: a arte grande, uma por vez, com setas e download ---- */
   .visor {
     width: min(1100px, calc(100vw - 24px)); max-width: none; height: min(92vh, 1000px); max-height: none;
@@ -414,13 +470,6 @@
     z-index: 10;
   }
 
-  /* Lado a lado, o calendário acompanha a rolagem da lista. */
-  @media (min-width: 1041px) {
-    .calendario { position: sticky; top: 16px; }
-  }
-  @media (max-width: 1040px) {
-    .quadro { grid-template-columns: minmax(0, 1fr); }
-  }
   @media (max-width: 760px) {
     .topo { padding: 16px 16px 18px; }
     .aviso { padding: 12px 16px; }
@@ -428,19 +477,35 @@
     .cartao-estilo .botao { width: 100%; justify-content: center; }
     .barra { padding: 18px 16px 14px; }
     .barra-envio { align-items: stretch; width: 100%; }
+    .barra-botoes { flex-direction: column; align-items: stretch; }
     .barra-envio .botao { justify-content: center; }
+    .vistas { display: flex; }
+    .vista { flex: 1; }
     .envio { margin: 0 16px 18px; padding: 14px 16px; }
     .quadro { padding: 0 16px 36px; }
     .empresa-seletor-lista { max-width: 180px; }
+    /* Em tela estreita o calendário vira uma agenda: só os dias com post, um embaixo do outro. */
+    .legenda-tipos { padding: 10px 12px; border-bottom: 0; }
+    .semana-cab { display: none; }
+    .dias { display: block; }
+    .dia.livre, .dia.fora { display: none; }
+    .dia { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 10px; min-height: 0; padding: 10px 12px; border-left: 0; }
+    .dia-num { flex-direction: column; align-items: center; gap: 0; }
+    .dia-num b { min-width: 32px; height: 32px; font-size: 17px; }
+    .dia-semana { display: block; }
+    .agenda-vazia { display: block; margin: 0; padding: 16px 12px; border-top: 1px solid var(--linha); color: var(--texto-2); }
+    .cartao-post { padding: 8px 10px 9px; font-size: 14px; }
+    .cartao-tipo { font-size: 11px; }
+    .detalhe { width: 100vw; max-height: 100dvh; border-radius: 0; }
+    .detalhe-caixa { max-height: 100dvh; }
+    .detalhe-barra { padding: 12px 16px; }
+    .detalhe-acoes .botao { flex: 1 1 auto; justify-content: center; }
+    .detalhe-corpo { padding: 12px 16px 22px; }
     .visor { width: 100vw; height: 100dvh; border-radius: 0; }
     .visor-palco { padding: 0 6px; }
     .visor-seta { width: 38px; height: 38px; font-size: 20px; }
     .visor-seta.antes { left: 6px; }
     .visor-seta.depois { right: 6px; }
-  }
-  /* Em tela estreita o calendário dá lugar à lista, que já traz tudo dia a dia. */
-  @media (max-width: 640px) {
-    .calendario { display: none; }
   }
   @media (prefers-reduced-motion: no-preference) {
     .recado { animation: surgir 0.2s ease-out; }
@@ -470,11 +535,13 @@
 </main>
 
 <div class="recado" id="recado" role="status" hidden></div>
+<dialog class="detalhe" id="detalhe" aria-labelledby="detalhe-titulo"></dialog>
 <dialog class="visor" id="visor" aria-labelledby="visor-titulo"></dialog>
 
 <script src="empresa-seletor.js"></script>
 <script src="cartao-estilo.js"></script>
 <script src="roteiro-video.js"></script>
+<script src="tipos-de-post.js"></script>
 <script>
 'use strict';
 (function () {
@@ -482,15 +549,18 @@
   const $ = (id) => document.getElementById(id);
   const conteudo = $('conteudo');
 
-  const PLATAFORMAS = { insta: 'Instagram', yt: 'YouTube', linkedin: 'LinkedIn', blog: 'Blog' };
+  const caixaRecado = $('recado');
+
+  const PLATAFORMAS = { insta: 'Instagram', yt: 'YouTube', linkedin: 'LinkedIn', blog: 'Blog', whats: 'WhatsApp', ads: 'Anúncio' };
   const ESTADOS = {
     ok: 'Arte aprovada',
     espera: 'Arte aguardando aprovação',
     sem: 'Sem arte ainda',
   };
 
-  // O que a tela mostra da empresa escolhida. `mes` guarda o mês aberto em cada empresa ("AAAA-MM").
-  const tela = { dados: null, mes: {}, enviando: false, envio: null, temLaboratorio: false };
+  // O que a tela mostra da empresa escolhida. `mes` guarda o mês aberto em cada empresa ("AAAA-MM"); `vista` é a
+  // escolha de "Calendário | Lista" (o calendário abre por padrão).
+  const tela = { dados: null, mes: {}, vista: 'calendario', enviando: false, envio: null, temLaboratorio: false };
 
   // ---- utilidades ----
   function el(tag, props, filhos) {
@@ -506,9 +576,15 @@
     return e;
   }
   function trocar(...filhos) { conteudo.textContent = ''; filhos.forEach((f) => conteudo.appendChild(f)); }
+  // As cores dos tipos de post (fixas, iguais para toda empresa): as mesmas regras do arquivo do cliente.
+  document.head.appendChild(el('style', { texto: TiposDePost.cssDosTipos().join('\n') }));
   let tempoRecado = null;
   function recado(texto) {
-    const r = $('recado');
+    const r = caixaRecado;
+    // Com uma janela aberta (a do post ou a da arte grande), o recado vai para dentro dela: fora, ficaria por baixo.
+    const janelas = document.querySelectorAll('dialog[open]');
+    const dono = janelas.length ? janelas[janelas.length - 1] : document.body;
+    if (r.parentNode !== dono) dono.appendChild(r);
     r.textContent = texto;
     r.hidden = false;
     clearTimeout(tempoRecado);
@@ -574,7 +650,7 @@
   }
 
   async function carregarEmpresa() {
-    $('recado').hidden = true; // o recado era da empresa anterior
+    caixaRecado.hidden = true; // o recado era da empresa anterior
     tela.dados = null;
     tela.envio = null;
     tela.enviando = false;
@@ -665,10 +741,13 @@
       const estado = ligadas.some((a) => a.aprovadaEm !== null) ? 'ok' : ligadas.length || temArte ? 'espera' : 'sem';
       return {
         ordem, estado, artes: ligadas, grupos, bruto: p, id: p.id,
+        // o tipo (cor, ícone e nome do cartão) e as marcas do cartão: "✓ aprovada" e "⬇️ arte pronta" (há o que baixar)
+        tipo: TiposDePost.tipoDoPost(p),
+        aprovada: estado === 'ok',
+        pronta: temArte,
         gancho: typeof p.hook === 'string' ? p.hook.trim() : '',
         data: partesData(p.date),
         rede: (typeof p.platformLabel === 'string' && p.platformLabel.trim()) || PLATAFORMAS[p.platform] || p.platform || 'Rede a definir',
-        sigla: { insta: 'IG', yt: 'YT', linkedin: 'IN', blog: 'Blog' }[p.platform] || 'Post',
         titulo: (typeof p.title === 'string' && p.title.trim()) || 'Post sem título',
         legenda: typeof p.caption === 'string' ? p.caption.trim() : '',
       };
@@ -707,6 +786,12 @@
 
     const ir = (passo) => { tela.mes[codigo] = mudarMes(mes, passo); desenhar(); };
     const botaoEnviar = el('button', { classe: 'botao botao-principal', type: 'button', id: 'enviar', texto: 'Enviar ao cliente', onclick: enviarAoCliente });
+    // "Calendário | Lista", ao lado de "Enviar ao cliente"
+    const vistas = el('div', { classe: 'vistas', role: 'group', 'aria-label': 'Como ver os posts' }, [['calendario', 'Calendário'], ['lista', 'Lista']]
+      .map(([vista, nome]) => el('button', {
+        classe: 'vista', type: 'button', texto: nome, 'aria-pressed': tela.vista === vista ? 'true' : 'false',
+        onclick: () => { if (tela.vista !== vista) { tela.vista = vista; desenhar(); } },
+      })));
     const barra = el('div', { classe: 'barra' }, [
       el('div', {}, [
         el('div', { classe: 'mes-nav' }, [
@@ -719,15 +804,35 @@
           : 'Nenhum post neste mês. ' + posts.length + (posts.length === 1 ? ' post' : ' posts') + ' no cronograma.' }),
       ]),
       el('div', { classe: 'barra-envio' }, [
-        botaoEnviar,
+        el('div', { classe: 'barra-botoes' }, [vistas, botaoEnviar]),
         el('span', { classe: 'discreto', texto: 'Gera um arquivo só com os posts de ' + seletor.nome() + '.' }),
       ]),
     ]);
-    trocar(barra, desenharEnvio(), el('div', { classe: 'quadro' }, [desenharCalendario(mes, doMes), desenharLista(mes, doMes, semData)]));
+    const corpo = tela.vista === 'lista'
+      ? el('div', { classe: 'quadro' }, [desenharLista(mes, doMes, semData)])
+      : el('div', { classe: 'quadro' }, [desenharCalendario(mes, doMes, posts), semData.length ? desenharSemData(semData) : null]);
+    trocar(barra, desenharEnvio(), corpo);
     if (tela.enviando) { botaoEnviar.disabled = true; botaoEnviar.textContent = 'Preparando o arquivo…'; }
   }
 
-  function desenharCalendario(mes, doMes) {
+  // A legenda no alto do calendário: um quadrado de cor por tipo que existe no cronograma, com o ícone, o nome e quantos
+  // posts há no mês aberto ("Reels · 3"); à direita, o que querem dizer as marcas do cartão.
+  function desenharLegenda(doMes, posts) {
+    const existentes = TiposDePost.TIPOS.filter((t) => posts.some((p) => p.tipo.chave === t.chave));
+    return el('div', { classe: 'legenda-tipos' }, [
+      el('ul', { classe: 'legenda-lista', 'aria-label': 'Tipos de post neste mês' }, existentes.map((t) => {
+        const n = doMes.filter((p) => p.tipo.chave === t.chave).length;
+        return el('li', { classe: 'legenda-tipo tipo-' + t.chave + (n ? '' : ' sem-post') }, [
+          el('i', { 'aria-hidden': 'true' }), el('span', { 'aria-hidden': 'true', texto: t.icone }), t.nome + ' · ' + n,
+        ]);
+      })),
+      el('p', { classe: 'legenda-nota', texto: '✓ arte aprovada · ⬇️ arte pronta para baixar · clique no post para abrir' }),
+    ]);
+  }
+
+  // O calendário do mês em largura total: uma linha por semana, começando pelo primeiro dia da semana, cada dia com os cartões dos posts
+  // dele. Dia sem post fica apagado. Em tela estreita (CSS) vira a agenda: só os dias com post, um embaixo do outro.
+  function desenharCalendario(mes, doMes, posts) {
     const [a, m] = mes.split('-').map(Number);
     const primeiro = new Date(Date.UTC(a, m - 1, 1));
     const diasNoMes = new Date(Date.UTC(a, m, 0)).getUTCDate();
@@ -741,15 +846,43 @@
       const iso = d.getUTCFullYear() + '-' + dois(d.getUTCMonth() + 1) + '-' + dois(d.getUTCDate());
       const fora = d.getUTCMonth() !== m - 1;
       const doDia = fora ? [] : doMes.filter((p) => p.data.data === iso);
-      return el('div', { classe: 'dia' + (fora ? ' fora' : '') + (iso === hoje ? ' hoje' : '') }, [
-        el('span', { classe: 'dia-num', texto: String(d.getUTCDate()) }),
-      ].concat(doDia.map((p) => el('button', {
-        classe: 'chip ' + p.estado, type: 'button', title: p.rede + ': ' + p.titulo + ' (' + ESTADOS[p.estado] + ')',
-        onclick: () => destacar(p.ordem),
-      }, [el('span', { classe: 'chip-rede', texto: p.sigla }), el('span', { classe: 'chip-titulo', texto: p.titulo })]))));
+      return el('div', { classe: 'dia' + (fora ? ' fora' : doDia.length ? '' : ' livre') + (iso === hoje ? ' hoje' : '') }, [
+        el('span', { classe: 'dia-num' }, [el('b', { texto: String(d.getUTCDate()) }), el('span', { classe: 'dia-semana', texto: curto(d) })]),
+        doDia.length ? el('div', { classe: 'dia-posts' }, doDia.map(desenharChip)) : null,
+      ]);
     }));
-    const legenda = el('div', { classe: 'legenda-cores' }, ['ok', 'espera', 'sem'].map((k) => el('span', {}, [el('i', { classe: k }), ESTADOS[k]])));
-    return el('section', { classe: 'calendario', 'aria-label': 'Calendário de ' + nomeDoMes(mes) }, [cab, dias, legenda]);
+    return el('section', { classe: 'calendario', 'aria-label': 'Calendário de ' + nomeDoMes(mes) }, [
+      desenharLegenda(doMes, posts), cab, dias,
+      // só aparece na agenda (tela estreita), que não mostra os dias vazios
+      doMes.length ? null : el('p', { classe: 'agenda-vazia', texto: 'Nenhum post em ' + soMes(mes) + '. Use as setas para ver os outros meses.' }),
+    ]);
+  }
+
+  // O cartão do post no calendário: borda e fundo na cor do tipo, o nome do tipo, o título (até 3 linhas) e as marcas.
+  // Clicar abre a janela do post.
+  function desenharChip(p) {
+    const marcas = [p.aprovada ? '✓ aprovada' : '', p.pronta ? '⬇️ arte pronta' : ''].filter(Boolean);
+    return el('button', {
+      classe: 'cartao-post tipo-' + p.tipo.chave, type: 'button', title: p.tipo.nome + ': ' + p.titulo,
+      onclick: (e) => abrirDetalhe(p, e.currentTarget),
+    }, [
+      el('span', { classe: 'cartao-tipo' }, [el('span', { 'aria-hidden': 'true', texto: p.tipo.icone }), ' ' + p.tipo.nome]),
+      el('span', { classe: 'cartao-titulo', texto: p.titulo }),
+      marcas.length ? el('span', { classe: 'cartao-marcas', texto: marcas.join(' · ') }) : null,
+    ]);
+  }
+
+  // Os posts sem data, abaixo do calendário, em lista (os mesmos cartões, mais largos).
+  function desenharSemData(semData) {
+    return el('section', { classe: 'sem-data', 'aria-label': 'Posts sem data definida' }, [
+      el('h2', { texto: 'Sem data definida' }),
+      el('div', { classe: 'cartoes-lista' }, semData.map(desenharChip)),
+    ]);
+  }
+
+  // O tipo escrito (ícone e nome), na lista e na janela do post.
+  function etiquetaDoTipo(t) {
+    return el('span', { classe: 'etiqueta-tipo tipo-' + t.chave }, [el('span', { 'aria-hidden': 'true', texto: t.icone }), ' ' + t.nome]);
   }
 
   function desenharLista(mes, doMes, semData) {
@@ -764,7 +897,19 @@
     return el('section', { classe: 'lista', 'aria-label': 'Lista de posts' }, partes);
   }
 
+  // Um post da lista: a data à esquerda e o conteúdo do post.
   function desenharPost(p) {
+    return el('li', { classe: 'post tipo-' + p.tipo.chave, id: 'post-' + p.ordem }, [
+      el('div', { classe: 'post-data' }, p.data
+        ? [el('b', { texto: String(p.data.dia) }), el('span', { texto: curto(p.data.quando) })]
+        : [el('b', { texto: '—' }), el('span', { texto: 'a definir' })]),
+      el('div', {}, conteudoDoPost(p, { roteiroAberto: false, comTitulo: true })),
+    ]);
+  }
+
+  // O que a lista e a janela do post mostram: o tipo, a rede e o estado, o título (na janela ele fica na barra do alto),
+  // o gancho, a arte (miniaturas, visualizador e botões de baixar) e o roteiro e a legenda em campos com copiar.
+  function conteudoDoPost(p, opcoes) {
     // A linha "Arte: ..." só quando nenhum quadro de arte aparece (o quadro já diz o nome e se está aprovada).
     const arte = p.artes.length && !p.grupos.some((g) => g.imagens.length || g.video || g.previa)
       ? el('p', { classe: 'post-peca' }, ['Arte: '].concat(p.artes.flatMap((a, i) => [
@@ -781,18 +926,57 @@
       el('a', { href: g.previa, target: '_blank', rel: 'noopener', texto: 'Abrir a prévia' }), '.',
     ])));
     if (!blocos.length) blocos.push(el('p', { classe: 'arte-vazia', texto: p.artes.length ? 'As imagens desta arte ainda não foram encontradas. Abra o Laboratório para ver a prévia.' : 'Ainda sem arte ligada a este post.' }));
-    return el('li', { classe: 'post', id: 'post-' + p.ordem }, [
-      el('div', { classe: 'post-data' }, p.data
-        ? [el('b', { texto: String(p.data.dia) }), el('span', { texto: curto(p.data.quando) })]
-        : [el('b', { texto: '—' }), el('span', { texto: 'a definir' })]),
-      el('div', {}, [
-        el('p', { classe: 'post-meta' }, [el('span', { classe: 'rede', texto: p.rede }), el('span', { classe: 'estado ' + p.estado, texto: ESTADOS[p.estado] })]),
-        el('h3', { texto: p.titulo }),
-        p.gancho && p.gancho !== p.titulo ? el('p', { classe: 'gancho', texto: 'Gancho: ' + p.gancho }) : null,
-        arte,
-      ].concat(blocos, [desenharRoteiro(p)])),
-    ]);
+    return [
+      el('p', { classe: 'post-meta' }, [etiquetaDoTipo(p.tipo), el('span', { classe: 'rede', texto: p.rede }), el('span', { classe: 'estado ' + p.estado, texto: ESTADOS[p.estado] })]),
+      opcoes.comTitulo ? el('h3', { texto: p.titulo }) : null,
+      p.gancho && p.gancho !== p.titulo ? el('p', { classe: 'gancho', texto: 'Gancho: ' + p.gancho }) : null,
+      arte,
+    ].concat(blocos, [desenharRoteiro(p, opcoes.roteiroAberto)]);
   }
+
+  // ---- a janela do post: clicar no cartão abre tudo do post, com a barra de baixar fixa no alto ----
+  // Na barra: "Baixar tudo (.zip)" (um por arte, com o nome dela, quando o post tem mais de uma), "Baixar o vídeo"
+  // quando a arte tem vídeo, "Copiar a legenda" no post sem arte (mensagem de WhatsApp, stories) e "Fechar". Clicar
+  // fora ou apertar Esc também fecha. O visualizador da arte grande abre por cima desta janela.
+  let voltarDoDetalhe = null;
+  function abrirDetalhe(p, origem) {
+    const d = $('detalhe');
+    voltarDoDetalhe = origem || null;
+    d.className = 'detalhe tipo-' + p.tipo.chave;
+    d.textContent = '';
+    const comArte = p.grupos.filter((g) => g.imagens.length || g.video);
+    const varias = comArte.length > 1;
+    const acoes = [];
+    comArte.forEach((g) => {
+      if (g.imagens.length) {
+        acoes.push(el('a', { classe: 'botao botao-principal', href: enderecoDoZip(p, g), download: '', texto: varias ? '⬇️ Baixar ' + g.nome + ' (.zip)' : '⬇️ Baixar tudo (.zip)' }));
+      }
+      if (g.video) {
+        acoes.push(el('a', { classe: 'botao' + (g.imagens.length ? '' : ' botao-principal'), href: g.video.url, download: g.video.nome, texto: varias ? '⬇️ Baixar o vídeo (' + g.nome + ')' : '⬇️ Baixar o vídeo' }));
+      }
+    });
+    if (!comArte.length && p.legenda) {
+      acoes.push(el('button', { classe: 'botao botao-principal', type: 'button', texto: 'Copiar a legenda', onclick: () => copiar(p.legenda, 'Legenda', null) }));
+    }
+    acoes.push(el('button', { classe: 'botao', type: 'button', texto: 'Fechar', onclick: () => d.close() }));
+    const quando = p.data ? maiuscula(formato({ weekday: 'long', day: 'numeric', month: 'long' }).format(p.data.quando)) : 'Data a definir';
+    d.appendChild(el('div', { classe: 'detalhe-caixa' }, [
+      el('header', { classe: 'detalhe-barra' }, [
+        el('div', { classe: 'detalhe-cabeca' }, [
+          el('p', { classe: 'detalhe-quando' }, [etiquetaDoTipo(p.tipo), el('span', { texto: quando })]),
+          el('h2', { id: 'detalhe-titulo', texto: p.titulo }),
+        ]),
+        el('div', { classe: 'detalhe-acoes' }, acoes),
+      ]),
+      el('div', { classe: 'detalhe-corpo' }, conteudoDoPost(p, { roteiroAberto: true, comTitulo: false })),
+    ]));
+    if (!d.open) d.showModal();
+  }
+  $('detalhe').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.close(); }); // clique fora fecha
+  $('detalhe').addEventListener('close', () => {
+    $('detalhe').textContent = ''; // para o vídeo ao fechar
+    if (voltarDoDetalhe && voltarDoDetalhe.isConnected) voltarDoDetalhe.focus();
+  });
 
   // ---- a arte: miniaturas que abrem o visualizador, e os botões de baixar ----
   // Os itens de um grupo, na ordem: o vídeo primeiro (é a peça principal do Reels), depois as imagens.
@@ -897,12 +1081,13 @@
   // ---- roteiro e legenda: um campo por destino, cada um com o seu botão de copiar (R-13) ----
   // O ícone de copiar (duas folhas) e o de copiado (✓) são desenhados no CSS (.copiar e .copiar.copiado).
 
-  function desenharRoteiro(p) {
+  // `aberto`: na janela do post, o bloco já vem aberto.
+  function desenharRoteiro(p, aberto) {
     const campos = RoteiroVideo.camposDoPost(p.bruto);
     if (!campos.length) return null;
     const video = campos.some((c) => c.chave === 'junto');
     const titulo = video ? 'Roteiro do vídeo e legenda' : campos.length === 1 && campos[0].chave === 'legenda' ? 'Legenda' : 'Roteiro e legenda';
-    return el('details', { classe: 'roteiro' }, [
+    return el('details', { classe: 'roteiro', open: !!aberto }, [
       el('summary', {}, [titulo + ' ', el('span', { texto: '(' + (campos.length === 1 ? '1 campo' : campos.length + ' campos') + ' para copiar)' })]),
     ].concat(campos.map((c) => {
       const botao = el('button', { classe: 'copiar', type: 'button', title: 'Copiar: ' + c.rotulo.toLowerCase(), 'aria-label': 'Copiar ' + c.rotulo.toLowerCase() });
@@ -912,14 +1097,6 @@
         el('pre', { classe: 'campo-texto', texto: c.texto }),
       ]);
     })));
-  }
-
-  function destacar(ordem) {
-    const alvo = $('post-' + ordem);
-    if (!alvo) return;
-    alvo.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    alvo.classList.add('destaque');
-    setTimeout(() => alvo.classList.remove('destaque'), 1800);
   }
 
   async function copiar(texto, rotulo, botao) {

@@ -4,9 +4,13 @@
 const fs = require('fs');
 const path = require('path');
 const empresa = require('../core/empresa');
+const { TIPOS_ESCOLHIDOS } = require('./tipos-de-post');
 
 const TIPOS = ['capa', 'carrossel', 'post', 'card', 'thumb', 'video', 'outro'];
-const PLATAFORMAS = ['insta', 'yt', 'linkedin', 'blog'];
+// whats: mensagem de WhatsApp (grupo, lista, status); ads: anúncio pago. Nenhum dos dois precisa se passar por Instagram.
+const PLATAFORMAS = ['insta', 'yt', 'linkedin', 'blog', 'whats', 'ads'];
+// O tipo do post (campo opcional `tipo`), que dá a cor, o ícone e o nome do cartão no calendário (tipos-de-post.js).
+const TIPOS_DE_POST = TIPOS_ESCOLHIDOS;
 
 // A pasta da empresa. FABRICA_RAIZ existe para os testes e para rodar fora do lugar de sempre.
 function raiz() {
@@ -153,6 +157,7 @@ function validarPost(p) {
   if (!texto(p.date) || !dataValida(p.date)) erros.push('date: obrigatória, no formato AAAA-MM-DD (por exemplo 2026-10-16)');
   if (!PLATAFORMAS.includes(p.platform)) erros.push(`platform: obrigatória, uma destas: ${PLATAFORMAS.join(', ')}`);
   if (!texto(p.title)) erros.push('title: obrigatório (texto)');
+  if (p.tipo !== undefined && !TIPOS_DE_POST.includes(p.tipo)) erros.push(`tipo: opcional; quando vier, um destes: ${TIPOS_DE_POST.join(', ')}`);
   for (const campo of ['week', 'dateLabel', 'platformLabel', 'cta', 'hook', 'previewUrl', 'script', 'caption', 'tips', 'presenter', 'video', 'cabecalho', 'geral']) {
     if (p[campo] !== undefined && typeof p[campo] !== 'string') erros.push(`${campo}: precisa ser texto`);
   }
@@ -161,4 +166,4 @@ function validarPost(p) {
   return erros;
 }
 
-module.exports = { raiz, caminhos, lerJson, gravarJson, TIPOS, PLATAFORMAS, validarPeca, validarPost, pertenceAEmpresa, caminhoRelativoSeguro };
+module.exports = { raiz, caminhos, lerJson, gravarJson, TIPOS, PLATAFORMAS, TIPOS_DE_POST, validarPeca, validarPost, pertenceAEmpresa, caminhoRelativoSeguro };

@@ -126,6 +126,55 @@ t('cronograma: a arte de cada post para ver grande e baixar, e o roteiro em camp
   assert.deepStrictEqual(campos, ['Roteiro falado', 'Descrição visual', 'Roteiro com descrição visual', 'Legenda'], 'os quatro campos da R-13');
 });
 
+t('cronograma: calendário em largura total por padrão, cartão por tipo, legenda no topo e a janela do post', () => {
+  const h = ler(path.join(PAINEIS, 'cronograma.html'));
+  const codigo = semComentarios(h);
+  // o tipo de cada post vem do script comum, com as cores fixas dele (as mesmas do arquivo do cliente)
+  assert.ok(/<script src="tipos-de-post\.js"><\/script>/.test(h), 'carrega os tipos de post');
+  assert.ok(/tipo: TiposDePost\.tipoDoPost\(p\)/.test(codigo), 'o tipo do post vem de tipoDoPost');
+  assert.ok(/TiposDePost\.cssDosTipos\(\)/.test(codigo), 'as cores dos tipos vêm do script comum');
+  // "Calendário | Lista" ao lado de "Enviar ao cliente", com o calendário aberto por padrão
+  assert.ok(/vista: 'calendario'/.test(codigo), 'o calendário abre por padrão');
+  assert.ok(codigo.includes("['calendario', 'Calendário'], ['lista', 'Lista']") && /'aria-pressed'/.test(codigo), 'os dois botões das vistas');
+  assert.ok(/el\('div', \{ classe: 'barra-botoes' \}, \[vistas, botaoEnviar\]\)/.test(codigo), 'as vistas ficam ao lado de "Enviar ao cliente"');
+  assert.ok(/desenharLista\(mes, doMes, semData\)/.test(codigo), 'a lista continua existindo, como segunda vista');
+  // calendário: dom a sáb, dia sem post apagado, o cartão do tipo com as marcas, a legenda no topo
+  assert.ok(/desenharLegenda\(doMes, posts\), cab, dias/.test(codigo), 'a legenda fica no alto do calendário');
+  assert.ok(codigo.includes("'✓ arte aprovada · ⬇️ arte pronta para baixar · clique no post para abrir'"), 'a nota da legenda');
+  assert.ok(codigo.includes("t.nome + ' · ' + n"), 'cada tipo da legenda com quantos posts há no mês');
+  assert.ok(!/legenda-cores|ESTADOS\[k\]/.test(h), 'a legenda antiga de estados saiu');
+  assert.ok(/' livre'/.test(codigo) && /\.dia\.livre, \.dia\.fora \{ background/.test(h), 'dia sem post fica apagado');
+  // o dia sem post não pode usar uma classe que a tela já usa sozinha (".vazio" é a mensagem de "nenhum post ainda", com
+  // margem enorme: o dia virava uma caixinha solta no meio da célula)
+  const classesSoltas = new Set([...h.matchAll(/^\s+\.([a-z-]+) \{/gm)].map((m) => m[1]));
+  assert.ok(!classesSoltas.has('livre') && !classesSoltas.has('fora'), 'as classes do dia só valem junto com .dia');
+  const chip = corpoDe(codigo, 'function desenharChip(p) {');
+  for (const parte of ["'cartao-post tipo-' + p.tipo.chave", "'✓ aprovada'", "'⬇️ arte pronta'", 'p.tipo.icone', 'p.tipo.nome', 'abrirDetalhe(p, e.currentTarget)']) assert.ok(chip.includes(parte), 'cartão sem ' + parte);
+  assert.ok(/\.cartao-post \{[^}]*border-left: 4px solid var\(--tipo-cor\)[^}]*background: var\(--tipo-fundo\)/.test(h), 'borda esquerda e fundo suave na cor do tipo');
+  assert.ok(/\.cartao-tipo \{[^}]*text-transform: uppercase/.test(h) && /-webkit-line-clamp: 3/.test(h), 'nome do tipo em caixa-alta e título em até 3 linhas');
+  // posts sem data continuam abaixo do calendário, em lista
+  assert.ok(/semData\.length \? desenharSemData\(semData\) : null/.test(codigo), 'posts sem data abaixo do calendário');
+  // tela estreita: agenda (só os dias com post), nunca o calendário escondido
+  const estreita = h.slice(h.indexOf('@media (max-width: 760px)'));
+  assert.ok(/\.dia\.livre, \.dia\.fora \{ display: none; \}/.test(estreita) && /\.dias \{ display: block; \}/.test(estreita), 'a agenda mostra só os dias com post');
+  assert.ok(!/\.calendario \{ display: none/.test(h), 'o calendário nunca some');
+  // a janela do post: <dialog>, barra fixa com baixar, copiar a legenda e fechar, roteiro já aberto
+  assert.ok(/<dialog class="detalhe" id="detalhe" aria-labelledby="detalhe-titulo"><\/dialog>/.test(h), 'a janela do post');
+  const detalhe = corpoDe(codigo, 'function abrirDetalhe(p, origem) {');
+  for (const parte of ["'⬇️ Baixar tudo (.zip)'", "'⬇️ Baixar ' + g.nome + ' (.zip)'", "'⬇️ Baixar o vídeo'", "'Copiar a legenda'", "'Fechar'", 'enderecoDoZip(p, g)', 'roteiroAberto: true', 'd.showModal()']) {
+    assert.ok(detalhe.includes(parte), 'a janela não tem ' + parte);
+  }
+  assert.ok(/!comArte\.length && p\.legenda/.test(detalhe), '"Copiar a legenda" é para o post sem arte');
+  assert.ok(/\.detalhe-barra \{[^}]*position: sticky; top: 0;/.test(h), 'a barra fica fixa no alto da janela');
+  assert.ok(/\$\('detalhe'\)\.addEventListener\('click', \(e\) => \{ if \(e\.target === e\.currentTarget\) e\.currentTarget\.close\(\); \}\)/.test(codigo), 'clique fora fecha');
+  assert.ok(/open: !!aberto/.test(codigo), 'o bloco do roteiro pode vir aberto');
+  // o visualizador abre por cima da janela do post (também é <dialog>, aberto depois) e o recado entra na janela aberta
+  assert.ok(/<dialog class="detalhe"[^\n]*\n<dialog class="visor"/.test(h) && /if \(!d\.open\) d\.showModal\(\);/.test(corpoDe(codigo, 'function abrirVisor(p, g, i) {')), 'o visualizador é outra janela, por cima');
+  assert.ok(/document\.querySelectorAll\('dialog\[open\]'\)/.test(corpoDe(codigo, 'function recado(texto) {')), 'o recado aparece dentro da janela aberta');
+  // os textos da tela não usam palavra interna (nem nome de formato de arquivo)
+  for (const f of frasesDe(codigo)) assert.ok(!temFormato(f), 'formato de arquivo no texto: ' + f);
+});
+
 const ESTILOS = path.join(PAINEIS, 'estilos.html');
 // Só o código da tela (sem os comentários), para os testes que procuram uma palavra no que roda.
 const semComentarios = (h) => h.replace(/<!--[\s\S]*?-->/g, '').replace(/\/\*[\s\S]*?\*\//g, '').split('\n').map((l) => l.replace(/(^|\s)\/\/.*$/, '$1')).join('\n');
@@ -666,9 +715,10 @@ t('nenhum arquivo de dados lido por caminho e nada de fora do computador', () =>
     assert.ok(!/<link[^>]+stylesheet/i.test(texto), `${nome} carrega folha de estilo de fora`);
     const scripts = [...texto.matchAll(/<script[^>]*\ssrc="([^"]+)"/g)].map((m) => m[1]);
     // os scripts são os da própria pasta: o seletor comum e, no Laboratório e no Cronograma, o cartão do estilo (Tarefa 12);
-    // no Cronograma, também o roteiro em campos (R-13), que só monta textos
+    // no Cronograma, também o roteiro em campos (R-13) e os tipos de post (cor, ícone e nome do cartão), que só montam textos
     const permitidos = ['empresa-seletor.js'].concat(['laboratorio.html', 'cronograma.html'].includes(nome) ? ['cartao-estilo.js'] : [])
-      .concat(nome === 'cronograma.html' ? ['roteiro-video.js'] : []);
+      .concat(nome === 'cronograma.html' ? ['roteiro-video.js', 'tipos-de-post.js'] : []);
+    assert.ok(permitidos.every((s) => fs.existsSync(path.join(PAINEIS, s))), 'os scripts permitidos estão na própria pasta');
     assert.ok(scripts.every((s) => permitidos.includes(s)), `${nome} carrega script de fora: ${scripts}`);
   }
 });
