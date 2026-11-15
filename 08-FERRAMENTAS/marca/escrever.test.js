@@ -113,9 +113,16 @@ t('marca nova: parte do exemplo, com o nome da empresa e a conta vazia, e abre n
   const y = lerYaml(texto.replace(BOM_INICIO, ''));
   assert.deepStrictEqual(y.video['correcoes-transcricao'], {}, 'as correções de grafia do exemplo não vão para a empresa');
   assert.ok(!/empresa\s*exemplo|empresa\.exemplo/i.test(texto), 'nada da empresa do exemplo no arquivo');
-  // linha a linha: igual ao exemplo, menos as linhas trocadas, a linha da origem e as correções do exemplo
-  const novo = linhas(ler(r, 'empresas/aurora/marca.yaml'));
-  const ex = linhas(fs.readFileSync(EXEMPLO)).filter((l) => !/^\s+empresaexemplo:/.test(l));
+  // o cabeçalho é o da empresa, não o do exemplo ("EXEMPLO FICTÍCIO", "empresa inventada"), e mantém o fim de linha
+  const todas = linhas(ler(r, 'empresas/aurora/marca.yaml'));
+  const corpo = (ls) => ls.slice(ls.findIndex((l) => !l.startsWith('#') && l.trim() !== ''));
+  const cab = todas.slice(0, todas.length - corpo(todas).length).join('');
+  assert.ok(/^# Contrato de marca — Aurora Nutrição\r?\n/.test(cab), cab);
+  assert.ok(!/EXEMPLO|inventada|fictícia/i.test(cab), 'o cabeçalho do exemplo ficou: ' + cab);
+  assert.strictEqual(/\r\n/.test(cab), /\r\n/.test(fs.readFileSync(EXEMPLO, 'utf8')), 'o fim de linha do cabeçalho é o do arquivo');
+  // linha a linha, depois do cabeçalho: igual ao exemplo, menos as linhas trocadas, a linha da origem e as correções do exemplo
+  const novo = corpo(todas);
+  const ex = corpo(linhas(fs.readFileSync(EXEMPLO))).filter((l) => !/^\s+empresaexemplo:/.test(l));
   const semOrigem = novo.filter((l) => !/^origem: /.test(l));
   assert.strictEqual(novo.length - semOrigem.length, 1, 'uma linha de origem');
   assert.strictEqual(semOrigem.length, ex.length);
@@ -161,6 +168,24 @@ const MARCA_RICA = [
   '    frase: "fale com a gente"',
   '',
 ].join('\r\n');
+
+t('marca que já saiu com o cabeçalho do exemplo: a próxima gravação troca o cabeçalho e não mexe no resto', () => {
+  const r = raizDuas();
+  const ex = fs.readFileSync(EXEMPLO, 'utf8').replace(/nome: "Empresa Exemplo"/, 'nome: "Aurora Nutrição"');
+  esc(r, 'empresas/aurora/marca.yaml', ex);
+  escrever.gravarMarca(r, 'aurora', { cores: { acento: '#E76F51' } }, { origem: 'pessoa', agora: hora(1) });
+  const texto = ler(r, 'empresas/aurora/marca.yaml').toString('utf8');
+  assert.ok(texto.startsWith('# Contrato de marca — Aurora Nutrição'), texto.slice(0, 80));
+  assert.ok(!/EXEMPLO FICTÍCIO|empresa inventada/.test(texto), 'sobrou o cabeçalho do exemplo');
+  const yAntes = lerYaml(ex), yDepois = lerYaml(texto);
+  yAntes.cores.acento = '#E76F51'; yAntes.origem = 'pessoa';
+  assert.deepStrictEqual(yDepois, yAntes, 'só o acento e a origem mudaram no conteúdo');
+  // marca com cabeçalho próprio (escrito à mão): fica como está
+  const r2 = raizDuas();
+  esc(r2, 'empresas/aurora/marca.yaml', MARCA_RICA);
+  escrever.gravarMarca(r2, 'aurora', { cores: { acento: '#E76F51' } }, { origem: 'pessoa', agora: hora(1) });
+  assert.strictEqual(ler(r2, 'empresas/aurora/marca.yaml').toString('utf8').split(/\r?\n/)[0], MARCA_RICA.split(/\r?\n/)[0]);
+});
 
 t('marca existente com comentários, blocos extras, BOM e CRLF: só as linhas pedidas mudam e o fim de linha fica', () => {
   const r = raizDuas();

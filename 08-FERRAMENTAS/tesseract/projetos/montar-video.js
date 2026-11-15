@@ -137,7 +137,7 @@ const MED_BOTAO = medir(ctas.map((c) => c.botao), 40, 'Bold');
 const L = [];
 let id = 1;
 const A = []; // ações: efeitos, presets de entrada/saída, keyframes
-// Tesseract 0.3.1: Video/Audio não aceitam activeRange; a janela vira playback "windowed" com mapeamento linear 1:1.
+// Tesseract (desde a 0.3.1; vale na 0.6): Video/Audio não aceitam activeRange; a janela vira playback "windowed" com mapeamento linear 1:1.
 const comPlayback = (camada) => {
   if ((camada.type !== 'Video' && camada.type !== 'Audio') || !camada.activeRange) return camada;
   const { activeRange: r, ...resto } = camada;

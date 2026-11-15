@@ -108,8 +108,13 @@ Checkpoint de primeira entrada. Por pergunta estruturada, no máximo 4 por chama
    da empresa, lado a lado, com o vídeo. Empresa sem marca gravada que já tem identidade visual: peça a marca antes
    (Fase G.4 do Desenho, item 1). O `catalogo.html` (`previa.js`, e `previa.js --marca <id>`) só quando o painel não
    puder ser aberto. Deixe explícito que o estilo pode ser mantido como está ou adaptado à paleta da empresa.
-4. **Fotos:** liste o que existe em `<pastaMarca>/fotos/` (o caminho `pastaMarca` da empresa ativa) e pergunte se alguma deve aparecer. Não há foto? Siga: o
-   designer usa mockups, números e objetos do estilo.
+4. **Fotos (escolha visual, D-01):** veja o que existe em `<pastaMarca>/fotos/` (o caminho `pastaMarca` da empresa
+   ativa). Não há foto? Siga: o designer usa mockups, números e objetos do estilo. Há fotos: **nunca** pergunte pelo
+   nome do arquivo nem mostre só a pasta ou uma prancha das fotos soltas. Escolha de 2 a 4 candidatas, monte a peça com
+   cada uma pelo gerador (a capa, ou a lâmina onde a foto entra, com o título do roteiro como provisório), junte lado a
+   lado com as letras A, B, C escritas, abra no navegador da pessoa e só então pergunte, numa chamada própria, com o
+   caminho da prévia no texto e as opções pelas mesmas letras, mais "Nenhuma foto". O mesmo vale para a **imagem da
+   capa de Reels** (quadros do vídeo ou fotos): a capa montada com cada imagem, nunca os quadros soltos.
 
 Grave a resposta em `saida/pedido.md` com os campos `tema`, `objetivo`, `formato`, `estilo`, `cores`, `fotos` (lista de arquivos
 ou "nenhuma").

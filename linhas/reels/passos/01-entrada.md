@@ -65,6 +65,11 @@ logo, estilo escolhido, peças já feitas, se o jeito dos vídeos já foi defini
 o conjunto de cores, letras e logo que faz as suas peças serem reconhecidas como suas. Eu posso montar o vídeo com
 ela, para ficar com a mesma cara dos seus outros conteúdos."**
 
+**Mostre a identidade antes de perguntar (D-01):** com marca ou estilo escolhido, abra a tela Estilos do painel
+(`node _fabrica/paineis/servidor.js garantir` e `<endereço>/_fabrica/paineis/estilos.html?empresa=<codigo>`), que
+mostra a identidade aplicada no carrossel, na capa de Reels e no vídeo, e ponha esse endereço no texto da pergunta.
+Sem marca nem estilo, não há aparência para escolher: a pergunta é só se cria a identidade agora.
+
 Então **uma pergunta**, "Quer que este vídeo use a sua identidade visual?", com a recomendação em primeiro lugar:
 
 - **Já tem identidade** (recomendação `usar-identidade`):

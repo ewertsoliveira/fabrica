@@ -26,7 +26,9 @@ formato: instagram-reels
 #   em qualquer camada; os ajustes pós-revisão continuam essa estação por SendMessage.
 # - Modelo nos passos 3 e 4: leve em Expresso e Padrão; o mais forte só em Vitrine.
 # - O passo 4, em Padrão e Vitrine, também exporta a AMOSTRA de ~10 s; o passo 5 só vale com a amostra mostrada.
-# - Export do passo 6 em pelo menos 3 pedaços (--pedacos 3; nunca 2).
+# - Export do passo 6 em pelo menos 3 pedaços (--pedacos 3; nunca 2) no modelo base. No modelo do estilo da empresa,
+#   export inteiro pelo modelos/montar.js, que já leva o som a -14 LUFS (no Tesseract 0.6, exportar um intervalo que
+#   começa no meio do vídeo é ~20x mais lento; ver passos/06-montar-exportar.md).
 # - Contexto enxuto: dados/briefing.md no lugar de ler a empresa inteira em cada passo.
 # - Passo de capa: NÃO exportado ainda (depende do Laboratório de Design). Ver LEIA-ME.md.
 

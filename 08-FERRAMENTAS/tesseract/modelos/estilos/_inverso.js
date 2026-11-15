@@ -10,7 +10,7 @@
 // outras letras do estilo a um papel (ex.: { numero: 'principal' }). Sem marca, as cores e as letras são as do estilo.
 const path = require('path');
 const { agrupa, EASE, hex, comAlfa, limpa, norm, elipse, retangulo, retArredondado, estrela } = require('../motor');
-const { docLinha, comVar, ehDestaque, pessoaEmJanela, cenaEmJanela, pessoaRecortadaReduzida, enquadre } = require('./_comum');
+const { docLinha, comVar, ehDestaque, pessoaEmJanela, cenaEmJanela, pessoaRecortadaReduzida, enquadre, encaixaAbertura, avisoFixo } = require('./_comum');
 const temaMarca = require('../tema-marca');
 const TEX = (n) => path.join(__dirname, '..', 'texturas', n + '.png');
 
@@ -317,7 +317,7 @@ function montar(def, { P, DUR, palavras, pedido, cenas, acento, arquivoMatte, ma
     const toks = ws.map((w, i) => ({ texto: caixa(w), dest: i0 >= 0 && i >= i0 && i < i0 + pw.length }));
     const linhas = []; let cur = [], len = 0;
     for (const t of toks) {
-      if (cur.length && len + 1 + t.texto.length > (def.quebra || 13)) { linhas.push(cur); cur = []; len = 0; }
+      if (cur.length && len + 1 + t.texto.length > (ch.quebra || def.quebra || 13)) { linhas.push(cur); cur = []; len = 0; }
       cur.push(t); len += (len ? 1 : 0) + t.texto.length;
     }
     if (cur.length) linhas.push(cur);
@@ -328,19 +328,36 @@ function montar(def, { P, DUR, palavras, pedido, cenas, acento, arquivoMatte, ma
     }, []));
     const alinhar = def.alinhar || 'esquerda', x = alinhar === 'centro' ? 540 : 96;
     // com a letra da marca, o título encolhe até a linha mais larga caber; a última linha fica na mesma altura
-    const kt = cabe(segs, 'titulo', 'tituloDest', LARGURA_TITULO);
-    const passo = F[kt.kb].est.size * (def.entrelinha || 1.06);
-    const yUlt = def.tituloBase || 1490, y1 = yUlt - (segs.length - 1) * passo;
-    segs.forEach((l, k) => {
-      const camadas = linha('titulo-' + k, l, { kb: kt.kb, kd: kt.kd, x, alinhar, cy: y1 + k * passo, a: a + 200 + k * 120, z, video: true, texto: def.corTexto || 'claro' });
-      camadas.forEach((c) => P.fade(c, entrada === 'pop' ? 'pop' : 'softRise', 'fade'));
-    });
+    let kt = cabe(segs, 'titulo', 'tituloDest', LARGURA_TITULO);
     const rotulo = def.rotulo || {};
     const txt = rotulo.colchetes ? `[ ${pedido.rotulo || 'REELS'} ]` : pedido.rotulo || 'REELS';
     // com marca, o rótulo encolhe até caber (na pílula, a folga de 22 px de cada lado entra na conta)
     const kRot = cabe([[{ texto: txt, dest: false }]], 'rot', 'rot', (alinhar === 'centro' ? LARGURA_LINHA : LARGURA_TITULO) - (rotulo.fundo ? 44 : 0)).kb;
     const mR = mede(kRot, [txt])[txt];
-    const yR = y1 - passo * 0.5 - (rotulo.fundo ? 70 : 56);
+    const folgaRot = rotulo.fundo ? 70 : 56;
+    const entre = def.entrelinha || 1.06;
+    let passo = F[kt.kb].est.size * entre;
+    let yUlt = def.tituloBase || 1490;
+    // com rosto.queixo (ou chamada.posicao "acima" e rosto.topo), o bloco (do fio, ou do alto do rótulo, ao pé da última
+    // linha) sai de perto do rosto e o título encolhe se precisar; o ponto de referência é o centro da última linha
+    const altRot = (mR.bottom - mR.top) + (rotulo.fundo ? 30 : 0);
+    const enc = encaixaAbertura({ pedido, ancora: yUlt, modelo: def.nome,
+      topo: (f) => -((segs.length - 1) * passo * f + passo * f * 0.5 + folgaRot + Math.max(altRot / 2, def.fio ? 52 : 0)),
+      // pé: meia altura da tarja ou da pílula do destaque (1,7 vez a altura da maiúscula), que é o que desce mais
+      base: (f) => Math.max(F[kt.kb].est.size, F[kt.kd].est.size) * f * 0.62 });
+    if (enc) {
+      yUlt = enc.y;
+      if (enc.f < 1) {
+        kt = { kb: variante(kt.kb, Math.round(F[kt.kb].est.size * enc.f)), kd: variante(kt.kd, Math.round(F[kt.kd].est.size * enc.f)) };
+        passo = F[kt.kb].est.size * entre;
+      }
+    }
+    const y1 = yUlt - (segs.length - 1) * passo;
+    segs.forEach((l, k) => {
+      const camadas = linha('titulo-' + k, l, { kb: kt.kb, kd: kt.kd, x, alinhar, cy: y1 + k * passo, a: a + 200 + k * 120, z, video: true, texto: def.corTexto || 'claro' });
+      camadas.forEach((c) => P.fade(c, entrada === 'pop' ? 'pop' : 'softRise', 'fade'));
+    });
+    const yR = y1 - passo * 0.5 - folgaRot;
     const cxR = alinhar === 'centro' ? 540 : x + mR.w / 2;
     const kR = rotulo.cor || 'claro';
     const [corR, corRFundo] = corPar(kR, rotulo.fundo || fundoNoVideo(kR), { proxy: !rotulo.fundo, onde: 'rótulo' });
@@ -368,8 +385,9 @@ function montar(def, { P, DUR, palavras, pedido, cenas, acento, arquivoMatte, ma
   if (layout === 'imagem-mini' && def.imagemMini) Object.assign(G, def.imagemMini);
   if (layout === 'imagem-mini' && def.imagemCirculo) G.img = CIRCULO_IMAGEM;
   if (def.raio && G.img.r === undefined) G.img = { ...G.img, raio: def.raio };
+  // cada item do B-roll do pedido na sua janela; a anotação vai só com o primeiro
   const janelas = [];
-  for (const b of cenas.slice(0, 1)) {
+  for (const [ib, b] of cenas.entries()) {
     const a = b.ini * 1000, z = b.fim * 1000; janelas.push([a, z]);
     if (layout !== 'imagem-mini') tela('broll', a, z);
     const j = G.img, rot = j.r === undefined ? def.rotImg || 0 : 0;
@@ -379,7 +397,7 @@ function montar(def, { P, DUR, palavras, pedido, cenas, acento, arquivoMatte, ma
     if (rot) img.transform.rotation = rot;
     anima([...mi, img]);
     if (def.enfeiteImg) anima(def.enfeiteImg(H, a, z, j, layout) || []);
-    if (pedido.anotacao && F.nota) {
+    if (ib === 0 && pedido.anotacao && F.nota) {
       const pos = layout === 'imagem-mini' ? [300, 1170] : j.r !== undefined ? [j.cx, j.cy - j.r - 60] : [j.x + j.w * 0.7, j.y - 56];
       const kN = def.corNota || 'acento', sobreVideo = layout === 'imagem-mini';
       const [corN] = corPar(kN, sobreVideo ? fundoNoVideo(kN) : def.tela.fundo, { proxy: sobreVideo, naTela: !sobreVideo, onde: 'anotação' });
@@ -467,4 +485,7 @@ function montar(def, { P, DUR, palavras, pedido, cenas, acento, arquivoMatte, ma
     const barra = P.ret('barra', 0, DUR, [84, 1820], [912, 6], cor(def.barra.cor || 'acento'));
     P.kf(barra, 'scaleX', [[0, 0], [DUR, 100, EASE.linear]]);
   }
+
+  // aviso fixo no alto (V-05), na letra do rótulo
+  if (pedido.aviso) avisoFixo(P, DUR, pedido.aviso, F.rot.fonte, F.rot.est);
 }

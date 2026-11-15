@@ -21,7 +21,7 @@ olhando a prancha no passo 5, e o projeto montado vira a base do export do passo
 4. **Empresa do run nos scripts:** todo comando deste passo (`montar-video.js`, `aplicar.js`, `tsrct`) roda com o prefixo
    `FABRICA_EMPRESA=<codigo do run>`, que o runner passa à estação.
 5. **Conferência também do projeto do vídeo:** antes de concluir este passo, além da pasta do run, a conferência entre
-   empresas roda sobre `08-FERRAMENTAS/tesseract/projetos/<NN>` (o `NN` está no `material.md`), como manda o runner.
+   empresas roda sobre `08-FERRAMENTAS/tesseract/projetos/reelsNN` (o nome, como `reels01`, está na linha **Reels:** do `material.md`), como manda o runner.
 
 ## Contexto a carregar
 

@@ -12,7 +12,8 @@
 // mesma medida leve. Sem marca, nada muda.
 const path = require('path');
 const { agrupa, EASE, hex, elipse } = require('../motor');
-const { linhaMista, ehDestaque, ancora, docLinha, comVar, desfoca, pessoaEmJanela, cenaEmJanela, pessoaRecortadaReduzida, enquadre } = require('./_comum');
+const { linhaMista, ehDestaque, ancora, docLinha, comVar, desfoca, pessoaEmJanela, cenaEmJanela, pessoaRecortadaReduzida, enquadre,
+  partirChamada, encaixaAbertura, avisoFixo } = require('./_comum');
 const { limpa } = require('../motor');
 const temaMarca = require('../tema-marca');
 const { giroDeMatiz } = require('./_matiz');
@@ -114,23 +115,47 @@ module.exports = {
     let fimChamada = 0;
     if (ch) {
       const a = ch.ini * 1000, z = ch.fim * 1000; fimChamada = z;
-      const pal = ch.palavra || ch.texto.split(' ')[0];
-      const resto = ch.texto.replace(pal, '').trim();
-      const rot = 'NUTRIÇÃO';
-      const x0 = 96, y0 = 1060;
+      // o título segue a ordem da frase: a palavra de destaque fica numa linha só dela, em itálico, no lugar em que aparece
+      // (chamada.quebra: caracteres por linha no resto do título)
+      const { antes, pal, depois } = partirChamada(ch, 'Luz de Vela');
+      const nq = ch.quebra || 12;
+      const la = quebra(antes, nq), ld = quebra(depois, nq);
+      const linhas = [...la, ...ld];
+      const rot = pedido.rotulo || 'REELS';
+      const x0 = 96;
       // com a letra da marca, o rótulo e o título encolhem até caber entre as margens de 96 px; a primeira linha do título
       // fica onde está e as outras sobem junto com o corpo, então o título nunca sobe para o rosto
       const { r: [{ e: estR, m: mRs }] } = cabe([{ textos: [rot], e: est.rot }], 888);
       const mR = mRs[rot];
+      let { f: fT, r: [{ e: estT, m: mA }, { e: estTI, m: mIs }] } = cabe([{ textos: linhas, e: est.titulo }, { textos: [pal], e: est.tituloIta }], 888);
+      // primeira linha do título em y0+140 e as outras a cada 150 px (no corpo da marca, na mesma proporção). Com rosto.queixo
+      // (ou chamada.posicao "acima" e rosto.topo), o bloco (do fio, 56 px acima do rótulo, ao pé do título) sai de perto do
+      // rosto e o título encolhe se precisar
+      let y0 = 1060, y1 = null, passo = null;
+      const n = linhas.length + 1;
+      const enc = encaixaAbertura({ pedido, ancora: y0, modelo: 'Luz de Vela', topo: () => -56, base: (f) => 65 + n * estT.size * f });
+      if (enc) {
+        y0 = enc.y;
+        if (enc.f < 1) {
+          estT = { ...estT, size: Math.round(estT.size * enc.f) }; estTI = { ...estTI, size: Math.round(estTI.size * enc.f) };
+          mA = linhas.length ? P.medir(linhas, estT) : {}; mIs = P.medir([pal], estTI);
+        }
+        passo = estT.size; y1 = y0 + 65 + estT.size / 2;
+      }
+      const mI = mIs[pal];
       P.texto('rot', a, z, [x0 + mR.w / 2, y0], comVar({ ...docLinha(F.rot, estR), text: rot, fillColor: noVideo('acento', 'rótulo') }), ancora(mR));
       const fio = P.forma('fio', a + 150, z, { commands: [{ type: 'moveTo', x: x0, y: y0 - 56 }, { type: 'lineTo', x: x0 + 140, y: y0 - 56 }] }, { traco: OURO, largura: 3, trim: 0, cap: 'butt' });
       P.kf(fio, 'trimEnd', [[0, 0], [600, 100, EASE.saida]]);
-      const linhas = quebra(resto, 12);
-      const { f: fT, r: [{ e: estT, m: mA }, { e: estTI, m: mIs }] } = cabe([{ textos: linhas, e: est.titulo }, { textos: [pal], e: est.tituloIta }], 888);
-      const mI = mIs[pal];
-      const t1 = P.texto('titulo-1', a + 250, z, [x0 + mI.w / 2, y0 + 140], comVar({ ...docLinha(F.tituloIta, estTI), text: pal, fillColor: noVideo('acento', 'título') }), ancora(mI));
+      const corDest = noVideo('acento', 'título');
       const corT = noVideo('claro', 'título');
-      const ts = [t1, ...linhas.map((l, k) => P.texto('titulo-' + (k + 2), a + 450 + k * 120, z, [x0 + mA[l].w / 2, y0 + 140 + (150 + k * 150) * fT], comVar({ ...docLinha(F.titulo, estT), text: l, fillColor: corT }), ancora(mA[l])))];
+      // altura de cada linha (sem encaixe, a conta de sempre, valor por valor)
+      const yLinha = (i) => (enc ? y1 + i * passo : i ? y0 + 140 + (150 + (i - 1) * 150) * fT : y0 + 140);
+      const ordem = [...la.map((l) => ({ l })), { l: pal, ita: true }, ...ld.map((l) => ({ l }))];
+      const ts = ordem.map(({ l, ita }, i) => {
+        const m = ita ? mI : mA[l];
+        return P.texto('titulo-' + (i + 1), i ? a + 450 + (i - 1) * 120 : a + 250, z, [x0 + m.w / 2, yLinha(i)],
+          comVar({ ...docLinha(ita ? F.tituloIta : F.titulo, ita ? estTI : estT), text: l, fillColor: ita ? corDest : corT }), ancora(m));
+      });
       ts.forEach((t) => { t.dropShadow = sombra; P.fade(t, 'softRise', 'fade'); });
     }
 
@@ -147,7 +172,7 @@ module.exports = {
     const cartao = (nome, a, z, j) => { const f = P.ret(nome + '-fio', a, z, [j.x - 3, j.y - 3], [j.w + 6, j.h + 6], OURO); P.fade(f, 'fade', 'fade'); return f; };
     const janelas = [];
     let cyLegCartao = 1460;
-    for (const b of cenas.slice(0, 1)) {
+    for (const b of cenas) { // cada item do B-roll do pedido na sua janela
       const a = b.ini * 1000, z = b.fim * 1000; janelas.push([a, z]);
       if (layout !== 'imagem-mini') {
         const f = P.ret('broll-fundo', a, z, [0, 0], [1080, 1920], ESCURO); P.fade(f, 'fade', 'fade');
@@ -226,6 +251,9 @@ module.exports = {
         cor: t.it ? cDest : cBase, sombra, a: t.it ? t.ini : g.ini })), { cy: noCartao ? cyLegCartao : 1420, a: g.ini, z: g.fim, espaco: 22, nome: 'leg' });
       camadas.forEach((c) => P.fade(c, 'fade', 'none'));
     });
+
+    // aviso fixo no alto (V-05), na letra do rótulo
+    if (pedido.aviso) avisoFixo(P, DUR, pedido.aviso, F.rot, est.rot);
   },
 };
 

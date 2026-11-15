@@ -26,9 +26,21 @@ function validar(bloco, { faixa = nucleo.FAIXA_PADRAO } = {}) {
   if (bloco.textos !== undefined && (typeof bloco.textos !== 'object' || Array.isArray(bloco.textos))) e.push('textos: objeto');
   if (bloco.opcoes !== undefined && (typeof bloco.opcoes !== 'object' || Array.isArray(bloco.opcoes))) e.push('opcoes: objeto');
   if (!e.length) e.push(...m.validar({ ...bloco, textos: bloco.textos || {}, opcoes: bloco.opcoes || {} }));
-  if (faixa[1] - faixa[0] < (ALTURA[bloco.tipo] ?? 0) && bloco.tipo !== 'selo') e.push(`faixa ${faixa.join(',')} tem ${faixa[1] - faixa[0]} px; o bloco precisa de ${ALTURA[bloco.tipo]}`);
+  // faixa mais baixa que o bloco: versão compacta (o bloco inteiro encolhe), até a metade da altura
+  if (escalaNaFaixa(bloco, faixa) < ESCALA_MINIMA) {
+    e.push(`faixa ${faixa.join(',')} tem ${faixa[1] - faixa[0]} px; o bloco precisa de ${ALTURA[bloco.tipo]} (compacto: no mínimo ${Math.ceil(ALTURA[bloco.tipo] * ESCALA_MINIMA)})`);
+  }
   if (faixa[1] > 1320 && bloco.tipo !== 'cartao-cta') e.push('faixa termina abaixo de y 1320, onde começa a legenda');
+  if (faixa[0] < 250 && bloco.tipo !== 'cartao-cta') e.push('faixa começa acima de y 250, onde ficam a foto de perfil e a barra do app');
   return e.map((x) => `[${bloco.id}] ${x}`);
+}
+
+// escala do bloco na faixa: 1 quando cabe; menor quando a faixa é mais baixa que o bloco (compacto). O selo é uma pílula
+// solta, posicionada por opcoes.y, e o cartão final tem posição e escala próprias (opcoes.centroY e opcoes.escala)
+const ESCALA_MINIMA = 0.5;
+function escalaNaFaixa(bloco, faixa) {
+  if (bloco.tipo === 'selo' || bloco.tipo === 'cartao-cta' || !ALTURA[bloco.tipo]) return 1;
+  return Math.min(1, (faixa[1] - faixa[0]) / ALTURA[bloco.tipo]);
 }
 
 // monta uma lista de blocos num único lote.
@@ -55,6 +67,10 @@ function montar(blocos, opts = {}) {
     const m = BLOCOS[b.tipo];
     if (b.fim + (opts.desloca || 0) <= 0) { avisos.push(`[${b.id}] termina antes do início do trecho (fim ${b.fim} s, desloca ${opts.desloca}); ignorado`); continue; }
     ctx.bloco = b.id;
+    // cada bloco começa no mapa da faixa (o cartão final troca pelo dele); compacto quando a faixa é mais baixa que o bloco
+    const s = escalaNaFaixa(b, faixa);
+    ctx.mapa = { de: nucleo.FAIXA_PADRAO[0], para: faixa[0], s };
+    if (s < 1) avisos.push(`[${b.id}] compacto: ${Math.round(s * 100)}% do tamanho, na faixa ${faixa.join(',')}`);
     const r = m.construir(b, ctx) || {};
     const f = ctx.fechaBloco();
     // as janelas saem em segundos da COMPOSIÇÃO (já somado o `desloca`), que é o tempo que o export em pedaços usa

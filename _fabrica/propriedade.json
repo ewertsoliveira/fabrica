@@ -8,6 +8,7 @@
     "_fabrica/propriedade.json",
     "_fabrica/modelo.json",
     ".claude/skills/",
+    ".claude/settings.json",
     "08-FERRAMENTAS/",
     "05-ESTRATEGIA/nucleo-de-conteudo/regras/",
     "linhas/reels/",

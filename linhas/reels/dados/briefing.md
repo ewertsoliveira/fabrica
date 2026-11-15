@@ -19,22 +19,27 @@ motion, mapa, ficha ou ilustração fora da camada.
 
 ## Posição (formato Reels 1080x1920)
 - O queixo se mede em quadro real, por janela. Topo de mockup, placa ou cartão ≥ queixo + 50 px (placas na faixa
-  y 955 a 1305 quando a pessoa grava perto).
+  y 955 a 1305 quando a pessoa grava perto). Quem grava perto da câmera tem o queixo perto de y 1140 a 1200: aí os
+  blocos de motion vão na versão `compacta` (ver `blocos-motion/LEIA-ME.md`) e, no modelo do estilo, o pedido leva
+  `rosto.queixo` (o título desce para baixo do queixo e encolhe se precisar).
 - Headline começa em y ≥ 250 (foto de perfil); legenda em y 1320 a 1460; nada importante abaixo de y 1600 (barra da rede).
 - Gráfico nunca sobre o rosto; conferir no enquadramento aberto e no fechado (115%).
 
 ## Regras permanentes de execução
 1. **O modelo forte planeja e arquiteta; o modelo leve executa.** Passos 3 e 4 no modelo forte só na Vitrine; o passo 6 (export, mixagem, conferência) sempre em modelo leve, em estação nova que lê `estrutura.md`.
 2. **Amostra em vídeo de ~10 s para aprovar a estrutura** em Padrão e Vitrine: o trecho mais denso em motion, com as animações finais, exportado no passo 4 e mostrado no passo 5 junto com a prancha. Só depois do "sim" vem o export do vídeo inteiro. Expresso: prancha.
-3. **Export final em pelo menos 3 pedaços**, um export por versão.
+3. **Export final em pelo menos 3 pedaços** no modelo base, um export por versão. No modelo do estilo, um export
+   inteiro (`modelos/montar.js --exportar`; dividir por intervalo deixa o Tesseract 0.6 mais lento).
 4. **RAM:** antes do passo 4 e do passo 6, conferir a RAM livre; com menos de 3 GB, pedir que o responsável feche o navegador em vez de dividir em 2.
 
 ## REGRA DE LINK (pedida pela responsável, cobrada várias vezes)
 Toda mídia gráfica entregue (vídeo, capa, prancha, amostra, comparação, preview) vai **registrada no laboratório** (o painel do laboratório da empresa) e **a resposta traz o link clicável** o endereço do servidor local do laboratório seguido do caminho da peça de cada peça, conferido com uma requisição local (resposta 200) antes de mandar. Nunca entregar só caminho de arquivo da raiz: o responsável não busca em pasta. Em checkpoint (passos 7 e 10), os links vêm **antes** da pergunta. O agente que gera a mídia cria o `preview.html` e registra a entrada; se esquecer, o runner faz antes de abrir o checkpoint.
 
-## Tesseract (0.3.1)
+## Tesseract (a versão mais nova; conferido na 0.6.0)
 - Ordem: `montar-video.js` → blocos de motion (`aplicar.js`) → **export em pedaços** (`exportar-em-pedacos.js`) →
   `mixar-audio.js`. O motion não é idempotente: remontar antes de rodar de novo.
+- Modelo do estilo: `modelos/montar.js --exportar` exporta inteiro e leva o som a -14 LUFS (`somLUFS` no log); um MP4
+  pronto que não passou por ele vai a -14 LUFS com `node projetos/mixar-audio.js <mp4>`.
 - Export em segundo plano, nunca em primeiro. Um export por versão. Padrão:
   `node exportar-em-pedacos.js --decupagem <pasta>/decupagem-v1.json --pedacos 3` (4 só com 6 GB ou mais de RAM livre; **nunca 2**:
   o modo `auto` cai para 2 abaixo de 3 GB, e o mínimo é 3). Inteiro só como fallback com motivo.

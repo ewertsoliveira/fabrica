@@ -19,10 +19,11 @@ Vêm do `marca.yaml` da empresa ativa. Papéis usados nos vídeos:
 - Fonte de título e de legenda: [principal]
 
 ## Formato do rosto
-Padrão: [tela cheia | cartão com ilustração em cima | faixa]
-- Quando há elemento na tela: [cartão com ilustração em cima]
 - Quando é só a pessoa falando: [tela cheia]
-- Quando a frase fecha o raciocínio: [o cartão sai e só a ilustração fica]
+- Quando há imagem na tela (`rosto.layout` do modelo): [recorte | dividir | rosto-mini | imagem-mini | lado-a-lado]. A
+  pessoa nunca sai de cena quando a imagem entra; muda só a forma em que ela aparece.
+- Rosto no vídeo de referência: queixo em y [px] e alto da cabeça em y [px] (`rosto.queixo` e `rosto.topo` do pedido; o
+  título da abertura fica abaixo do queixo, ou acima da cabeça com `chamada.posicao: "acima"`).
 - Troca de formato no máximo a cada 5 s (V-02).
 
 ## O que aparece para cada tipo de frase

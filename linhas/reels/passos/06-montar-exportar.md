@@ -7,8 +7,9 @@ saida: saida/entrega.md
 
 # Passo 6: Exportar, mixar e entregar
 
-A montagem e a prancha são do passo 4. Este passo aplica os ajustes pedidos no checkpoint 5, **exporta uma única vez,
-em pedaços paralelos**, mixa o som, mede, roda a conferência por script e entrega.
+A montagem e a prancha são do passo 4. Este passo aplica os ajustes pedidos no checkpoint 5, **exporta uma única vez**
+(em pedaços paralelos no modelo base; inteiro no modelo do estilo), leva o som a -14 LUFS, mede, roda a conferência por
+script e entrega.
 
 ## Exceções ao runner
 
@@ -17,11 +18,11 @@ em pedaços paralelos**, mixa o som, mede, roda a conferência por script e entr
    remontado se a decupagem não mudou. Os ajustes pós-revisão (`ao_reprovar` do passo 7) continuam **essa mesma estação**.
 2. **Modelo:** sempre leve neste passo, inclusive na Vitrine.
 3. **Contexto enxuto:** `dados/briefing.md` no lugar da empresa inteira.
-4. **Empresa do run nos scripts:** todo comando deste passo (`montar-video.js`, `exportar-em-pedacos.js`,
-   `mixar-audio.js`, `conferir-reels.js`) roda com o prefixo `FABRICA_EMPRESA=<codigo do run>`, que o runner passa à
+4. **Empresa do run nos scripts:** todo comando deste passo (`montar-video.js`, `modelos/montar.js`,
+   `exportar-em-pedacos.js`, `mixar-audio.js`, `conferir-reels.js`) roda com o prefixo `FABRICA_EMPRESA=<codigo do run>`, que o runner passa à
    estação.
 5. **Conferência também do projeto do vídeo:** antes de concluir este passo, além da pasta do run, a conferência entre
-   empresas roda sobre `08-FERRAMENTAS/tesseract/projetos/<NN>` (o `NN` está no `material.md`), como manda o runner.
+   empresas roda sobre `08-FERRAMENTAS/tesseract/projetos/reelsNN` (o nome, como `reels01`, está na linha **Reels:** do `material.md`), como manda o runner.
 
 ## Contexto a carregar
 
@@ -35,18 +36,27 @@ o `preferencias-aprovadas.md` da empresa ativa (`dadosLinha`: trilha, digitaçã
 
 ## Instruções
 
-Ordem fixa: **montar → motion → exportar em pedaços → mixar → conferir**.
+Ordem fixa: **montar → motion → exportar em pedaços → mixar → conferir**. No modelo do estilo: **montar e exportar
+inteiro (o som já sai a -14 LUFS) → conferir** (item 2).
 
 1. Se houver `revisao.md` de uma reprovação, corrigir apenas o que a revisão apontou. Senão, aplicar só os ajustes do
    checkpoint 5 à decupagem do passo 4.
 2. **Montar e motion.** Se algo mudou na decupagem: remontar com `projetos/montar-video.js` e reaplicar os blocos (na
    ordem do briefing) e conferir **uma folha de 8 a 12 quadros só do que mudou**. Sem mudança, não renderizar de novo:
    a prancha do passo 4 vale. Conferir que `motion.janelas` cobre todos os blocos; sem janela o script não divide.
-   **Modelo do estilo da empresa** (código do modelo em `entrada.md`): os itens 3 e 4 viram um export só, do próprio
-   montador dos modelos, com a marca da empresa do run:
+   **Modelo do estilo da empresa** (código do modelo em `entrada.md`): os itens 3 e 4 viram um export só, inteiro e em
+   segundo plano, do próprio montador dos modelos, com a marca da empresa do run:
    `FABRICA_EMPRESA=<codigo do run> node 08-FERRAMENTAS/tesseract/modelos/montar.js <modelo> <pasta>/pedido-modelo.json --usar-marca --exportar --saida <pasta>/modelo`.
-   A linha `marca-usada` do log tem de trazer o código do run e `exemplo: false`. Depois, com o MP4 de `<pasta>/modelo/`:
-   medir como no item 5 (a mixagem por decupagem não se aplica: o áudio é o do vídeo), rodar o item 6 com
+   **Não dividir em pedaços:** o modelo do estilo não tem decupagem, e no Tesseract 0.6 exportar um intervalo que começa
+   no meio do vídeo é cerca de 20 vezes mais lento que do começo (medido: 30 s para 14,5 s inteiros, 214 s só para os
+   últimos 4,8 s). A regra dos 3 pedaços vale para o modelo base. Registrar em `entrega.md`: "export inteiro (modelo do
+   estilo)".
+   A linha `marca-usada` do log tem de trazer o código do run e `exemplo: false`, e o log não pode ter avisos
+   `[pedido]` (item do `broll` ou aviso fixo que o modelo deixou de fora) nem `[rosto]` (título que não coube longe do
+   rosto) sem resolver. **Som:** o `montar.js` leva o som do vídeo a -14 LUFS sozinho (mesmo loudnorm do
+   `mixar-audio.js`, duas passadas, pico -1,5 dBTP); a linha final do log traz `somLUFS` (`antes` e `depois`). Se o MP4
+   não passou por ele, `node 08-FERRAMENTAS/tesseract/projetos/mixar-audio.js <mp4>` faz só a normalização (vídeo
+   copiado). Depois, com o MP4 de `<pasta>/modelo/`: medir como no item 5, rodar o item 6 com
    `<pasta>/pedido-modelo.json` no lugar da decupagem (se o script não aceitar, registrar como pendência em `entrega.md`)
    e olhar a folha de quadros: pessoa em cena junto com cada imagem de destaque, nada sobre o rosto, cada imagem de
    destaque com a pessoa por no mínimo 4 s. Os modelos não têm cartão final de chamada: com o pedido do modelo, o script
@@ -77,7 +87,8 @@ Ordem fixa: **montar → motion → exportar em pedaços → mixar → conferir*
    Corrigir qualquer FALHA antes de entregar; AVISO vai para as pendências (com o modelo do estilo, o aviso de cartão de
    chamada não impede entregar; ver o item 2). Olhar os quadros das emendas (um antes e um
    depois de cada corte do `plano.json`) junto com 12 quadros finais.
-7. Gravar `saida/entrega.md` (na seção Medidas: modo de export, nº de pedaços, cortes em segundos, tempo de relógio).
+7. Gravar `saida/entrega.md` (na seção Medidas: modo de export, nº de pedaços, cortes em segundos, tempo de relógio;
+   no modelo do estilo, "inteiro" e o `somLUFS` do log).
    **Ao registrar o vídeo, a capa ou a miniatura no Laboratório** (`registrar.js peca`, ver CORE.md): sem o campo
    `estilo` no JSON da peça, vale o estilo escolhido pela empresa. Feito com o modelo do estilo da empresa, deixe sem o
    campo. Quando o pedido trocou o estilo, ponha no JSON da peça o estilo usado (`"estilo": "<id>"`, ou

@@ -540,13 +540,20 @@ Checkpoints sempre executam em primeiro plano (precisam da resposta da pessoa) e
 
 **Regra: toda pergunta de checkpoint usa `AskUserQuestion`.** Nunca escreva a pergunta como texto solto. Havendo várias
 perguntas, junte em uma chamada (até 4 por chamada, cada uma com 2 a 4 opções). Pergunta de texto livre: extraia 2 ou 3
-exemplos concretos como opções; a ferramenta sempre oferece "Outro".
+exemplos concretos como opções; a ferramenta sempre oferece "Outro". **Exceção:** a pergunta visual nunca vai junto
+com as outras; ela vai numa chamada própria, depois da prévia aberta (regra abaixo).
 
 ## Regra visual (inviolável, D-01 do Núcleo)
 
-**Tudo que é visual é mostrado, não só descrito.** Cor, tipografia, logo, layout, capa, estilo de vídeo: antes de
-perguntar qualquer coisa ao responsável sobre isso, **gere a prévia e entregue o link na mesma mensagem**. Texto sozinho
-não decide design.
+**Tudo que é visual é mostrado, não só descrito.** Cor, tipografia, logo, layout, capa, imagem ou foto de uma peça,
+quadro do vídeo, estilo de vídeo, identidade visual: antes de perguntar qualquer coisa ao responsável sobre isso, **gere
+a prévia e entregue o link na mesma mensagem**. Texto sozinho não decide design. Vale em **todo** ponto da Fábrica:
+checkpoint de entrada (pedido, fotos, imagem de capa), revisão, entrega e linha criada pela empresa, mesmo que o passo
+da linha não fale em prévia.
+
+**A prévia é a peça pronta com cada opção, nunca a matéria-prima.** Escolher a imagem da capa = mostrar a capa montada
+com cada imagem candidata, lado a lado. Uma prancha de quadros soltos do vídeo, uma lista de fotos ou nomes de arquivo
+**não são prévia**. Toda opção da pergunta tem a sua versão montada (nada de "Foto de estúdio" só descrita).
 
 1. Gere a página: `node _fabrica/core/visual.js paletas|tipografias|quadro <entrada.json>` (entrada em JSON; o formato
    está no cabeçalho do script). Ela imprime o caminho do HTML e o endereço `file://`.
@@ -555,9 +562,21 @@ não decide design.
    link hospedado.
 3. Ofereça de 2 a 4 opções, com letra, lado a lado. Peça a escolha **depois** de a prévia existir.
 4. Nada é gravado no contrato de marca (caminho `marca`) antes da escolha explícita.
-5. Para o que o gerador não cobre (capa, layout, modelo de vídeo), gere o arquivo da própria peça e apresente o caminho.
+5. Para o que o gerador não cobre (capa, layout, foto numa lâmina, modelo de vídeo), gere a própria peça com cada
+   opção pelo gerador de verdade (ex.: `08-FERRAMENTAS/carrossel/gerar.js --formato reels`, uma vez por imagem), junte
+   as versões lado a lado com as letras escritas e apresente o caminho. Sem o texto final, use o do roteiro e diga que
+   é provisório.
+6. Abra a prévia no navegador da pessoa **antes** de perguntar (a janela de perguntas cobre a conversa). Na
+   `AskUserQuestion`, o texto da pergunta traz o caminho da prévia e as opções usam as mesmas letras ("A · quadro 20").
 
-Se você se pegar descrevendo um design em parágrafos, pare: gere a prévia.
+**Trava automática:** o gancho `_fabrica/core/guarda-visual.js` (em `.claude/settings.json`) bloqueia a pergunta que
+fala de aparência sem citar uma prévia que existe, e diz o que fazer. Não contorne: gere a prévia. Pergunta que não
+escolhe nada de aparência e caiu na trava por uma palavra (ex.: a data de publicação) é refeita com
+`metadata: { "source": "fabrica:nao-visual" }`; isso nunca vale para escolher imagem, foto, capa, cor, letra, layout,
+estilo ou identidade.
+
+Se você se pegar descrevendo um design em parágrafos, ou listando fotos e quadros para a pessoa escolher, pare: gere a
+prévia.
 
 ## Explicar o processo (inviolável, L-01 a L-06 do Núcleo)
 

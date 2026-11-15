@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"require(require('path').join(process.env.CLAUDE_PROJECT_DIR||process.cwd(),'_fabrica','core','guarda-visual.js')).main()\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

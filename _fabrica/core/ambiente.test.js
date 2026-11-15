@@ -60,4 +60,21 @@ caso('a linha de comando: --json devolve JSON e a saída 1 quando falta o obriga
   } finally { fs.rmSync(raiz, { recursive: true, force: true }); }
 });
 
+caso('modelo do whisper ou da máscara pela metade (download interrompido) não passa como OK', () => {
+  const raiz = fs.mkdtempSync(path.join(os.tmpdir(), 'fabrica-amb-'));
+  try {
+    const w = path.join(raiz, '08-FERRAMENTAS', 'whisper-cpp');
+    fs.mkdirSync(path.join(w, 'bin', 'Release'), { recursive: true });
+    fs.mkdirSync(path.join(w, 'modelos'), { recursive: true });
+    fs.writeFileSync(path.join(w, 'bin', 'Release', 'whisper-cli.exe'), 'x');
+    fs.writeFileSync(path.join(w, 'modelos', 'ggml-large-v3-turbo-q5_0.bin'), Buffer.alloc(1000));
+    fs.mkdirSync(path.join(raiz, '08-FERRAMENTAS', 'rvm'), { recursive: true });
+    fs.writeFileSync(path.join(raiz, '08-FERRAMENTAS', 'rvm', 'rvm_mobilenetv3_fp32.onnx'), Buffer.alloc(1000));
+    const por = Object.fromEntries(conferir(raiz).map((i) => [i.id, i]));
+    assert.ok(!por.whisper.ok && /incompleto/.test(por.whisper.detalhe), por.whisper.detalhe);
+    assert.ok(!por.rvm.ok && /incompleto/.test(por.rvm.detalhe), por.rvm.detalhe);
+    assert.ok(!por.onnxruntime.ok && /npm install/.test(por.onnxruntime.comoResolver));
+  } finally { fs.rmSync(raiz, { recursive: true, force: true }); }
+});
+
 console.log(`\n${n}/${n} casos passaram.`);

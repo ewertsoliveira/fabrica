@@ -75,9 +75,9 @@ const pedidoBase = () => ({
 });
 
 // monta um modelo e devolve o projeto; ctx.marca é o tema (ou null)
-function monta(nome, { marca = null, acento = null, pedido = pedidoBase(), fala = palavras } = {}) {
+function monta(nome, { marca = null, acento = null, pedido = pedidoBase(), fala = palavras,
+  cenas = [{ img: 'x.png', ini: 5.3, fim: 10.1, cena: 'x.png', id: 'cena-0' }] } = {}) {
   const P = projetoFalso();
-  const cenas = [{ img: 'x.png', ini: 5.3, fim: 10.1, cena: 'x.png', id: 'cena-0' }];
   cenas.forEach((c) => P.importaImagem(c.id));
   const modelo = require('./estilos/' + nome);
   modelo.montar({ P, DUR: 14500, palavras: fala.map((p) => ({ ...p })), temMatte: false, arquivoMatte: null, pedido, cenas, acento, marca });
@@ -120,21 +120,25 @@ const ANTES = {
   colagem: '385b2bcf7715ee1e',
   editorial: '25ec577ac5f59d6c',
 };
-// os dois modelos próprios, em cada arranjo, tirada do commit b9263a5 (item 6.1, antes do 6.2)
+// os dois modelos próprios, em cada arranjo, tirada do commit b9263a5 (item 6.1, antes do 6.2). Trocada de propósito na
+// 0.8.1: o rótulo da abertura vinha fixo ("NUTRIÇÃO · REELS" no Concreto, "NUTRIÇÃO" no Luz de Vela) e passou a ser o
+// pedido.rotulo (padrão REELS), como nos outros 12. Com o rótulo antigo no pedido, as digitais batem com as de antes
+// (Concreto 32c41c3309f8e9a2, 08c16da7b1ed7d2f, f76c56958c4ff593, f0ec1dcc187140a2, e7b3d537045d67da; Luz 0ca20b15ec2952fc,
+// 3fa81eb4cdbd716c, 6585bf3962f79da6, 81725a3d0d8f95a9, 068d629763444da7): nada mais mudou
 const pedidoArranjo = (layout) => (layout ? { ...pedidoBase(), rosto: { y: 820, layout } } : pedidoBase());
 const ANTES_PROPRIOS = {
-  'concreto-acido': '32c41c3309f8e9a2',
-  'concreto-acido/imagem-mini': '08c16da7b1ed7d2f',
-  'concreto-acido/rosto-mini': 'f76c56958c4ff593',
-  'concreto-acido/dividir': 'f0ec1dcc187140a2',
-  'concreto-acido/lado-a-lado': 'e7b3d537045d67da',
-  'concreto-acido/recorte': '32c41c3309f8e9a2',
-  'luz-de-vela': '0ca20b15ec2952fc',
-  'luz-de-vela/imagem-mini': '3fa81eb4cdbd716c',
-  'luz-de-vela/rosto-mini': '0ca20b15ec2952fc',
-  'luz-de-vela/dividir': '6585bf3962f79da6',
-  'luz-de-vela/lado-a-lado': '81725a3d0d8f95a9',
-  'luz-de-vela/recorte': '068d629763444da7',
+  'concreto-acido': '9de89624c0e50ce4',
+  'concreto-acido/imagem-mini': '788512460e52e6af',
+  'concreto-acido/rosto-mini': '3e295bfd2cda3b28',
+  'concreto-acido/dividir': '57cad3a229ae9cd4',
+  'concreto-acido/lado-a-lado': '927ec371844f9d72',
+  'concreto-acido/recorte': '9de89624c0e50ce4',
+  'luz-de-vela': 'cf3850c6b3c2f22c',
+  'luz-de-vela/imagem-mini': 'f61d0113b6d07965',
+  'luz-de-vela/rosto-mini': 'cf3850c6b3c2f22c',
+  'luz-de-vela/dividir': '6be0204a55817b59',
+  'luz-de-vela/lado-a-lado': 'bfb15a0ea1c059d0',
+  'luz-de-vela/recorte': '9714d3bd29b4a05c',
 };
 if (process.argv.includes('--digitais')) {
   for (const m of INVERSOS) console.log(`  '${m}': '${digital(monta(m))}',`);
@@ -602,6 +606,108 @@ t('duas empresas em seguida nos modelos próprios: a marca de uma não aparece n
     const b = monta(m, { marca: tema(BOREAL) });
     assert.ok(!cores(b).includes('Poppins') && !temCor(b, '#F2994A'), m);
     assert.strictEqual(digital(monta(m)), ANTES_PROPRIOS[m]);
+  }
+});
+
+// ---------- 0.8.1: erros achados no primeiro Reels de uma empresa nova ----------
+const TODOS = [...PROPRIOS, ...INVERSOS];
+const silencio = (fn) => comAvisos(fn).r;
+// alto e pé (px) de uma camada da abertura: texto pela medida falsa (tinta de 22% a 92% do corpo, centrada na posição),
+// retângulo pela posição e tamanho, forma pelo caminho
+function faixaVertical(c) {
+  const p = c.transform.position, an = c.transform.anchorPoint;
+  if (c.type === 'Text') { const h = c.sourceText.fontSize * 0.7; return [p[1] - h / 2, p[1] + h / 2]; }
+  if (c.type === 'Rect') { const y = p[1] - an[1]; return [y, y + c.rect.size[1]]; }
+  const ys = ((c.shape.path || {}).commands || []).filter((k) => 'y' in k).map((k) => k.y + p[1] - an[1]);
+  return [Math.min(...ys), Math.max(...ys)];
+}
+const abertura = (P) => P.camadas.filter((c) => /^(titulo-\d|rot$|rot-fundo|fio$)/.test(c.name));
+const extremos = (P) => { const v = abertura(P).map(faixaVertical); return [Math.min(...v.map((x) => x[0])), Math.max(...v.map((x) => x[1]))]; };
+
+t('rótulo da abertura: o do pedido (padrão REELS) nos 14 modelos, nunca um tema fixo', () => {
+  for (const m of TODOS) {
+    const padrao = textos(monta(m), /^rot$/).map((c) => c.sourceText.text).join('');
+    assert.ok(/REELS/.test(padrao), `${m}: rótulo padrão "${padrao}"`);
+    const proprio = textos(monta(m, { pedido: { ...pedidoBase(), rotulo: 'TEMA 2027' } }), /^rot$/).map((c) => c.sourceText.text).join('');
+    assert.ok(/TEMA 2027/.test(proprio), `${m}: rótulo do pedido ignorado ("${proprio}")`);
+    const todos = monta(m).camadas.filter((c) => c.type === 'Text').map((c) => c.sourceText.text).join(' ');
+    assert.ok(!/NUTRI/i.test(todos), `${m}: texto de outro tema no vídeo`);
+  }
+});
+
+t('título de abertura na ordem da frase quando o destaque não é a primeira palavra', () => {
+  const chamada = { texto: 'O segredo da semana', palavra: 'Segredo', ini: 0.5, fim: 3.2 };
+  for (const m of TODOS) {
+    const P = monta(m, { pedido: { ...pedidoBase(), chamada } });
+    const linhas = textos(P, /^titulo-\d/).sort((p, q) => p.transform.position[1] - q.transform.position[1] || p.transform.position[0] - q.transform.position[0]);
+    const frase = linhas.map((c) => c.sourceText.text).join(' ').toLowerCase();
+    assert.strictEqual(frase, 'o segredo da semana', `${m}: título fora de ordem ("${frase}")`);
+  }
+  // no Concreto, a faixa ácida fica atrás da linha da palavra, onde quer que ela esteja
+  const C = monta('concreto-acido', { pedido: { ...pedidoBase(), chamada } });
+  const faixa = C.camadas.find((c) => c.name === 'titulo-faixa');
+  const pal = textos(C, /^titulo-\d/).find((c) => c.sourceText.text === 'SEGREDO');
+  const [f0, f1] = faixaVertical({ ...faixa, transform: { ...faixa.transform, anchorPoint: [0, 0] } });
+  assert.ok(pal.transform.position[1] > f0 && pal.transform.position[1] < f1, 'a faixa não está atrás da palavra de destaque');
+  // palavra que não está no texto: avisa e não repete a palavra no título
+  const { r: Q, avisos } = comAvisos(() => monta('concreto-acido', { pedido: { ...pedidoBase(), chamada: { ...chamada, palavra: 'anistia' } } }));
+  assert.ok(avisos.some((a) => /anistia/.test(a)), 'sem aviso da palavra que não está no texto');
+  assert.strictEqual(textos(Q, /^titulo-\d/).map((c) => c.sourceText.text).join(' '), 'O SEGREDO DA SEMANA');
+});
+
+t('rosto.queixo: a abertura fica 40 px abaixo do queixo e acima de 1640, nos 14 modelos e em todos os arranjos', () => {
+  for (const m of TODOS) for (const l of [null, 'imagem-mini', 'rosto-mini', 'recorte']) {
+    const pedido = { ...pedidoBase(), rosto: { y: 820, queixo: 1200, ...(l ? { layout: l } : {}) } };
+    const [alto, pe] = extremos(silencio(() => monta(m, { pedido })));
+    assert.ok(alto >= 1240 - 1 && pe <= 1640 + 1, `${m}${l ? '/' + l : ''}: abertura de ${Math.round(alto)} a ${Math.round(pe)}`);
+  }
+  // queixo alto (longe do título): nada muda
+  for (const m of TODOS) {
+    const pedido = { ...pedidoBase(), rosto: { y: 820, queixo: 700 } };
+    assert.deepStrictEqual(extremos(monta(m, { pedido })), extremos(monta(m)), `${m}: mexeu sem precisar`);
+  }
+});
+
+t('chamada.posicao "acima" com rosto.topo: a abertura fica entre a barra do app e a cabeça', () => {
+  for (const m of TODOS) {
+    const pedido = { ...pedidoBase(), chamada: { ...pedidoBase().chamada, posicao: 'acima' }, rosto: { y: 820, topo: 760, layout: m === 'concreto-acido' ? 'recorte' : undefined } };
+    const [alto, pe] = extremos(silencio(() => monta(m, { pedido })));
+    assert.ok(alto >= 230 - 1 && pe <= 720 + 1, `${m}: abertura de ${Math.round(alto)} a ${Math.round(pe)}`);
+  }
+  const { avisos } = comAvisos(() => monta('protagonista', { pedido: { ...pedidoBase(), chamada: { ...pedidoBase().chamada, posicao: 'acima' } } }));
+  assert.ok(avisos.some((a) => /rosto\.topo/.test(a)), 'sem aviso de rosto.topo faltando');
+});
+
+t('chamada.quebra: menos linhas no título', () => {
+  const chamada = { texto: 'Ordem na semana começa cedo', palavra: 'Ordem', ini: 0.5, fim: 3.2 };
+  for (const m of TODOS) {
+    const curto = textos(monta(m, { pedido: { ...pedidoBase(), chamada } }), /^titulo-\d/).length;
+    const largo = textos(monta(m, { pedido: { ...pedidoBase(), chamada: { ...chamada, quebra: 30 } } }), /^titulo-\d/).length;
+    assert.ok(largo < curto || curto <= 2, `${m}: quebra 30 deu ${largo} linhas (antes ${curto})`);
+  }
+});
+
+t('todos os itens do B-roll entram, cada um na sua janela, nos 14 modelos', () => {
+  const cenas = [{ img: 'x.png', ini: 4.0, fim: 6.5, cena: 'x.png', id: 'cena-0' }, { img: 'y.png', ini: 8.0, fim: 11.0, cena: 'y.png', id: 'cena-1' }];
+  for (const m of TODOS) {
+    const P = monta(m, { cenas });
+    for (const [i, b] of cenas.entries()) {
+      const img = P.camadas.find((c) => c.type === 'Image' && c.source && c.source.assetId === 'cena-' + i);
+      assert.ok(img, `${m}: o B-roll ${i + 1} não entrou`);
+      assert.strictEqual(img.activeRange.start, b.ini * 1000, `${m}: B-roll ${i + 1} fora da janela`);
+    }
+    assert.ok(textos(P, /^nota$/).length <= 1, `${m}: anotação repetida`);
+  }
+});
+
+t('aviso fixo (V-05) nos 14 modelos, do começo ao fim, no alto', () => {
+  for (const m of TODOS) {
+    const P = monta(m, { pedido: { ...pedidoBase(), aviso: 'Ilustração · simulação' } });
+    const a = textos(P, /^aviso$/)[0];
+    assert.ok(a && a.sourceText.text === 'Ilustração · simulação', `${m}: sem aviso`);
+    assert.strictEqual(a.activeRange.start, 0); assert.strictEqual(a.activeRange.duration, 14500);
+    assert.ok(a.transform.position[1] < 200, `${m}: aviso fora do alto`);
+    assert.ok(!monta(m).camadas.some((c) => /^aviso/.test(c.name)), `${m}: aviso sem pedido`);
   }
 });
 

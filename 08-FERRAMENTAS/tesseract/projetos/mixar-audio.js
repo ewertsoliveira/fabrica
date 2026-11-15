@@ -2,15 +2,24 @@
 // Lê a decupagem (blocos, headline, alerta e o bloco "som"), põe cada efeito do kit pelo tipo de bloco,
 // mixa a trilha com ducking sobre a voz do MP4 já exportado e grava um MP4 novo (vídeo copiado, sem reexportar no Tesseract).
 // Uso: node mixar-audio.js <pasta>/decupagem.json [--trilha arquivo.mp3] [--saida arquivo.mp4]
+//      node mixar-audio.js <video.mp4> [--saida arquivo.mp4] [--alvo -14]
+//        MP4 pronto, sem decupagem (o caminho do modelo do estilo): só leva o som a -14 LUFS, com o mesmo loudnorm
+//        (ver normalizar-audio.js). Sem --saida, troca o próprio arquivo.
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { execFileSync } = require('child_process');
-const K = require('./som/kit');
-const { SR } = K;
 
 const args = process.argv.slice(2);
 const opc = (nome) => { const i = args.indexOf('--' + nome); return i >= 0 ? args[i + 1] : null; };
+if (/\.(mp4|mov)$/i.test(args[0] || '')) {
+  const { normalizar } = require('./normalizar-audio');
+  const r = normalizar(args[0], opc('saida') || args[0], { alvo: Number(opc('alvo') || -14) });
+  console.log(JSON.stringify({ saida: path.basename(opc('saida') || args[0]), antesLUFS: r.antes, saidaLUFS: r.depois }));
+  process.exit(0);
+}
+const K = require('./som/kit');
+const { SR } = K;
 const decPath = path.resolve(args[0]);
 const DEC = JSON.parse(fs.readFileSync(decPath, 'utf8'));
 const BASE = path.dirname(decPath);

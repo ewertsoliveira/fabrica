@@ -36,12 +36,15 @@ sozinho na primeira vez que um modelo pede uma.
 ## Fluxo
 
 ```
-node preparar-material.js "<video>" --estado cru|pre-editado [--mascara] [--reels NN]
-   -> projetos/<NN>/material.md  (para e pergunta se houver ambiguidade: rode de novo com --decisao chave=valor)
+node preparar-material.js "<video>" --estado cru|pre-editado [--mascara] [--reels reelsNN]
+   -> projetos/reelsNN/material.md  (para e pergunta se houver ambiguidade: rode de novo com --decisao chave=valor)
 decupagem (plano de edição aprovado)  ->  montagem do projeto Tesseract
-node exportar-em-pedacos.js --decupagem projetos/<NN>/decupagem.json --pedacos auto
+node exportar-em-pedacos.js --decupagem projetos/reelsNN/decupagem.json --pedacos auto
 node conferir-reels.js <video.mp4> <decupagem.json>
 ```
+
+Com o modelo do estilo da empresa, a montagem e o export são do `modelos/montar.js` (export inteiro, som já a -14 LUFS;
+ver `modelos/README.md`). Um MP4 pronto, sem decupagem, vai a -14 LUFS com `node projetos/mixar-audio.js <video.mp4>`.
 
 ## Regras que valem sempre
 
@@ -51,8 +54,14 @@ node conferir-reels.js <video.mp4> <decupagem.json>
 - **Pré-edição:** o áudio de vídeo gravado em celular pode começar depois do vídeo (`start_time`); sem `aresample=async=1:first_pts=0` os cortes desalinham o áudio. O script já trata isso, e a transcrição deve rodar sobre o vídeo editado, não sobre o bruto.
 - **Memória no export:** feche navegador e qualquer `tsrct`/`ffmpeg` antes; cada pedaço usa ~1,1 a 1,4 GB. Nunca rode dois exports ao mesmo tempo.
 
-## Armadilhas do Tesseract 0.3.1
+## Armadilhas do Tesseract (aprendidas na 0.3.1; os scripts rodam igual na 0.6.0)
 
+- **Na 0.6.0, exportar um intervalo que começa no meio do vídeo (`--start-frame`, `--start-ms`) é ~20x mais lento**
+  que a partir do começo (medido: 214 s para os últimos 4,8 s de um vídeo que sai inteiro em 30 s). Por isso o modelo
+  do estilo (`modelos/montar.js`) exporta inteiro; o `exportar-em-pedacos.js` monta um projeto por pedaço, cada um
+  começando do zero, e não sofre disso.
+- O mesmo id de recurso não entra duas vezes no projeto ("asset ID already exists"); o motor dos modelos importa cada
+  vídeo uma vez só.
 - Vídeo sem áudio no export: a camada de vídeo precisa de `volume: 1`.
 - Camadas de imagem e de vídeo só entram pelo documento (`project commit`); ações servem para efeitos, presets e keyframes.
 - Dois keyframes no mesmo instante da mesma propriedade derrubam o lote inteiro: deduplicar antes.
@@ -61,6 +70,6 @@ node conferir-reels.js <video.mp4> <decupagem.json>
 - Formas ignoram alfa fraco e opacidade fracionária; pré-misture a cor com o fundo.
 - Retângulo criado por ação não aceita sombra; o que precisa de sombra entra como imagem.
 - `animatorSetCornerRadius` só vale para mídia; em retângulo use `roundness`.
-- A versão 0.3.1 exige `playback` (janela "windowed") nas camadas de vídeo e áudio, no lugar de `activeRange`.
+- Desde a 0.3.1 (e na 0.6), as camadas de vídeo e áudio pedem `playback` (janela "windowed") no lugar de `activeRange`.
 - O recorte automático de pessoa da CLI pública devolve máscara vazia; por isso a máscara vem do RVM, como camada track matte em luma.
 - Projeto `.tsrct` embute o vídeo inteiro: fica fora do git.

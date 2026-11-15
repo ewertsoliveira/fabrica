@@ -1,4 +1,4 @@
-// Núcleo da biblioteca de blocos de motion (Tesseract 0.3.1), Fábrica de Conteúdo.
+// Núcleo da biblioteca de blocos de motion (Tesseract: escrita na 0.3.1, conferida na 0.6.0), Fábrica de Conteúdo.
 // Mesmas funções rect/texto/forma/kf/janelas, com as
 // armadilhas do Tesseract tratadas aqui UMA vez, para que nenhum bloco precise lembrar delas:
 //
@@ -13,7 +13,9 @@
 //     recusa aplicar duas vezes o mesmo id e oferece --refazer (remove as camadas daquele id antes).
 //
 // Coordenadas dos blocos: escritas na faixa padrão (topo em y 955). O núcleo desloca tudo em y pelo
-// (faixa[0] - 955), então `--faixa y0,y1` move o bloco inteiro sem tocar no código dele.
+// (faixa[0] - 955), então `--faixa y0,y1` move o bloco inteiro sem tocar no código dele. Faixa mais baixa que a altura
+// do bloco = versão compacta: o bloco inteiro encolhe na proporção (escala de cada camada e posições em torno de x 540 e
+// do topo da faixa), também sem tocar no código dele. Ver Contexto.mapa.
 'use strict';
 
 // ---------- identidade: vem do contrato de marca (06-MARCA-E-FOTOS/marca.yaml), por papel ----------
@@ -99,6 +101,9 @@ class Contexto {
     this.desloca = desloca;  // segundos somados a todos os tempos
     this.faixa = faixa;
     this.dy = faixa[0] - FAIXA_PADRAO[0];
+    // mapa das coordenadas do bloco para a tela: y vai de `de` para `para` e, com s < 1 (compacto), tudo encolhe em torno
+    // de (540, de). O index.js ajusta a escala de cada bloco; o cartão final põe o dele (centro e escala próprios)
+    this.mapa = { de: FAIXA_PADRAO[0], para: faixa[0], s: 1 };
     this.prefixoKf = prefixoKf;
     this.kfn = 0;
     this.acoes = [];         // criações, na ordem (de trás para a frente)
@@ -110,11 +115,16 @@ class Contexto {
   }
   ms(s) { return Math.round((s + this.desloca) * 1000); }
   faixaMs(a, z) { const ini = Math.max(0, this.ms(a)); return { start: ini, duration: Math.max(1, this.ms(z) - ini) }; }
-  y(v) { return v + this.dy; }
+  // com escala 1, a mesma conta de sempre (só o deslocamento em y), valor por valor
+  x(v) { const m = this.mapa; return m.s === 1 ? v : 540 + (v - 540) * m.s; }
+  y(v) { const m = this.mapa; return m.s === 1 ? v + (m.para - m.de) : m.para + (v - m.de) * m.s; }
+  esc(v) { return this.mapa.s === 1 ? v : v * this.mapa.s; }
   nome(papel) { return this.bloco ? `${this.bloco}-${papel}` : papel; }
   novoId() { return this.prox++; }
+  // a camada guarda o desenho no tamanho da faixa padrão; a escala do transform encolhe em torno da âncora
   tf(pos, anchor = [0, 0], escala = 100, opac = 100) {
-    return { anchorPoint: anchor, position: [pos[0], this.y(pos[1])], scale: [escala, escala], rotation: 0, opacity: opac };
+    const e = this.esc(escala);
+    return { anchorPoint: anchor, position: [this.x(pos[0]), this.y(pos[1])], scale: [e, e], rotation: 0, opacity: opac };
   }
 
   // cada criação entra na frente (insertIndex 0): crie de trás para a frente
@@ -162,7 +172,7 @@ class Contexto {
   // camada de imagem: só entra pelo documento (project commit). aplicar.js importa o asset e grava a camada.
   imagem(papel, a, z, { asset, arquivo, pos, tamanho, escala = 100, opac = 100 }) {
     const id = this.novoId(), nome = this.nome(papel);
-    this.documento.push({ id, nome, asset, arquivo, pos: [pos[0], this.y(pos[1])], tamanho, escala, opac, activeRange: this.faixaMs(a, z) });
+    this.documento.push({ id, nome, asset, arquivo, pos: [this.x(pos[0]), this.y(pos[1])], tamanho, escala: this.esc(escala), opac, activeRange: this.faixaMs(a, z) });
     this.camadas.push({ layerId: id, nome });
     return { id, a, z, nome, documento: true };
   }
@@ -176,7 +186,12 @@ class Contexto {
     const tr = this.tracks.get(chave);
     chaves.forEach(([s, v, e]) => {
       const t = Math.max(0, this.ms(s) - t0);
-      if (prop === 'positionY' && typeof v === 'number') v += this.dy; // y absoluto acompanha a faixa
+      // posição absoluta acompanha a faixa (e o compacto); escala animada encolhe junto
+      if (typeof v === 'number') {
+        if (prop === 'positionY') v = this.y(v);
+        else if (prop === 'positionX') v = this.x(v);
+        else if (prop === 'scaleX' || prop === 'scaleY') v = this.esc(v);
+      }
       tr.mapa.set(t, [t, v, e]);
     });
   }

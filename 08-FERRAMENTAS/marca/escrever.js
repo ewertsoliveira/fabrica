@@ -399,6 +399,29 @@ function tirarCopias(c, arqAlvo, desfeito) {
 // falhar), as cópias que ela acabou de fazer saem.
 // `opcoes.copiasFeitas` ({ arquivos, pastas }): letras que quem chama acabou de copiar para esta gravação (a marca que nasce
 // do estilo). Elas entram na anotação do histórico, e o "Desfazer" desta gravação as tira junto com as da própria gravação.
+// o cabeçalho de comentário do exemplo ("EXEMPLO FICTÍCIO", "os valores abaixo são de uma empresa inventada") não vale para
+// a marca de verdade: ao gravar, ele vira o cabeçalho da empresa, também numa marca que já tinha saído com o do exemplo.
+// Só os comentários do alto mudam; o que o YAML diz fica igual (a gravação confere relendo o arquivo).
+const CAB_EXEMPLO = /^# Contrato de marca — EXEMPLO FICTÍCIO/;
+function cabecalhoDaEmpresa(texto, nome) {
+  if (!CAB_EXEMPLO.test(texto)) return texto;
+  const eol = texto.includes('\r\n') ? '\r\n' : '\n';
+  const ls = texto.split(/\r?\n/);
+  let i = 0;
+  while (i < ls.length && (ls[i].startsWith('#') || ls[i].trim() === '')) i++;
+  const quem = String(nome || '').replace(/[\r\n]+/g, ' ').trim() || 'sua empresa';
+  const cab = [
+    `# Contrato de marca — ${quem}`,
+    '#',
+    '# Cores, letras, logo, voz e regras de vídeo desta empresa. Todo valor que muda de',
+    '# empresa para empresa mora aqui, e só aqui; os scripts da Fábrica leem este arquivo.',
+    '#',
+    '# Gravado pela tela Sua marca (ou pelo agente, com `08-FERRAMENTAS/marca/escrever.js`),',
+    '# com histórico e Desfazer. Prefira mudar por lá a editar à mão.',
+  ];
+  return [...cab, '', ...ls.slice(i)].join(eol);
+}
+
 function gravarMarca(r, codigo, valores, opcoes = {}) {
   const previas = ehObjeto(opcoes.copiasFeitas) ? opcoes.copiasFeitas : {};
   const criados = { arquivos: Array.isArray(previas.arquivos) ? previas.arquivos.slice() : [], pastas: Array.isArray(previas.pastas) ? previas.pastas.slice() : [] };
@@ -440,9 +463,9 @@ function gravarMarcaComCopias(r, codigo, valores, opcoes, criados) {
   if (!atual && ehObjeto(antes.video) && tem(antes.video, 'correcoes-transcricao')) {
     trocas.push({ rota: ['video', 'correcoes-transcricao'], esvaziar: true, esperado: {} });
   }
-  const novo = aplicar(base, trocas);
   const esperado = clonar(antes);
   for (const x of trocas) colocar(esperado, x.rota, x.esperado);
+  const novo = cabecalhoDaEmpresa(aplicar(base, trocas), ehObjeto(esperado.empresa) ? esperado.empresa.nome : '');
   const confere = (texto) => {
     let lido;
     try { lido = lerYaml(semBom(texto)); } catch { return false; }

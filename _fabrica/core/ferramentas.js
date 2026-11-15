@@ -114,6 +114,20 @@ function atualizaPathDoSistema() {
   if (r.status === 0 && r.stdout.trim()) process.env.PATH = r.stdout.trim() + ';' + process.env.PATH;
 }
 
+/** Id do pacote do ffmpeg que o winget já instalou ("Gyan.FFmpeg", "Gyan.FFmpeg.Essentials"...) na tabela do
+ *  "winget list"; null se nenhum. O "Essentials" vem primeiro: é o mesmo programa, e muita máquina já tem esse. */
+function pacoteNaLista(saida) {
+  const s = String(saida || '');
+  // a tabela do winget corta id comprido numa janela estreita ("Gyan.FFmpeg.Ess…"): vale o começo do sufixo
+  if (/\bGyan\.FFmpeg\.E/.test(s)) return 'Gyan.FFmpeg.Essentials';
+  if (/\bGyan\.FFmpeg\.S/.test(s)) return 'Gyan.FFmpeg.Shared';
+  return /\bGyan\.FFmpeg(?![.\w])/.test(s) ? 'Gyan.FFmpeg' : null;
+}
+function pacoteFfmpeg() {
+  const r = spawnSync('winget', ['list', '--id', 'Gyan.FFmpeg', '--accept-source-agreements'], { encoding: 'utf8', timeout: 120000 });
+  return pacoteNaLista(r.stdout);
+}
+
 // ---------- ferramentas ----------
 // Cada uma tem: id, nome, atual() -> {versao|null, ok}, maisNova() -> {versao, rotulo}, instalar(opc).
 
@@ -123,16 +137,24 @@ const FERRAMENTAS = [
     nome: 'ffmpeg (áudio e vídeo)',
     atual: () => ({ versao: rodaVersao('ffmpeg', ['-version']), ok: !!rodaVersao('ffmpeg', ['-version']) && !!rodaVersao('ffprobe', ['-version']) }),
     maisNova: async () => {
-      // O winget sempre instala a mais nova do ffmpeg; consultar o site do ffmpeg é frágil. Compara pelo "winget upgrade".
-      const r = spawnSync('winget', ['upgrade', '--id', 'Gyan.FFmpeg', '--accept-source-agreements'], { encoding: 'utf8', timeout: 120000 });
+      // O winget sempre instala a mais nova do ffmpeg; consultar o site do ffmpeg é frágil. Compara pelo "winget upgrade",
+      // no pacote que já está instalado (Gyan.FFmpeg ou Gyan.FFmpeg.Essentials: o mesmo programa com outro nome)
+      const id = pacoteFfmpeg() || 'Gyan.FFmpeg';
+      const r = spawnSync('winget', ['upgrade', '-e', '--id', id, '--accept-source-agreements'], { encoding: 'utf8', timeout: 120000 });
       const saida = String(r.stdout || '');
-      const tem = /Gyan\.FFmpeg/i.test(saida) && /\d+\.\d+/.test(saida.split(/Gyan\.FFmpeg/i)[1] || '');
+      const tem = saida.includes(id) && /\d+\.\d+/.test(saida.split(id)[1] || '');
       return { versao: null, rotulo: tem ? 'há versão nova' : 'já é a mais nova', desatualizado: tem };
     },
     instalar: () => {
       const instalado = !!rodaVersao('ffmpeg', ['-version']);
+      const id = pacoteFfmpeg();
+      // ffmpeg que veio de outro lugar (outro pacote do winget, instalação à mão): não instala um segundo no PATH
+      if (instalado && !id) {
+        console.log('  o ffmpeg deste computador não veio do winget (Gyan.FFmpeg); mantido como está. Para atualizar, use o mesmo caminho por onde ele foi instalado.');
+        return;
+      }
       const args = instalado
-        ? ['upgrade', '-e', '--id', 'Gyan.FFmpeg', '--accept-package-agreements', '--accept-source-agreements', '--silent']
+        ? ['upgrade', '-e', '--id', id, '--accept-package-agreements', '--accept-source-agreements', '--silent']
         : ['install', '-e', '--id', 'Gyan.FFmpeg', '--accept-package-agreements', '--accept-source-agreements', '--silent'];
       const r = spawnSync('winget', args, { encoding: 'utf8', timeout: 20 * 60 * 1000, stdio: ['ignore', 'pipe', 'pipe'] });
       // winget devolve código diferente de 0 quando "já está na versão mais nova"; o que vale é o programa rodar depois
@@ -279,5 +301,5 @@ async function main() {
   return falhou ? 1 : 0;
 }
 
-module.exports = { versaoDe, comparar, escolherRelease, lerSha, verificar, FERRAMENTAS };
+module.exports = { versaoDe, comparar, escolherRelease, lerSha, verificar, FERRAMENTAS, pacoteNaLista };
 if (require.main === module) main().then((c) => process.exit(c), (e) => { console.log('PROBLEMA: ' + e.message); process.exit(1); });

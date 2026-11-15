@@ -14,7 +14,7 @@ A revisão devolveu o veredito em `saida/revisao.md` e a estação de edição e
 `biblioteca-de-modelos.md`) da empresa.
 
 **Conferência antes da entrega:** antes de apresentar o vídeo final, a conferência entre empresas roda sobre a pasta do
-run e sobre `08-FERRAMENTAS/tesseract/projetos/<NN>` (o `NN` está no `material.md`), como manda o runner. Sem as duas
+run e sobre `08-FERRAMENTAS/tesseract/projetos/reelsNN` (o nome, como `reels01`, está na linha **Reels:** do `material.md`), como manda o runner. Sem as duas
 limpas, nada é apresentado como entrega.
 
 ## O que apresentar
@@ -25,6 +25,8 @@ limpas, nada é apresentado como entrega.
 4. As pendências: dados ilustrativos, peças a validar.
 
 ## Perguntar
+
+Abra o vídeo final antes da pergunta e ponha o caminho dele no texto da pergunta (D-01, item 11).
 
 **O Reels está aprovado?**
 

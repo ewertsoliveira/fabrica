@@ -1,4 +1,4 @@
-// Chamada ao CLI do Tesseract (0.3.1) a partir do Node, sem depender do PATH.
+// Chamada ao CLI do Tesseract (escrita na 0.3.1; conferida na 0.6.0) a partir do Node, sem depender do PATH.
 'use strict';
 const fs = require('fs');
 const os = require('os');

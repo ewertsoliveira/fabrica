@@ -78,6 +78,10 @@ function validar(bloco) {
   if (o.logo && !fs.existsSync(path.resolve(o.logo))) e.push('opcoes.logo: arquivo não encontrado');
   else if (o.logo) { try { tamanhoDaImagem(fs.readFileSync(path.resolve(o.logo))); } catch (x) { e.push('opcoes.logo: ' + x.message); } }
   if (/link na bio/i.test(`${t.frase} ${t.botao}`)) e.push('"link na bio" não funciona em vídeo: use outra chamada');
+  if (o.escala !== undefined && !(typeof o.escala === 'number' && o.escala >= 0.5 && o.escala <= 1)) e.push('opcoes.escala: de 0.5 a 1 (cartão compacto)');
+  // o cartão tem 500 px de altura (x escala): fica entre a foto de perfil (y 250) e os botões do app (y 1640)
+  const s = typeof o.escala === 'number' ? o.escala : 1, cy = o.centroY ?? 1310;
+  if (cy - 250 * s < 250 || cy + 250 * s > 1640) e.push(`opcoes.centroY ${cy} com escala ${s}: o cartão (y ${Math.round(cy - 250 * s)} a ${Math.round(cy + 250 * s)}) sai da área entre 250 e 1640; diminua a escala ou mude o centro`);
   return e;
 }
 
@@ -85,8 +89,11 @@ function construir(bloco, c) {
   const t = bloco.textos, o = bloco.opcoes || {};
   const A0 = bloco.inicio, Z = bloco.fim;
   const cy0 = o.centroY ?? 1310;          // centro do cartão (1310 padrão; desce quando o trecho final está fechado e o rosto fica maior)
-  const dy = cy0 - 1310;
-  const Y = (v) => v - c.dy;              // o cartão tem posição própria (centroY): não acompanha a --faixa das placas
+  // o cartão tem posição própria (centroY) e não acompanha a --faixa das placas: as coordenadas abaixo são as do cartão
+  // centrado em 1310; o mapa leva o centro para centroY e, com opcoes.escala (compacto), encolhe tudo em torno dele
+  c.mapa = { de: 1310, para: cy0, s: o.escala ?? 1 };
+  const dy = 0;
+  const Y = (v) => v;
   const conta = o.conta ?? marca.handle;
   const logoContrato = marca.pega('pecas.logo', '');
   let arqLogo = o.logo ? path.resolve(o.logo) : (logoContrato ? marca.caminho(logoContrato) : null);
@@ -135,6 +142,7 @@ const campos = {
   'textos.frase': 'argumento em ExtraBold 50 da fonte principal, caixa mista, até 2 linhas (~64 caracteres)',
   'textos.botao': 'texto do botão na cor de acento (a largura é medida no render)',
   'opcoes.centroY': 'centro do cartão (padrão 1310; desce quando o trecho final está fechado e o rosto fica maior)',
+  'opcoes.escala': 'cartão compacto, de 0.5 a 1 (padrão 1 = 920 x 500 px): para quem grava perto da câmera, com o queixo perto de y 1200 (ex.: escala 0.68 e centroY 1425 = y 1255 a 1595)',
   'opcoes.larguraBotao': 'largura do texto do botão em px, para não medir no Tesseract',
   'opcoes.conta': 'endereço da conta no cartão (padrão: empresa.handle do contrato de marca)',
   'opcoes.logo': 'logo em PNG, JPG, WebP ou SVG, o tamanho lido do próprio arquivo (padrão: pecas.logo do contrato; sem logo, o cartão leva só o endereço da conta)',

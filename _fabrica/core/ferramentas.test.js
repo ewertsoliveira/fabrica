@@ -2,7 +2,7 @@
 // Testes das partes puras de ferramentas.js (sem rede). Rode: node _fabrica/core/ferramentas.test.js
 'use strict';
 const assert = require('assert');
-const { versaoDe, comparar, escolherRelease, lerSha } = require('./ferramentas.js');
+const { versaoDe, comparar, escolherRelease, lerSha, pacoteNaLista } = require('./ferramentas.js');
 
 let n = 0;
 const caso = (nome, f) => { f(); n++; console.log('ok   ' + nome); };
@@ -43,6 +43,16 @@ caso('lê o checksum de um .sha256 com ou sem nome do arquivo', () => {
   assert.strictEqual(lerSha(h.toUpperCase()), h);
   assert.strictEqual(lerSha('lixo'), null);
   assert.strictEqual(lerSha(''), null);
+});
+
+caso('ffmpeg: acha o pacote que o winget já instalou (Essentials é o mesmo programa com outro nome)', () => {
+  const tabela = (id) => `Nome                      ID                     Versão Origem\n${'-'.repeat(60)}\nFFmpeg (Essentials Build) ${id} 9.0.1  winget\n`;
+  assert.strictEqual(pacoteNaLista(tabela('Gyan.FFmpeg.Essentials')), 'Gyan.FFmpeg.Essentials');
+  assert.strictEqual(pacoteNaLista(tabela('Gyan.FFmpeg.Ess…')), 'Gyan.FFmpeg.Essentials');
+  assert.strictEqual(pacoteNaLista(tabela('Gyan.FFmpeg')), 'Gyan.FFmpeg');
+  assert.strictEqual(pacoteNaLista(tabela('Gyan.FFmpeg.Shared')), 'Gyan.FFmpeg.Shared');
+  assert.strictEqual(pacoteNaLista('Nenhum pacote instalado encontrado.'), null);
+  assert.strictEqual(pacoteNaLista(''), null);
 });
 
 console.log(`\n${n} testes passaram.`);

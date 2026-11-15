@@ -1,5 +1,11 @@
 // Aplica um modelo de edição a um vídeo falado e gera o projeto do Tesseract (e, com --exportar, o MP4).
 // Uso: node montar.js <modelo|todos> <pedido.json> [--exportar] [--quadros 0.5,2,6] [--saida <pasta>] [--usar-marca]
+//        [--manter-quadros] [--sem-normalizar]
+// --manter-quadros: guarda cada quadro de conferência em 1080x1920 (<modelo>-quadro-<n>-<t>s.png), além da folha.
+// Com --exportar, o som do MP4 vai a -14 LUFS (V-06, normalizar-audio.js); --sem-normalizar deixa o som como veio.
+// O export é sempre inteiro: no Tesseract 0.6, exportar um intervalo que começa no meio do vídeo (--start-frame ou
+// --start-ms) renderiza ~20x mais devagar que do começo (medido: 214 s para os últimos 4,8 s de um vídeo que sai inteiro
+// em 30 s), então dividir em pedaços paralelos deixa o modelo do estilo mais lento, não mais rápido.
 // O pedido descreve o vídeo, as palavras com tempo, os destaques, a chamada, o B-roll e, opcionalmente, a marca
 // (cores e letras da empresa: pedido.marca, ou pedido.usarMarca para ler o marca.yaml; ver tema-marca.js).
 // --saida: o projeto, o MP4 e a folha de quadros vão para essa pasta, e não para saida/ ao lado do pedido (o .cache das
@@ -10,6 +16,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const { Projeto, preparaTrecho, hex } = require('./motor');
 const temaMarca = require('./tema-marca');
+const { normalizar } = require('../projetos/normalizar-audio');
 
 const MODELOS = ['vitrine', 'recorte', 'neon', 'cinema', 'impacto', 'caderno', 'visor', 'bloco', 'adesivo', 'circulo', 'retro', 'faixa', 'palco',
   // caminho inverso: estilos de carrossel aprovados que viraram modelos de Reels
@@ -22,10 +29,12 @@ const exportar = args.includes('--exportar');
 const iq = args.indexOf('--quadros');
 const quadros = iq > -1 ? args[iq + 1].split(',').map(Number) : null;
 const usarMarca = args.includes('--usar-marca');
+const manterQuadros = args.includes('--manter-quadros');
+const normalizarSom = !args.includes('--sem-normalizar');
 const is = args.indexOf('--saida');
 const saidaPedida = is > -1 ? args[is + 1] : null;
 if (!qual || !fs.existsSync(pedidoPath) || (is > -1 && (!saidaPedida || saidaPedida.startsWith('--')))) {
-  console.error('uso: node montar.js <' + MODELOS.join('|') + '|todos> <pedido.json> [--exportar] [--quadros 0.5,2] [--saida <pasta>] [--usar-marca]');
+  console.error('uso: node montar.js <' + MODELOS.join('|') + '|todos> <pedido.json> [--exportar] [--quadros 0.5,2] [--saida <pasta>] [--usar-marca] [--manter-quadros] [--sem-normalizar]');
   process.exit(1);
 }
 const BASE = path.dirname(pedidoPath);
@@ -42,6 +51,16 @@ function fimComTempoMinimo(b, i) {
   const limites = [pedido.broll[i + 1]?.ini, pedido.palavraTela?.ini, pedido.trecho && pedido.trecho.fim - (pedido.trecho.ini || 0)]
     .filter((x) => typeof x === 'number');
   return Math.max(b.fim, Math.min(b.ini + min, ...limites));
+}
+
+// o que o pedido traz e o modelo não desenhou vai para o log, em vez de sumir em silêncio: itens do B-roll (cada cena entra
+// como imagem com o id cena-N) e o aviso fixo da regra V-05
+function avisaIgnorados(nome, camadas, cenas) {
+  const usadas = new Set(camadas.filter((c) => c.type === 'Image' && c.source && /^cena-\d+$/.test(c.source.assetId)).map((c) => c.source.assetId));
+  const fora = cenas.filter((c) => !usadas.has(c.id));
+  if (fora.length) console.warn(`[pedido] ${nome}: ${fora.length} de ${cenas.length} itens do broll não entraram no vídeo (${fora.map((c) => path.basename(c.img)).join(', ')}); este modelo desenha ${usadas.size}.`);
+  if (pedido.aviso && !camadas.some((c) => c.type === 'Text' && c.name === 'aviso'))
+    console.warn(`[pedido] ${nome}: o modelo não desenha o aviso fixo ("${pedido.aviso}", regra V-05); use um modelo que desenha (os 14 do caminho inverso e o Palco).`);
 }
 
 // cena de B-roll: a imagem centralizada sobre um fundo liso, em 1080x1920, para entrar como uma camada só. Com `lisa`
@@ -102,6 +121,7 @@ async function preparaCenas(lisa = null) {
       // os modelos que só trocam a cor de destaque
       marca: tema, acento: tema && tema.cores.acento ? hex(tema.cores.acento) : null };
     modelo.montar(ctx);
+    avisaIgnorados(nome, P.camadas || [], cenasDoModelo);
     const r = P.grava(DUR);
     // quadros de conferência dentro do vídeo; num vídeo mais curto que a amostra, redistribui pela duração
     let ts = (quadros || modelo.quadros || [0.5, 2, 4, 6, 7.5, 10, 13]).filter((t) => t < DUR / 1000);
@@ -111,8 +131,16 @@ async function preparaCenas(lisa = null) {
     const ins = pngs.flatMap((f) => ['-i', f]);
     const fil = pngs.map((_, i) => `[${i}]scale=360:640[v${i}]`).join(';') + ';' + pngs.map((_, i) => `[v${i}]`).join('') + `hstack=${pngs.length}`;
     execFileSync('ffmpeg', ['-v', 'error', '-y', ...ins, '-filter_complex', fil, path.join(SAIDA, `${nome}-quadros.png`)]);
-    pngs.forEach((f) => fs.rmSync(f));
-    if (exportar) P.exporta(path.join(SAIDA, nome + '.mp4'));
-    console.log(JSON.stringify({ modelo: nome, ...r, segundos: Math.round((Date.now() - t0) / 1000) }));
+    // com --manter-quadros, cada quadro fica no tamanho do vídeo (para mostrar uma opção grande); sem ele, só a folha
+    pngs.forEach((f, i) => (manterQuadros ? fs.renameSync(f, path.join(SAIDA, `${nome}-quadro-${i + 1}-${ts[i]}s.png`)) : fs.rmSync(f)));
+    let som = null;
+    if (exportar) {
+      const mp4 = path.join(SAIDA, nome + '.mp4');
+      P.exporta(mp4);
+      // o som do vídeo vem como foi gravado (no celular, bem abaixo do alvo): leva a -14 LUFS (V-06)
+      if (normalizarSom) som = normalizar(mp4);
+    }
+    console.log(JSON.stringify({ modelo: nome, ...r, segundos: Math.round((Date.now() - t0) / 1000),
+      ...(som ? { somLUFS: { antes: som.antes, depois: som.depois } } : {}) }));
   }
 })().catch((e) => { console.error(e.stderr || (/^marca: /.test(e.message) ? e.message : e)); process.exit(1); });

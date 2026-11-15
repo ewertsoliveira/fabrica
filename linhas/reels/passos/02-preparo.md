@@ -19,7 +19,7 @@ página `material.md`. O script faz sem raciocinar o que antes custava a maior p
   caminho de saída em `--relatorio`.
 - O comando roda com o prefixo `FABRICA_EMPRESA=<codigo do run>` (regra do runner).
 - **Conferência também do projeto do vídeo:** antes de concluir este passo, além da pasta do run, a conferência entre
-  empresas roda sobre `08-FERRAMENTAS/tesseract/projetos/<NN>` (o `NN` está no `material.md`), como manda o runner.
+  empresas roda sobre `08-FERRAMENTAS/tesseract/projetos/reelsNN` (o nome, como `reels01`, está na linha **Reels:** do `material.md`), como manda o runner.
 
 ## Contexto a carregar
 
@@ -33,10 +33,10 @@ script, `dados/briefing.md`. Nada da empresa inteira nem do README do Tesseract:
 
 1. Ler `entrada.md` e montar o comando, a partir de `08-FERRAMENTAS/tesseract/`:
    ```
-   FABRICA_EMPRESA=<codigo do run> node preparar-material.js "<Arquivo>" --estado <cru|pre-editado> --relatorio "<saida/material.md>" [--mascara] [--reels NN]
+   FABRICA_EMPRESA=<codigo do run> node preparar-material.js "<Arquivo>" --estado <cru|pre-editado> --relatorio "<saida/material.md>" [--mascara] [--reels reelsNN]
    ```
    - `--mascara` quando o modelo escolhido tem elemento ou título atrás do corpo (leva ~2,5 min por 60 s a 360 px).
-   - `--reels` só para forçar um número; sem ele o script usa o próximo livre.
+   - `--reels reelsNN` (ou só o número, `01`) para reaproveitar a pasta de um Reels já preparado, como numa re-transcrição; sem ele o script usa o próximo livre. Outro formato é recusado.
    - `--transicao <nome>` se o responsável pediu transição diferente de `zoom`; `--sem-viradas` se o plano não terá viradas.
 2. Rodar em segundo plano (2 a 10 minutos: duas passagens do whisper e a máscara) e esperar a notificação. Nada pesado em paralelo.
 3. **Código de saída 3 = o script parou e fez uma pergunta.** Ele imprime `PERGUNTA n [id]` com opções e, para cada uma,

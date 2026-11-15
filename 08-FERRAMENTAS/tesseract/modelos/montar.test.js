@@ -58,6 +58,10 @@ if (process.env.MONTAR_TESTE_MOTOR_FALSO === '1') {
     exporta(mp4) { fs.writeFileSync(mp4, 'mp4 de mentira'); },
   });
   require.cache[require.resolve(MOTOR)].exports = { ...real, Projeto: ProjetoFalso };
+  // o "MP4" de mentira não tem som: o normalizador (V-06) só registra que foi chamado
+  const NORM = require.resolve('../projetos/normalizar-audio');
+  require(NORM);
+  require.cache[NORM].exports = { ...require.cache[NORM].exports, normalizar: (mp4) => { console.log('normalizado ' + path.basename(mp4)); return { antes: -26, depois: -14 }; } };
   return;
 }
 
@@ -136,6 +140,37 @@ t('Palco com marca: a cena do B-roll vem do arquivo de fundo liso no claro da ma
   const sem = pastaDoPedido('cena-lisa-sem-marca');
   const s = roda(['palco', path.join(sem, 'pedido.json')], env);
   assert.ok(/imagem cena-0 cena-0-xicara\.png/.test(s.stdout), s.stdout);
+});
+
+// ---------- 0.8.1: quadros grandes, som a -14 LUFS e o que o modelo não desenha ----------
+t('--manter-quadros: cada quadro fica em arquivo próprio, além da folha; sem a opção, só a folha', () => {
+  const dir = pastaDoPedido('manter-quadros');
+  const r = roda(['protagonista', path.join(dir, 'pedido.json'), '--quadros', '1,2.5,6,9', '--manter-quadros']);
+  assert.strictEqual(r.status, 0, r.stdout + r.stderr);
+  assert.deepStrictEqual(arquivos(path.join(dir, 'saida')).filter((f) => f.endsWith('.png')),
+    ['protagonista-quadro-1-1s.png', 'protagonista-quadro-2-2.5s.png', 'protagonista-quadro-3-6s.png', 'protagonista-quadro-4-9s.png', 'protagonista-quadros.png']);
+  assert.ok(!arquivos(path.join(dir, 'saida')).some((f) => f.startsWith('.q-')), 'sobrou quadro temporário');
+});
+t('--exportar leva o som a -14 LUFS (V-06); --sem-normalizar não; sem --exportar, nada a normalizar', () => {
+  const dir = pastaDoPedido('normalizar');
+  const r = roda(['protagonista', path.join(dir, 'pedido.json'), '--exportar']);
+  assert.strictEqual(r.status, 0, r.stdout + r.stderr);
+  assert.ok(/normalizado protagonista\.mp4/.test(r.stdout) && /"somLUFS"/.test(r.stdout), r.stdout);
+  const s = roda(['protagonista', path.join(dir, 'pedido.json'), '--exportar', '--sem-normalizar']);
+  assert.strictEqual(s.status, 0, s.stdout + s.stderr);
+  assert.ok(!/normalizado/.test(s.stdout), s.stdout);
+  const q = roda(['protagonista', path.join(dir, 'pedido.json')]);
+  assert.ok(!/normalizado/.test(q.stdout), q.stdout);
+});
+t('o log avisa quando o modelo deixa de fora itens do broll ou o aviso fixo do pedido', () => {
+  const dir = pastaDoPedido('ignorados', { aviso: 'Ilustração', broll: [{ img: 'xicara.png', ini: 4, fim: 6.5 }, { img: 'mapa.png', ini: 8, fim: 11 }] });
+  fs.writeFileSync(path.join(dir, '.cache', 'cena-1-mapa.png'), 'cena pronta');
+  const c = roda(['cinema', path.join(dir, 'pedido.json')]);
+  assert.strictEqual(c.status, 0, c.stdout + c.stderr);
+  assert.ok(/1 de 2 itens do broll não entraram.*mapa\.png/.test(c.stderr), c.stderr);
+  assert.ok(/não desenha o aviso fixo/.test(c.stderr), c.stderr);
+  const p = roda(['protagonista', path.join(dir, 'pedido.json')]);
+  assert.ok(!/\[pedido\]/.test(p.stderr), p.stderr);
 });
 
 // ---------- --saida ----------

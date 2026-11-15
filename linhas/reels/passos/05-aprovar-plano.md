@@ -29,6 +29,10 @@ Em linguagem simples, sem JSON, em uma tela só. Para cada item, o segundo exato
 
 ## Perguntar
 
+Abra a prancha (e a amostra) no navegador da pessoa antes da pergunta e ponha o caminho delas no texto da pergunta
+(D-01, item 11). Se houver 2 ou 3 opções de gancho ou de capa, elas aparecem montadas na prancha, com letra, e são
+perguntadas numa chamada própria.
+
 **O plano e a estrutura estão aprovados para exportar?**
 
 1. Sim, pode exportar.

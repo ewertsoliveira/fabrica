@@ -329,6 +329,12 @@ enquanto a conferência da pasta do run não sair 0.
    - Apresentar o que o passo manda, **sempre com o caminho de qualquer arquivo que a pessoa precise ver**.
    - Fazer as perguntas por `AskUserQuestion` (nunca em texto solto), como a skill `fabrica` exige. Cada pergunta diz
      por que está sendo feita e o que muda com a resposta; as opções dizem o que é igual entre elas e o que muda (L-02).
+   - **Escolha visual no checkpoint (D-01, vale mesmo que o passo não peça prévia):** pergunta sobre imagem, foto,
+     quadro do vídeo, capa, cor, letra, layout, estilo ou identidade só depois de montar a peça com cada opção (a capa
+     com cada imagem, a lâmina com cada foto), juntar lado a lado com letras e abrir no navegador da pessoa. A pergunta
+     vai numa chamada própria, cita o caminho da prévia e usa as mesmas letras. Prancha de quadros soltos, lista de
+     fotos ou nome de arquivo não são prévia. Passo de linha que mande perguntar isso "com o nome do arquivo" está
+     errado: siga a D-01 e avise o responsável no fim do run que a linha precisa de ajuste.
    - Esperar. Salvar a resposta em `saida` (etapa 1 do caminho), no formato que o passo define.
 
 4. **Validação da saída (obrigatória).** Para cada arquivo que o passo declara em `saida`, rode (com o caminho

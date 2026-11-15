@@ -137,10 +137,12 @@ const ANTES = {
   // correção do item 6.6B (D6 B e D7 C): sem marca, a legenda do palco vai para baixo do cartão (no cartão, no queixo)
   palco: 'c1f4adc24dd362a2',
   'palco/matte': 'c1f4adc24dd362a2',
-  'concreto-acido': '9fb35d22dd5b1f95',
-  'concreto-acido/matte': '9fb35d22dd5b1f95',
-  'luz-de-vela': 'dc02d7cb74b573c2',
-  'luz-de-vela/matte': 'dc02d7cb74b573c2',
+  // 0.8.1: o rótulo fixo ("NUTRIÇÃO · REELS" e "NUTRIÇÃO") virou o pedido.rotulo (padrão REELS); antes 9fb35d22dd5b1f95
+  // (Concreto) e dc02d7cb74b573c2 (Luz de Vela)
+  'concreto-acido': 'dca62a6837f7a5cc',
+  'concreto-acido/matte': 'dca62a6837f7a5cc',
+  'luz-de-vela': '4f8f84b4737a16f4',
+  'luz-de-vela/matte': '4f8f84b4737a16f4',
   // caminho inverso: trocadas de propósito no item 6.6A (decisão D7, autorizada pelo responsável também sem marca): a frase
   // da legenda que atravessa a borda da tela do B-roll é cortada na borda (os 10 com a tela do B-roll) e o cartão da imagem
   // do Fanzine desce e encolhe. O Editorial não mudou. Valores de antes do 6.6A: revista-dominical 28e2080049333400,

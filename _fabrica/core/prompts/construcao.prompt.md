@@ -237,11 +237,17 @@ o arquivo dele pedindo que o responsável revise e aprove o que veio antes. Reco
 
 ### Portão 2c: Decisão visual com prévia (BLOQUEANTE)
 
-Regra D-01 (`05-ESTRATEGIA/nucleo-de-conteudo/regras/12-decisao-visual.md`). Para cada estação que propõe ou escolhe
-algo visual (cor, tipografia, capa, layout, modelo de vídeo, arte):
+Regra D-01 (`05-ESTRATEGIA/nucleo-de-conteudo/regras/12-decisao-visual.md`). Para cada passo, **estação ou
+checkpoint**, que propõe, pergunta ou escolhe algo visual (cor, tipografia, capa, imagem ou foto de uma peça, quadro do
+vídeo, layout, modelo de vídeo, arte, identidade):
 - [ ] A seção **Vetos** do passo contém "proposta visual sem prévia no mesmo turno" (ou equivalente literal)
 - [ ] A seção **Vetos** contém "opções descritas em texto em vez de mostradas lado a lado"
+- [ ] A seção **Vetos** contém "matéria-prima no lugar da peça (prancha de quadros soltos, lista de fotos, nome de
+      arquivo)"
 - [ ] Os **Critérios de qualidade** exigem de 2 a 4 opções com letra, uma linha cada, e contraste medido
+- [ ] Checkpoint: a instrução manda montar a peça com cada opção, abrir a prévia antes da pergunta e fazer a pergunta
+      visual numa chamada própria, com o caminho da prévia no texto. Nenhum checkpoint manda escolher foto, quadro ou
+      imagem "pelo nome do arquivo" ou por descrição.
 
 **Exceção:** o passo que aplica uma escolha já feita com prévia (o `design` de uma linha de carrossel aplica o estilo
 escolhido na Fase G.4 do Desenho) só precisa do primeiro veto e de mostrar a primeira lâmina aberta.

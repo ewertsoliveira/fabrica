@@ -70,7 +70,14 @@ function proximoReels() {
   const usados = fs.existsSync(PROJ) ? fs.readdirSync(PROJ).map((d) => (d.match(/^reels(\d+)$/) || [])[1]).filter(Boolean).map(Number) : [];
   return 'reels' + String((usados.length ? Math.max(...usados) : 0) + 1).padStart(2, '0');
 }
-const REELS = opc('reels') || proximoReels();
+// --reels aceita "reelsNN" ou só o número ("01" ou "1" viram "reels01"): o roteiro do passo 2 e o material.md falam no
+// número. Outro formato é recusado, em vez de criar em silêncio uma pasta nova com transcrição e estado próprios.
+function nomeDoReels(v) {
+  const m = /^(?:reels)?(\d{1,3})$/i.exec(String(v).trim());
+  if (!m) { console.error(`--reels "${v}" não é um número de Reels (use reelsNN ou NN, por exemplo reels01 ou 01)`); process.exit(1); }
+  return 'reels' + String(Number(m[1])).padStart(2, '0');
+}
+const REELS = opc('reels') ? nomeDoReels(opc('reels')) : proximoReels();
 const DIR = path.join(PROJ, REELS);
 const CONF = path.join(DIR, 'conf');
 fs.mkdirSync(CONF, { recursive: true });

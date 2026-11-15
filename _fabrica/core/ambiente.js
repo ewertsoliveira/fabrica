@@ -29,6 +29,7 @@ function roda(cmd, a = []) {
   return r.status === 0 ? String(r.stdout || r.stderr || "").trim() : null;
 }
 const existe = (...p) => fs.existsSync(path.join(...p));
+const tamanho = (...p) => { try { return fs.statSync(path.join(...p)).size; } catch { return null; } };
 
 function achaNavegador() {
   if (process.env.FABRICA_CHROMIUM && fs.existsSync(process.env.FABRICA_CHROMIUM)) return 'FABRICA_CHROMIUM';
@@ -70,10 +71,19 @@ function conferir(raiz = RAIZ) {
   add('video', 'ffprobe', 'ffprobe (vem com o ffmpeg)', ffprobe, '', 'Vem junto com o ffmpeg');
   const tsrct = process.env.LOCALAPPDATA && existe(process.env.LOCALAPPDATA, 'Tesseract', 'bin', 'tsrct.cmd');
   add('video', 'tesseract', 'Tesseract (montagem de vídeo)', tsrct, '', 'Rodar: node _fabrica/core/ferramentas.js (instala o Tesseract na versão mais nova)');
-  const whisper = existe(raiz, '08-FERRAMENTAS', 'whisper-cpp', 'bin', 'Release', 'whisper-cli.exe') && existe(raiz, '08-FERRAMENTAS', 'whisper-cpp', 'modelos', 'ggml-large-v3-turbo-q5_0.bin');
-  add('video', 'whisper', 'whisper (transcrição da fala)', whisper, '', 'Rodar: node _fabrica/core/ferramentas.js (instala o whisper.cpp e o modelo na versão mais nova)');
-  const rvm = existe(raiz, '08-FERRAMENTAS', 'rvm', 'rvm_mobilenetv3_fp32.onnx');
-  add('video', 'rvm', 'Modelo da máscara da pessoa (RVM)', rvm, '', 'Rodar: node _fabrica/core/ferramentas.js');
+  // os modelos são arquivos grandes: um download que parou no meio deixa o arquivo com o nome certo e pela metade, então
+  // vale o tamanho mínimo (o mesmo do ferramentas.js), não só existir
+  const exeWhisper = existe(raiz, '08-FERRAMENTAS', 'whisper-cpp', 'bin', 'Release', 'whisper-cli.exe');
+  const mWhisper = tamanho(raiz, '08-FERRAMENTAS', 'whisper-cpp', 'modelos', 'ggml-large-v3-turbo-q5_0.bin');
+  const whisper = exeWhisper && mWhisper >= 500e6;
+  add('video', 'whisper', 'whisper (transcrição da fala)', whisper,
+    !exeWhisper ? 'falta o programa' : mWhisper === null ? 'falta o modelo' : mWhisper < 500e6 ? `modelo incompleto (${Math.round(mWhisper / 1e6)} MB de ~570 MB)` : '',
+    'Rodar: node _fabrica/core/ferramentas.js (instala o whisper.cpp e o modelo na versão mais nova)');
+  const mRvm = tamanho(raiz, '08-FERRAMENTAS', 'rvm', 'rvm_mobilenetv3_fp32.onnx');
+  add('video', 'rvm', 'Modelo da máscara da pessoa (RVM; só para texto atrás do corpo)', mRvm !== null && mRvm >= 10e6,
+    mRvm !== null && mRvm < 10e6 ? `incompleto (${(mRvm / 1e6).toFixed(1)} MB de ~15 MB)` : '', 'Rodar: node _fabrica/core/ferramentas.js');
+  // a máscara roda o modelo pelo onnxruntime-node (também entre as dependências obrigatórias; aqui, para o vídeo dizer o que falta)
+  add('video', 'onnxruntime', 'onnxruntime-node (roda o modelo da máscara)', existe(raiz, 'node_modules', 'onnxruntime-node'), '', 'Rodar, na pasta da Fábrica: npm install');
   return itens;
 }
 

@@ -226,7 +226,9 @@ testados com a empresa fictícia do exemplo; o preparo e o export em pedaços, n
   em pedaços, conferir; sete blocos de motion; doze modelos de edição **em teste**;
 - a Linha de Produção de Reels (definição, passos, estações e dados);
 - a regra D-01 (toda decisão visual é mostrada, não só descrita) e o gerador de
-  prévia `_fabrica/core/visual.js` (paleta, tipografia, quadro de marca);
+  prévia `_fabrica/core/visual.js` (paleta, tipografia, quadro de marca), com a trava
+  `_fabrica/core/guarda-visual.js` (gancho em `.claude/settings.json`) que barra pergunta de
+  aparência sem prévia aplicada à peça;
 - o comando `/atualizar` (`_fabrica/core/atualizar.js`): traz as melhorias do modelo
   por arquivo, sem tocar no que é da empresa, com backup e proteção do que foi
   personalizado; a lista do que é do modelo está em `_fabrica/propriedade.json`;

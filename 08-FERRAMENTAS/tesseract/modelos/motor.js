@@ -110,8 +110,13 @@ class Projeto {
   }
 
   // ----- recursos -----
+  // um vídeo entra uma vez por id (o Tesseract recusa o mesmo id duas vezes): a máscara reduzida da pessoa, por exemplo,
+  // é a mesma em cada B-roll do arranjo de recorte
   importaVideo(arquivo, assetId = 'footage') {
+    this.videos = this.videos || {};
+    if (assetId in this.videos) return this.videos[assetId];
     const r = JSON.parse(tsrct('project', 'import-video', '-p', this.saida, '--file', path.resolve(arquivo), '--asset-id', assetId));
+    this.videos[assetId] = r.durationMs;
     return r.durationMs;
   }
   // devolve { family, style } pelo nome do arquivo da pasta fontes/ (ou caminho absoluto, como a letra da marca); o estilo
@@ -138,7 +143,7 @@ class Projeto {
   novo(c) {
     let camada = { id: this.id++, blendMode: 'normal', effects: [], layerStyles: [], masks: [], ...c };
     if ((camada.type === 'Video' || camada.type === 'Audio') && camada.activeRange) {
-      const { activeRange: r, ...resto } = camada; // Tesseract 0.3.1: Video/Audio usam playback "windowed"
+      const { activeRange: r, ...resto } = camada; // Tesseract (desde a 0.3.1; vale na 0.6): Video/Audio usam playback "windowed"
       camada = { ...resto, playback: { type: 'windowed', inputRange: r, mapping: { type: 'linear', input: { ...r }, output: { ...r } }, inputOffsetMs: 0 } };
     }
     this.camadas.push(camada);

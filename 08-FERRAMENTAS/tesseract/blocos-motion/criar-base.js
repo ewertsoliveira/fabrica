@@ -23,7 +23,7 @@ function criarBase(saida, fundo, duracao = 70) {
     const vid = JSON.parse(tsrct('project', 'import-video', '-p', saida, '--file', path.resolve(fundo), '--asset-id', 'fundo-teste'));
     const D = vid.durationMs; duracao = D / 1000;
     const r = { start: 0, duration: D };
-    // Tesseract 0.3.1: vídeo usa playback "windowed" no lugar de activeRange (mesma conversão do montar-video.js)
+    // Tesseract (desde a 0.3.1; vale na 0.6): vídeo usa playback "windowed" no lugar de activeRange (mesma conversão do montar-video.js)
     camada = { id: 1, blendMode: 'normal', effects: [], layerStyles: [], masks: [], type: 'Video', name: 'video', volume: 1,
       playback: { type: 'windowed', inputRange: r, mapping: { type: 'linear', input: { ...r }, output: { ...r } }, inputOffsetMs: 0 },
       sourceRange: r, sourceIntrinsicDuration: D,

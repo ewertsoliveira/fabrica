@@ -172,4 +172,56 @@ function separaDestaques(grupos, destaque) {
 
 const dentro = (t, janelas) => janelas.some(([a, z]) => t >= a && t < z);
 
-module.exports = { docLinha, comVar, ancora, linhaProgressiva, linhaMista, pessoaRecortada, pessoaEmJanela, cenaEmJanela, pessoaRecortadaReduzida, enquadre, pessoaRedonda, desfoca, ehDestaque, separaDestaques, dentro, EASE, s2ms };
+// chamada da abertura em três partes, na ordem da frase: { antes, pal, depois }. pal é a palavra de destaque
+// (chamada.palavra, uma ou mais palavras) como está escrita no texto, achada sem diferenciar maiúscula, acento ou pontuação.
+// Sem chamada.palavra, a primeira palavra. Se a palavra não está no texto, o destaque vai na primeira e o log avisa.
+function partirChamada(ch, modelo) {
+  const ws = String(ch.texto || '').split(/\s+/).filter(Boolean);
+  const pw = String(ch.palavra || ws[0] || '').split(/\s+/).filter(Boolean).map(norm);
+  let i0 = pw.length ? ws.findIndex((w, i) => pw.every((p, k) => norm(ws[i + k] || '') === p)) : 0;
+  let n = pw.length || 1;
+  if (i0 < 0) {
+    console.warn(`[chamada] ${modelo}: a palavra "${ch.palavra}" não está no texto "${ch.texto}"; o destaque vai na primeira palavra.`);
+    i0 = 0; n = 1;
+  }
+  return { antes: ws.slice(0, i0).join(' '), pal: ws.slice(i0, i0 + n).join(' '), depois: ws.slice(i0 + n).join(' ') };
+}
+
+// abertura (rótulo e título) longe do rosto. Sem rosto.queixo e sem chamada.posicao "acima", devolve null e o modelo fica
+// como sempre foi. ancora: a altura padrão do ponto de referência do bloco (cada modelo diz qual é); topo(f) e base(f): a
+// distância, com sinal, desse ponto até o alto e até o pé do bloco, com o corpo do título no fator f.
+//   embaixo (padrão, com rosto.queixo): o alto do bloco fica pelo menos 40 px abaixo do queixo e o pé não passa de 1640
+//     (acima da legenda do app e dos botões); o bloco fica na altura padrão sempre que cabe ali.
+//   em cima (chamada.posicao "acima", com rosto.topo): entre a barra do app (230) e 40 px acima do alto da cabeça.
+// Se não couber, o título encolhe 5% por vez, até 55% do corpo; no piso, o log avisa. Devolve { y, f }.
+const BARRA_APP = 230, PE_ABERTURA = 1640;
+function encaixaAbertura({ pedido, ancora: a0, topo, base, modelo }) {
+  const rosto = pedido.rosto || {}, ch = pedido.chamada || {};
+  const acima = ch.posicao === 'acima' && typeof rosto.topo === 'number';
+  if (ch.posicao === 'acima' && !acima) console.warn(`[rosto] ${modelo}: chamada.posicao "acima" pede rosto.topo (altura do alto da cabeça no vídeo de origem); o título fica embaixo.`);
+  if (!acima && typeof rosto.queixo !== 'number') return null;
+  const [min, max] = acima ? [BARRA_APP, rosto.topo - 40] : [rosto.queixo + 40, PE_ABERTURA];
+  for (let f = 1; ; f = Math.round((f - 0.05) * 100) / 100) {
+    const y = acima ? min - topo(f) : Math.max(min - topo(f), Math.min(a0, max - base(f)));
+    if (y + base(f) <= max) return { y, f };
+    if (f <= 0.55) {
+      console.warn(`[rosto] ${modelo}: o título não cabe entre ${Math.round(min)} e ${Math.round(max)} px nem com 55% do corpo; encurte a chamada ou aumente chamada.quebra.`);
+      return { y, f };
+    }
+  }
+}
+
+// aviso fixo no alto (regra V-05: ilustração ou simulação diz que é), do começo ao fim: texto branco numa pílula escura
+// translúcida em y 110, como no Palco. fonte e est: a letra do rótulo do modelo (com a marca, a mono dela), no corpo 26;
+// texto longo encolhe até caber em 876 px
+function avisoFixo(P, DUR, texto, fonte, est) {
+  let e = { ...est, size: 26, tracking: 10, allCaps: false };
+  let m = P.medir([texto], e)[texto];
+  if (m.w > 876) { e = { ...e, size: Math.max(16, Math.floor(e.size * 876 / m.w)) }; m = P.medir([texto], e)[texto]; }
+  const w = Math.round(m.w + 60);
+  P.ret('aviso-fundo', 0, DUR, [540, 110], [w, 52], [0, 0, 0, 0.5], { anchor: [w / 2, 26], raio: 1 });
+  return P.texto('aviso', 0, DUR, [540, 110], comVar({ ...docLinha(fonte, e), text: texto, fillColor: [1, 1, 1, 1] }), ancora(m));
+}
+
+module.exports = { docLinha, comVar, ancora, linhaProgressiva, linhaMista, pessoaRecortada, pessoaEmJanela, cenaEmJanela, pessoaRecortadaReduzida, enquadre, pessoaRedonda, desfoca, ehDestaque, separaDestaques, dentro, EASE, s2ms,
+  partirChamada, encaixaAbertura, avisoFixo };

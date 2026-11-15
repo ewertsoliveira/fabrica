@@ -39,6 +39,12 @@ desktop.ini
 *.dmg
 *.iso
 
+# Ferramentas de vídeo baixadas pela instalação (ferramentas.js): programas e modelos, ~600 MB, nunca vão para o git
+08-FERRAMENTAS/whisper-cpp/
+08-FERRAMENTAS/rvm/*.onnx
+*.onnx
+ggml-*.bin
+
 # Gerados na hora (catálogo dos blocos de motion e temporários)
 08-FERRAMENTAS/tesseract/blocos-motion/catalogo/
 08-FERRAMENTAS/tesseract/blocos-motion/catalogo.html

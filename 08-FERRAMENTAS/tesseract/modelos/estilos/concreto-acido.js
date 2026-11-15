@@ -9,7 +9,8 @@
 // monumentais viram a principal e o rótulo a mono. Com a letra da marca, título, legenda e palavra final encolhem até caber;
 // texto que fica sem contraste volta ao par do estilo, com aviso no log. Sem marca, nada muda.
 const { agrupa, EASE, hex } = require('../motor');
-const { linhaProgressiva, ehDestaque, separaDestaques, ancora, docLinha, comVar, pessoaEmJanela, cenaEmJanela, pessoaRecortadaReduzida, enquadre } = require('./_comum');
+const { linhaProgressiva, ehDestaque, separaDestaques, ancora, docLinha, comVar, pessoaEmJanela, cenaEmJanela, pessoaRecortadaReduzida, enquadre,
+  partirChamada, encaixaAbertura, avisoFixo } = require('./_comum');
 const temaMarca = require('../tema-marca');
 
 module.exports = {
@@ -124,35 +125,49 @@ module.exports = {
       if (!sobreOVideo) telaPreta('abertura', a, z);
       if (layout === 'dividir') pessoa(a, z, { x: 84, y: 800, w: 912, h: 680 }, 85);
       if (layout === 'lado-a-lado') pessoa(a, z, { x: 40, y: 300, w: 480, h: 1000 }, 90);
-      const pal = (ch.palavra || ch.texto.split(' ')[0]).toUpperCase();
-      const resto = ch.texto.toUpperCase().replace(pal, '').trim();
-      const linhas = [pal, ...quebra(resto, cfg.quebra || 10)];
+      // o título segue a ordem da frase: a palavra de destaque fica numa linha só dela, no lugar em que aparece, com a faixa
+      // (chamada.quebra: caracteres por linha no resto do título)
+      const { antes, pal, depois } = partirChamada(ch, 'Concreto Ácido');
+      const nq = ch.quebra || cfg.quebra || 10;
+      const la = quebra(antes.toUpperCase(), nq);
+      const linhas = [...la, pal.toUpperCase(), ...quebra(depois.toUpperCase(), nq)];
+      const kp = la.length; // a linha da palavra de destaque
       const x0 = cfg.x0 || 84;
       // com a letra da marca, o título encolhe até caber (a margem da direita é a da esquerda; no lado a lado, a da imagem);
       // a primeira linha fica onde está e as outras sobem junto com o corpo, então o título nunca sobe para o rosto
       const limite = (layout === 'lado-a-lado' ? 1040 : 996) - x0;
-      const { f: fT, r: [{ e: estT, m: mT }] } = cabe([{ textos: linhas, e: { ...est.titulo, size: cfg.size } }], limite);
-      const passo = cfg.passo * fT;
-      const rot = 'NUTRIÇÃO · REELS';
+      let { f: fT, r: [{ e: estT, m: mT }] } = cabe([{ textos: linhas, e: { ...est.titulo, size: cfg.size } }], limite);
+      let passo = cfg.passo * fT, rotY = cfg.rotY, y1 = cfg.y1;
+      // sobre o vídeo, com rosto.queixo (ou chamada.posicao "acima" e rosto.topo), o bloco desce para longe do queixo (ou
+      // sobe para cima da cabeça) e o título encolhe se precisar: tarja do rótulo de rotY-30 a rotY+30, primeira linha
+      // centrada 50 px abaixo da tarja mais meio corpo
+      const enc = sobreOVideo && encaixaAbertura({ pedido, ancora: cfg.rotY, modelo: 'Concreto Ácido', topo: () => -30,
+        base: (f) => 63 + estT.size * f + (linhas.length - 1) * passo * f }); // 13 px: a sobra da faixa ácida
+      if (enc) {
+        rotY = enc.y;
+        if (enc.f < 1) { estT = { ...estT, size: Math.round(estT.size * enc.f) }; mT = P.medir(linhas, estT); passo *= enc.f; }
+        y1 = rotY + 50 + estT.size / 2;
+      }
+      const rot = pedido.rotulo || 'REELS';
       const { r: [{ e: estR, m: mRs }] } = cabe([{ textos: [rot], e: est.rot }], limite - 24);
       const mR = mRs[rot];
-      P.ret('rot-fundo', a, z, [x0 - 12, cfg.rotY - 30], [mR.w + 24, 60], corRotFundo);
-      P.texto('rot', a, z, [x0 + mR.w / 2, cfg.rotY], comVar({ ...docLinha(F.rot, estR), text: rot, fillColor: corRot }), ancora(mR));
+      P.ret('rot-fundo', a, z, [x0 - 12, rotY - 30], [mR.w + 24, 60], corRotFundo);
+      P.texto('rot', a, z, [x0 + mR.w / 2, rotY], comVar({ ...docLinha(F.rot, estR), text: rot, fillColor: corRot }), ancora(mR));
       linhas.forEach((l, k) => {
-        const m = mT[l]; const cy = cfg.y1 + k * passo; const cx = x0 + m.w / 2;
-        if (k === 0) faixaAtras('titulo-faixa', a + 120, z, cx, cy, m);
+        const m = mT[l]; const cy = y1 + k * passo; const cx = x0 + m.w / 2;
+        if (k === kp) faixaAtras('titulo-faixa', a + 120, z, cx, cy, m);
         const t = P.texto('titulo-' + k, a + k * 90, z, [cx, cy], comVar({ ...docLinha(F.titulo, estT), text: l,
-          fillColor: k === 0 ? corFaixaTexto : sobreOVideo ? corVideo : corTelaTexto }), ancora(m));
-        if (k) t.dropShadow = sombra;
+          fillColor: k === kp ? corFaixaTexto : sobreOVideo ? corVideo : corTelaTexto }), ancora(m));
+        if (k !== kp) t.dropShadow = sombra;
         P.kf(t, 'positionX', [[0, cx - 60], [180, cx, EASE.saida]]);
         P.kf(t, 'opacity', [[0, 0], [90, 100, EASE.linear]]);
       });
     }
 
-    // B-roll num cartão de borda grossa com sombra dura ácida, entrando seco (sem desfoque)
+    // B-roll num cartão de borda grossa com sombra dura ácida, entrando seco (sem desfoque); cada item do pedido na sua janela
     const janelas = [];
     let cyLegCartao = 1480;
-    for (const b of cenas.slice(0, 1)) {
+    for (const b of cenas) {
       const a = b.ini * 1000, z = b.fim * 1000; janelas.push([a, z]);
       if (layout !== 'imagem-mini') telaPreta('broll', a, z);
       const [j, s] = { 'imagem-mini': [{ x: 624, y: 1000, w: 360, h: 360 }, 47],
@@ -213,6 +228,9 @@ module.exports = {
     P.ret('barra-trilho', 0, DUR, [84, 1820], [912, 8], comAlfa(PAPEL, 0.22));
     const barra = P.ret('barra', 0, DUR, [84, 1820], [912, 8], ACIDO);
     P.kf(barra, 'scaleX', [[0, 0], [DUR, 100, EASE.linear]]);
+
+    // aviso fixo no alto (V-05), na letra do rótulo
+    if (pedido.aviso) avisoFixo(P, DUR, pedido.aviso, F.rot, est.rot);
   },
 };
 

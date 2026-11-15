@@ -1,4 +1,4 @@
-# Biblioteca de blocos de motion (Tesseract 0.3.1)
+# Biblioteca de blocos de motion (Tesseract: escrita na 0.3.1, conferida na 0.6.0)
 
 Gráficos de motion montados por **JSON** (textos e tempos), sem escrever código por vídeo. Cores, fontes e o
 endereço da conta vêm do contrato de marca da empresa ativa (o `marca.yaml`, caminho `marca` em `empresa.js caminhos`); nenhum bloco guarda identidade de empresa.
@@ -83,6 +83,17 @@ duração do bloco**; o `montar` devolve os tempos resolvidos em `blocos[i].temp
 
 As placas ficam na faixa **y 955 a 1305**, acima da legenda (que começa em y 1320). `--faixa y0,y1` move o conjunto (máximo
 `970,1320`). **O queixo muda de vídeo para vídeo:** meça em quadro real (ffmpeg + grade) antes de manter 955.
+
+**Versão compacta, para quem grava perto da câmera.** Com o queixo perto de y 1200, nenhum bloco cabe entre o queixo e a
+legenda. Dê uma faixa mais baixa que o bloco, de preferência **acima da cabeça** (entre y 250 e 50 px acima do alto da
+cabeça, por exemplo `--faixa 260,460`): o bloco inteiro encolhe na proporção, em torno do centro da tela (ex.: a placa de
+350 px numa faixa de 200 px sai com 57% do tamanho), e o log diz `compacto: N%`. Mínimo: metade do tamanho (a faixa
+precisa de pelo menos metade da altura do bloco); a faixa nunca começa acima de y 250 nem passa de y 1320. Nada muda no
+JSON dos blocos.
+
+**Cartão final compacto.** O cartão (`cartao-cta`, 920 x 500 px) tem posição própria: `opcoes.centroY` (padrão 1310) e
+`opcoes.escala` (0,5 a 1). Com o queixo em ~1200: `"escala": 0.68, "centroY": 1425` (y 1255 a 1595). O cartão tem de
+ficar entre y 250 e 1640, senão é recusado.
 
 ## Mapas
 

@@ -31,7 +31,10 @@ Cada estilo de carrossel aprovado do catálogo (`04-LABORATORIO-DE-DESIGN/estilo
 mesmo nome, ligado em `formatos.reels.modelo` do `estilo.yaml`. Todos seguem as mesmas regras:
 
 - **Vídeo limpo:** sem grade, faixa ou véu sobre a pessoa, e grade de cor só leve.
-- **Título abaixo do queixo:** nada cobre o rosto.
+- **Título abaixo do queixo:** nada cobre o rosto. A altura padrão serve para quem grava a um braço da câmera; quem grava
+  perto tem o queixo mais baixo (num vídeo real, y 1140 a 1200), e aí o pedido leva `rosto.queixo`: o bloco do título
+  desce para 40 px abaixo do queixo e encolhe se precisar para não passar de y 1640. Ou vai para o alto, com
+  `chamada.posicao: "acima"` e `rosto.topo`. Sem esses campos, nada muda.
 - **B-roll num arranjo que deixa o rosto livre:** a pessoa em miniatura só entra depois que a imagem de destaque já
   está na tela.
 - **A pessoa nunca sai de cena:** quando a imagem de destaque entra, a pessoa continua no mesmo quadro, em todos os 27
@@ -65,10 +68,20 @@ Reels com um arquivo desses.
 
 ```sh
 node montar.js <modelo|todos> amostra/pedido.json [--exportar] [--quadros 0.5,2,6] [--saida <pasta>] [--usar-marca]
+               [--manter-quadros] [--sem-normalizar]
 ```
 
 Gera `saida/<modelo>.tsrct` e `saida/<modelo>-quadros.png` (folha de conferência) ao lado do pedido. Com `--exportar`, também o MP4.
 Leva 2 a 3 minutos por modelo sem exportar: a maior parte é a medição dos textos, feita no render real do Tesseract.
+
+- `--exportar`: o MP4 sai inteiro (no Tesseract 0.6, exportar um intervalo a partir do meio é ~20x mais lento, então
+  dividir em pedaços atrasa; 14,5 s exportam em ~30 s) e o som vai a **-14 LUFS** (V-06: mesmo loudnorm do
+  `mixar-audio.js`, duas passadas, pico -1,5 dBTP; vídeo copiado). A linha final do log traz `somLUFS` com o antes e o
+  depois. `--sem-normalizar` deixa o som como veio do vídeo.
+- `--manter-quadros`: além da folha (quadros em 360x640), guarda cada quadro de conferência em 1080x1920, como
+  `<modelo>-quadro-<n>-<t>s.png`, para mostrar uma opção em tamanho grande.
+- O log avisa (`[pedido] ...`) quando o modelo deixa de desenhar algo que o pedido traz: itens do `broll` ou o `aviso`.
+  E avisa (`[chamada]`, `[rosto]`) quando a palavra da chamada não está no texto ou o título não coube longe do rosto.
 
 - `--saida <pasta>`: o projeto, o MP4 e a folha de quadros vão para essa pasta (nada é criado em `saida/` ao lado do pedido); o
   `.cache` das cenas e do trecho continua ao lado do pedido.
@@ -90,16 +103,16 @@ Leva 2 a 3 minutos por modelo sem exportar: a maior parte é a medição dos tex
 | `video`, `palavras` | sim | vídeo e transcrição por palavra (`[{w, ini, fim}]` em ms, a mesma saída do `projetos/palavras.js`) |
 | `trecho` | não | `{ini, fim}` em segundos; recorta vídeo, máscara e palavras |
 | `matte` | não | máscara da pessoa (RVM); sem ela o Neon não põe a moldura atrás do corpo |
-| `chamada` | não | `{texto, palavra, ini, fim}`: título de abertura |
+| `chamada` | não | `{texto, palavra, ini, fim, quebra?, posicao?}`: título de abertura. `palavra` (uma ou mais palavras do `texto`, em qualquer posição; sem maiúscula, acento ou pontuação de diferença) recebe o destaque, e o título segue a ordem da frase; palavra que não está no texto: o destaque vai na primeira, com aviso no log. Nos 14 do caminho inverso: `quebra` = caracteres por linha (menos linhas, letra maior); `posicao: "acima"` (com `rosto.topo`) põe a abertura no alto |
 | `destaques` | não | palavras com tratamento especial |
-| `broll` | não | `[{img, ini, fim, fundo}]`: imagem centralizada numa cena 1080x1920; o primeiro item é o B-roll principal |
+| `broll` | não | `[{img, ini, fim, fundo}]`: imagem centralizada numa cena 1080x1920. Nos 14 do caminho inverso, no Palco e no Impacto, cada item entra na sua janela; os outros modelos base desenham só um ou dois, e o log avisa quantos ficaram de fora |
 | `palavraTela` | não | `{texto, ini, fim}`: tela cheia com uma palavra (Neon e Impacto) |
 | `marca` | não | `{ cores?, fontes? }`: `cores` com `escuro`, `claro`, `acento`, `neutro` (hex `#RRGGBB`); `fontes` com `principal`, `mono`, `acento` (arquivo `.ttf`/`.otf`: absoluto, ao lado do pedido ou em `fontes/`) e `principalItalico: true` quando a letra principal tem itálico. O que faltar fica com o papel original do modelo. O antigo `marca.acento` continua valendo como `marca.cores.acento` |
 | `palco` | só no Palco | `{ini, fim, foco?, fundo?, escalaCena?}`: intervalo do layout dividido (padrão: do 1º ao último B-roll); `foco` = altura do rosto no vídeo de origem (padrão 760) |
-| `aviso` | só no Palco | texto fixo no alto, do começo ao fim (regra V-05: ilustração ou simulação diz que é) |
+| `aviso` | no Palco e nos 14 do caminho inverso | texto fixo no alto, do começo ao fim (regra V-05: ilustração ou simulação diz que é), numa pílula escura em y 110; nos outros modelos o log avisa que ele ficou de fora |
 | `usarMarca` | não | verdadeiro (sem `marca` no pedido) usa as quatro cores e as letras `tipografia.principal`, `tipografia.mono` e, se houver, `tipografia.acento` do `marca.yaml` da empresa ativa; sem `marca.yaml`, cai na marca de exemplo e avisa |
-| `rosto` | não (caminho inverso) | `{layout?, y?}`. `layout`: um de imagem-mini, rosto-mini, dividir, lado-a-lado, recorte (padrão: o do modelo). `y`: altura do centro da cabeça no vídeo de origem (padrão 600). `cabeca`: altura da cabeça, cabelo incluso, no vídeo de origem (padrão 600) |
-| `rotulo` | não (caminho inverso) | rótulo curto acima do título (padrão `REELS`) |
+| `rosto` | não (caminho inverso) | `{layout?, y?, cabeca?, queixo?, topo?}`. `layout`: um de imagem-mini, rosto-mini, dividir, lado-a-lado, recorte (padrão: o do modelo). `y`: altura do centro da cabeça no vídeo de origem (padrão 600). `cabeca`: altura da cabeça, cabelo incluso, no vídeo de origem (padrão 600). `queixo`: altura do queixo no vídeo de origem; o rótulo e o título ficam pelo menos 40 px abaixo dele e acima de y 1640, encolhendo até 55% se precisar. `topo`: alto da cabeça, para `chamada.posicao: "acima"` (abertura entre y 230 e 40 px acima da cabeça). Meça num quadro real do trecho mais perto da câmera |
+| `rotulo` | não (caminho inverso) | rótulo curto acima do título, do tema do vídeo (padrão `REELS`) nos 14 modelos |
 | `anotacao` | não (Fanzine e Contraste) | anotação manuscrita junto da imagem do B-roll |
 
 ## Peças
@@ -268,7 +281,12 @@ do Luz de Vela, que giram até o matiz do acento. Na base `_inverso`, `titulo` e
 A prova visual dos 27 modelos com uma marca quente e uma fria fica numa página local de conferência, fora do git (o vídeo
 de demonstração mostra uma pessoa real).
 
-## O que aprendemos do Tesseract 0.3.1
+## O que aprendemos do Tesseract (na 0.3.1; os modelos rodam igual na 0.6.0)
+
+- Na 0.6.0, `tsrct export --start-frame` (ou `--start-ms`) a partir do meio do vídeo renderiza a ~0,7 quadro por segundo,
+  contra ~14 a partir do começo: o export do modelo é sempre inteiro.
+- O mesmo id de recurso não entra duas vezes ("asset ID already exists"): o motor importa cada vídeo uma vez (a máscara
+  reduzida da pessoa se repete em cada B-roll do recorte).
 
 - A camada `AiEdit` aceita `styleId`, mas o render local sai igual ao vídeo cru: os estilos da Captions são aplicados na nuvem, não no motor.
 - Efeitos animáveis por `setFxLayerEffectParamAnimator` (desfoque gaussiano, direcional, radial, aberração cromática, lente).

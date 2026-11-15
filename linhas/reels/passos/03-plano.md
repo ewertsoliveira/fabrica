@@ -49,10 +49,16 @@ Os demais `dados/` são do modelo e ficam na linha.
    `destaques`, `broll` e **`"usarMarca": true`** (as cores e letras vêm do `marca.yaml` da empresa do run, nunca escritas
    no pedido). Só quando `entrada.md` diz **Identidade visual: cores originais do estilo**, o pedido vai com
    `"usarMarca": false` e sem `marca` (as cores originais do estilo, escolhidas pela pessoa); `rosto.layout` = o arranjo que `node _fabrica/core/estilo-da-linha.js <codigo do run>` mostrar, se mostrar.
+   Também no pedido: `rotulo` (o rótulo curto acima do título, do tema do vídeo; sem ele sai `REELS`); `aviso` quando
+   houver ilustração ou simulação (V-05; os 14 modelos do estilo desenham); **`rosto.queixo`** (altura do queixo no
+   vídeo, medida num quadro real do trecho mais próximo da câmera) e, se o título for em cima, `rosto.topo` (alto da
+   cabeça) com `chamada.posicao: "acima"`. Na `chamada`, a `palavra` pode estar em qualquer lugar da frase (o título
+   segue a ordem da frase); `chamada.quebra` diminui o número de linhas. Todos os itens de `broll` entram, cada um na
+   sua janela; o log do passo 4 avisa se algum ficou de fora.
    Regras de vídeo do responsável, conferidas aqui: **a pessoa fica em cena junto com a imagem de destaque** (o modelo só
    tem arranjos com a pessoa no quadro: miniatura, círculo, divisão, lado a lado, recorte); **nada sobre o rosto** (texto,
-   cartão ou ícone; o título fica abaixo do queixo); **cada item de `broll` dura no mínimo 4 s** (`fim - ini >= 4`; os
-   modelos usam 4,5 s), porque a troca de quadro em 2 s confunde.
+   cartão ou ícone; o título fica abaixo do queixo, pelo `rosto.queixo`); **cada item de `broll` dura no mínimo 4 s**
+   (`fim - ini >= 4`; os modelos usam 4,5 s), porque a troca de quadro em 2 s confunde.
 4. **Lente 3, gráficos (seção 3):** gráficos, mockups, peças a gerar, alerta e encaixe. **Respeitar a camada:** Expresso
    não cria peça nova; Padrão usa só blocos existentes e cita o de origem; Vitrine pode criar peças, com amostra.
 5. **Lente 4, chamada final (seção 4):** cartão final, argumento, botão e cauda, depois de conferir que nenhum gráfico
