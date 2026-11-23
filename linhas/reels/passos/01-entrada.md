@@ -21,7 +21,11 @@ Nada de vídeo começa com programa faltando ou velho, e nenhum login ou cadastr
    nenhum desses downloads pede login) **antes** de seguir. Dizer o que vai baixar em linguagem simples (L-01), por
    exemplo: "Antes de editar, preciso atualizar os programas que cortam, legendam e montam o vídeo. São downloads
    gratuitos, sem cadastro, e levam alguns minutos. Posso baixar?", e pedir o "sim".
-3. Se o Tesseract mudou de versão, registrar no relatório e conferir os quadros de teste antes de confiar nos modelos.
+3. Versão nova não entra sem teste: o `ferramentas.js` instala a versão nova à parte, roda o autoteste (um vídeo de
+   teste com um modelo de edição, uma fala curta transcrita e os quadros comparados com os da versão anterior) e só então
+   a põe em uso; se não passar, a versão que já funcionava continua. Repetir para a pessoa só a frase simples que ele
+   imprime (FEITO ou PROBLEMA) e registrar no relatório a versão em uso e se houve atualização ou versão recusada.
+   Funciona igual no Windows e no Mac.
 4. Só depois da conferência passar (todos "OK") seguir para a abertura. Se não passar, **parar e dizer o que falta**
    em palavras simples; nunca abrir a entrevista de estilo nem pedir o vídeo com o ambiente incompleto.
 5. Contas: se for preciso entrar ou criar conta em qualquer serviço, é agora, antes da abertura, e a pessoa entra

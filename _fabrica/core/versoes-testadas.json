@@ -1,0 +1,11 @@
+{
+  "descricao": "Últimas versões de cada ferramenta de vídeo que passaram no autoteste de quem mantém a Fábrica (Windows e Mac). Servem para a primeira instalação quando a versão mais nova falha, para quando o GitHub não responde e para liberar um visual novo do Tesseract. Atualizar a cada versão da Fábrica (ver INSTALAR.md, 'Para quem mantém a Fábrica').",
+  "atualizado": "2026-11-22",
+  "tesseract": { "versao": "0.8.0" },
+  "whisper": { "etiqueta": "b5907", "publicado": "2026-11-20T15:48:53Z" },
+  "ffmpeg-mac": {
+    "versao": "9.1",
+    "arm64": { "ffmpeg": "/download/macos/arm64/1795207104_9.1/ffmpeg.zip", "ffprobe": "/download/macos/arm64/1795207104_9.1/ffprobe.zip" },
+    "amd64": { "ffmpeg": "/download/macos/amd64/1795212433_9.1/ffmpeg.zip", "ffprobe": "/download/macos/amd64/1795212433_9.1/ffprobe.zip" }
+  }
+}

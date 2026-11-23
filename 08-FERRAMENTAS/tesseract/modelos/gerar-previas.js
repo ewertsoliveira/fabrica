@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
+require('../../../_fabrica/core/programas'); // acha o ffmpeg da Fábrica no Mac
 
 const ORIGEM = path.resolve(process.argv[2] || path.join(__dirname, 'amostra', 'saida'));
 const DESTINO = path.join(__dirname, 'previews');

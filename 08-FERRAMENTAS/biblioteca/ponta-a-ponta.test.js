@@ -16,6 +16,7 @@ const os = require('os');
 const path = require('path');
 const http = require('http');
 const { spawn, spawnSync } = require('child_process');
+require('../../_fabrica/core/programas'); // acha o ffmpeg da Fábrica no Mac
 
 const RAIZ_CODIGO = path.join(__dirname, '..', '..');
 const LAB = '04-LABORATORIO-DE-DESIGN';

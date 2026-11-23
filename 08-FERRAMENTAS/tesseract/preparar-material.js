@@ -39,10 +39,10 @@ const posicionais = args.filter((a, i) => !a.startsWith('--') && !(i > 0 && VALO
 
 const PROJ = path.resolve(opc('projetos-dir', path.join(RAIZ, 'projetos')));
 const SCRIPTS = path.join(RAIZ, 'projetos'); // pre-edicao.js e palavras.js do modelo base
-const WHISPER = path.resolve(RAIZ, '..', 'whisper-cpp', 'bin', 'Release', 'whisper-cli.exe');
+const { caminho, tsrctSync } = require('../../_fabrica/core/programas'); // acha tsrct, whisper e ffmpeg no Windows e no Mac
+const WHISPER = caminho('whisper');
 const MODELO = path.resolve(RAIZ, '..', 'whisper-cpp', 'modelos', 'ggml-large-v3-turbo-q5_0.bin');
 const MATTE = path.resolve(RAIZ, '..', 'rvm', 'matte.js');
-const TSRCT = path.join(process.env.LOCALAPPDATA || '', 'Tesseract', 'bin', 'tsrct.cmd');
 
 const fmt = (t) => (t === null || t === undefined ? 'n/d' : Number(t).toFixed(2).replace('.', ','));
 const log = (...a) => console.error('[preparar-material]', ...a);
@@ -98,7 +98,7 @@ const cache = (arq) => !REFAZER && fs.existsSync(arq) && fs.statSync(arq).size >
 
 // ---------- 1. sondagem ----------
 let versaoTsrct = 'n/d';
-try { versaoTsrct = execFileSync('cmd.exe', ['/c', TSRCT, '--version'], { encoding: 'utf8' }).trim().split('\n').pop(); } catch { /* registrado como n/d */ }
+try { versaoTsrct = tsrctSync(['--version'], { encoding: 'utf8' }).trim().split('\n').pop(); } catch { /* registrado como n/d */ }
 const sonda = JSON.parse(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration:stream=codec_type,codec_name,width,height,r_frame_rate,start_time', '-of', 'json', VIDEO], { encoding: 'utf8' }));
 const DUR_BRUTO = Number(sonda.format.duration);
 const vs = sonda.streams.find((s) => s.codec_type === 'video') || {};
@@ -134,7 +134,8 @@ function whisper(wav, prefixo, prompt) {
   log('whisper em ' + path.basename(wav));
   const naoAscii = (x) => /[^\x00-\x7F]/.test(x);
   let tmp = null; let wavUsado = wav, prefUsado = prefixo;
-  if (naoAscii(wav) || naoAscii(prefixo) || naoAscii(MODELO)) {
+  // o whisper do Windows não abre arquivo em pasta com acento; o do Mac abre (conferido no Mac da nuvem, em 22/11/2026)
+  if (process.platform === 'win32' && (naoAscii(wav) || naoAscii(prefixo) || naoAscii(MODELO))) {
     tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'wsp-'));
     if (naoAscii(tmp)) throw new Error('caminho com acento e pasta temporária também com acento: usar --projetos-dir em pasta só com ASCII');
     wavUsado = path.join(tmp, 'a.wav'); prefUsado = path.join(tmp, 'saida');

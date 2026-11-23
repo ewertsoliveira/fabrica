@@ -45,6 +45,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawn, spawnSync, execFileSync } = require('child_process');
+const { caminho, tsrctSpawn } = require('../../_fabrica/core/programas'); // acha o tsrct e o ffmpeg no Windows e no Mac
 
 // ---------- argumentos ----------
 const args = process.argv.slice(2);
@@ -95,7 +96,7 @@ const CORTES_S = (opc('cortes', '') || '').split(',').filter(Boolean).map(Number
 const DIR = path.resolve(opc('dir', path.join(PROJ_DIR, 'export-pedacos')));
 const MOT_DEC = DEC.motion || {};
 const COPIAR = [...new Set([...(MOT_DEC.arquivos || []), ...(opc('copiar', '') || '').split(',').filter(Boolean)])];
-const TSRCT = path.join(process.env.LOCALAPPDATA || '', 'Tesseract', 'bin', 'tsrct.cmd');
+const TSRCT = caminho('tsrct');
 const FOLGA = 0.0002; // s: arredonda para baixo os tempos que caem exatamente num quadro (ver msP)
 const LIMITE_INTEIRO_S = 20; // abaixo disto não vale dividir
 const ATRASO_MAX_Q = 15;     // início de frase dentro de um bloco só vale se o bloco acaba em até 0,5 s
@@ -121,21 +122,29 @@ const MOTION = MOTION_ARQ ? path.resolve(BASE, MOTION_ARQ)
 
 // ---------- pré-checagens ----------
 const AVISOS_PRE = [];
+// Processos rodando, com o nome sem pasta e sem .exe e a memória em KB: tasklist no Windows, ps no Mac.
+function listarProcessos() {
+  if (process.platform === 'win32') {
+    return sh('tasklist', ['/FO', 'CSV', '/NH']).split(/\r?\n/).map((l) => l.match(/^"([^"]+)","\d+","[^"]*","\d+","([^"]*)"/)).filter(Boolean)
+      .map((m) => ({ nome: m[1].toLowerCase().replace(/\.exe$/, ''), kb: Number(m[2].replace(/\D/g, '')) || 0 }));
+  }
+  return sh('ps', ['-axo', 'rss=,comm=']).split(/\r?\n/).map((l) => l.trim().match(/^(\d+)\s+(.+)$/)).filter(Boolean)
+    .map((m) => ({ nome: path.basename(m[2]).toLowerCase(), kb: Number(m[1]) || 0 }));
+}
+// navegador: os nomes exatos do Windows e, no Mac, o começo do nome (os processos auxiliares do Chrome entram na soma)
+const NAVEGADOR = /^(chrome|msedge|firefox|brave|opera)$|^(google chrome|microsoft edge|safari|firefox|brave browser|opera)/;
 function preChecagens() {
   const info = { ram_livre_gb: null, ram_total_gb: Number((os.totalmem() / 2 ** 30).toFixed(1)), tsrct: 0, ffmpeg: 0, navegador_gb: 0 };
   info.ram_livre_gb = opc('ram-livre-gb') ? Number(opc('ram-livre-gb')) : Number((os.freemem() / 2 ** 30).toFixed(2));
   try {
-    const linhas = sh('tasklist', ['/FO', 'CSV', '/NH']).split(/\r?\n/);
     let kb = 0;
-    for (const l of linhas) {
-      const m = l.match(/^"([^"]+)","\d+","[^"]*","\d+","([^"]*)"/); if (!m) continue;
-      const nome = m[1].toLowerCase(); const mem = Number(m[2].replace(/\D/g, '')) || 0;
-      if (nome === 'tsrct.exe') info.tsrct++;
-      else if (nome === 'ffmpeg.exe') info.ffmpeg++;
-      else if (/^(chrome|msedge|firefox|brave|opera)\.exe$/.test(nome)) kb += mem;
+    for (const p of listarProcessos()) {
+      if (p.nome === 'tsrct') info.tsrct++;
+      else if (p.nome === 'ffmpeg') info.ffmpeg++;
+      else if (NAVEGADOR.test(p.nome)) kb += p.kb;
     }
     info.navegador_gb = Number((kb / 2 ** 20).toFixed(2));
-  } catch (e) { AVISOS_PRE.push('não consegui listar os processos (tasklist): ' + String(e.message).slice(0, 80)); }
+  } catch (e) { AVISOS_PRE.push('não consegui listar os processos: ' + String(e.message).slice(0, 80)); }
   if (info.tsrct) AVISOS_PRE.push(`há ${info.tsrct} processo(s) tsrct rodando (outro export ou editor): disputa memória e tempo com os pedaços`);
   if (info.ffmpeg) AVISOS_PRE.push(`há ${info.ffmpeg} processo(s) ffmpeg rodando: a medida de tempo e de memória fica menos confiável`);
   if (info.navegador_gb >= 1.5) AVISOS_PRE.push(`navegador pesado aberto (${vg(info.navegador_gb, 1)} GB): feche antes do export para sobrar memória`);
@@ -455,7 +464,7 @@ while ($true) {
 function exportaUm(tsrctArq, mp4, rotuloLog) {
   return new Promise((res) => {
     const ini = Date.now();
-    const c = spawn('cmd.exe', ['/c', TSRCT, 'export', '-p', tsrctArq, '-o', mp4, '--fps', String(FPS)], { stdio: ['ignore', 'pipe', 'pipe'] });
+    const c = tsrctSpawn(['export', '-p', tsrctArq, '-o', mp4, '--fps', String(FPS)], { stdio: ['ignore', 'pipe', 'pipe'] });
     let ult = '', logTxt = '';
     const onData = (x) => { const s = String(x); logTxt += s; const l = s.trim().split(/\r?\n/).pop(); if (l) ult = l; };
     c.stdout.on('data', onData); c.stderr.on('data', onData);
@@ -467,10 +476,10 @@ async function exporta(rotulo = 'export') {
   const SO = opc('so', null);
   const ALVO = SO ? PEDACOS.filter((p) => p.i === Number(SO)) : PEDACOS;
   let amostrador = null;
-  if (AMOSTRAR) {
+  if (AMOSTRAR && process.platform === 'win32') {
     const ps1 = path.join(DIR, 'amostrador.ps1'); fs.writeFileSync(ps1, AMOSTRADOR_PS1);
     amostrador = spawn('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', ps1, path.join(DIR, `amostras-${rotulo}.csv`), '2'], { stdio: 'ignore' });
-  }
+  } else if (AMOSTRAR) log('amostrador de memória só no Windows (neste computador o export segue sem as amostras)');
   const t0 = Date.now();
   const doPedaco = (p) => {
     p.mp4 = path.join(p.dir, `pedaco-${p.i}-sem-trilha.mp4`);

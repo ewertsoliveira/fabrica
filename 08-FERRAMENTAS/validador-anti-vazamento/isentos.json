@@ -568,6 +568,12 @@
   "_fabrica/core/ferramentas.js": [
     "url"
   ],
+  "_fabrica/core/compilar-whisper.js": [
+    "url"
+  ],
+  "_fabrica/core/rede.test.js": [
+    "url"
+  ],
   "_fabrica/paineis/tipos-de-post.js": [
     "hex"
   ]

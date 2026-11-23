@@ -10,10 +10,10 @@ const marca = require('../../marca/marca');
 const fontes = require('../fontes');
 const { tamanhoDaImagem } = require('../blocos-motion/cartao-cta');
 
-const T = path.join(process.env.LOCALAPPDATA, 'Tesseract', 'bin', 'tsrct.cmd');
+const { tsrctSync } = require('../../../_fabrica/core/programas'); // acha o tsrct e o ffmpeg no Windows e no Mac
 // Peças de imagem (tiles de terceiros, mockups, fundos): a pasta da empresa vence a da ferramenta.
 const PASTAS_PECAS = [path.join(marca.PASTA, 'pecas'), path.join(__dirname, '..', 'assets')];
-const tsrct = (...a) => execFileSync('cmd.exe', ['/c', T, ...a], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+const tsrct = (...a) => tsrctSync(a, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 
 const decPath = path.resolve(process.argv[2]);
 const DEC = JSON.parse(fs.readFileSync(decPath, 'utf8'));

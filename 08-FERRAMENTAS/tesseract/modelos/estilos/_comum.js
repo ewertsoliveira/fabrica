@@ -4,6 +4,7 @@ const { EASE, s2ms, limpa, norm, elipse, retangulo, retArredondado } = require('
 const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
+require('../../../../_fabrica/core/programas'); // acha o ffmpeg da Fábrica no Mac
 
 // texto em caixa larga alinhado à esquerda: é a mesma configuração do medidor, então a medida vale para o render
 const docLinha = (fonte, estilo, extra = {}) => ({

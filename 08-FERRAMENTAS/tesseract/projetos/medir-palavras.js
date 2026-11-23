@@ -7,8 +7,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const { PNG } = require('pngjs');
 const fontes = require('../fontes');
-
-const T = path.join(process.env.LOCALAPPDATA, 'Tesseract', 'bin', 'tsrct.cmd');
+const { tsrctSync } = require('../../../_fabrica/core/programas'); // acha o tsrct no Windows e no Mac
 
 const palavras = (process.argv[2] || '').split('|').filter(Boolean);
 const tam = Number(process.argv[3] || 92);
@@ -20,7 +19,7 @@ const LINHA = Math.max(200, tam * 1.6); // altura de cada faixa de medição
 const BOX_H = Math.max(140, Math.round(tam * 1.4));
 
 const POR_QUADRO = Math.floor((1920 - 40 - BOX_H) / LINHA) + 1; // faixas que cabem num quadro de 1920px
-const run = (...args) => execFileSync('cmd.exe', ['/c', T, ...args], { encoding: 'utf8' });
+const run = (...args) => tsrctSync(args, { encoding: 'utf8' });
 const res = {};
 
 // mede em lotes: com muitas palavras, as últimas faixas cairiam fora do quadro e voltariam com largura negativa

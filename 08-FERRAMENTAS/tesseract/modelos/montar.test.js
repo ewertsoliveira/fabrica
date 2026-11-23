@@ -70,6 +70,7 @@ const assert = require('assert');
 const crypto = require('crypto');
 const os = require('os');
 const { spawnSync } = require('child_process');
+require('../../../_fabrica/core/programas'); // acha o ffmpeg da Fábrica no Mac
 const empresaMod = require('../../../_fabrica/core/empresa');
 
 const MONTAR = path.join(__dirname, 'montar.js');

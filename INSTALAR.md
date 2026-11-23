@@ -56,13 +56,24 @@ Rode `node --version` e `git --version`. Eles precisam existir, e o Node precisa
   Peça o "sim" e instale:
   - Windows: `winget install -e --id OpenJS.NodeJS.LTS` e `winget install -e --id Git.Git`.
     Avise antes: "Vai aparecer uma janela do Windows perguntando se pode fazer alterações. Clique em **Sim**."
-  - Mac: se existir o `brew`, use `brew install node git`. Se não existir, abra https://nodejs.org e
-    https://git-scm.com/downloads no navegador da pessoa e explique, um site de cada vez, qual botão clicar para baixar e
-    como abrir o arquivo baixado (clicar duas vezes e ir clicando em "Continuar" ou "Next" até terminar).
+  - Mac: o Git vem nas **ferramentas gratuitas da Apple**, que a Fábrica também usa para preparar a transcrição dos
+    vídeos. Rode `xcode-select -p`; se der erro, elas faltam (mesmo que o Git já exista, confira). Explique: "O Mac
+    precisa das ferramentas gratuitas da Apple. Elas trazem o programa que baixa a Fábrica e o que prepara a transcrição
+    dos vídeos." Peça o "sim", rode `xcode-select --install` e avise: "Vai abrir uma janela do Mac. Clique em
+    **Instalar** e depois em **Concordo**. Leva alguns minutos. Me diga **terminou** quando a janela fechar." Para o
+    Node: se existir o `brew`, use `brew install node`. Se não existir, abra https://nodejs.org no navegador da pessoa e
+    explique qual botão clicar para baixar e como abrir o arquivo baixado (clicar duas vezes e ir clicando em
+    "Continuar" até terminar; o Mac pede a senha do computador numa janela dele, e quem digita é a pessoa).
   - Linux: o gerenciador do sistema (`apt`, `dnf`...), pedindo o "sim" antes.
 - **Depois de instalar**, rode `node --version` de novo. Se ainda não achar o programa (acontece, a janela não enxerga o
   que acabou de ser instalado), diga: "Instalei! Agora preciso que você **feche esta ferramenta e abra de novo**, e cole
   o mesmo pedido de antes. Eu continuo de onde parei." Quando ela voltar, o Passo 1 vai passar direto.
+- **No Mac, confira também a versão do macOS** com `sw_vers -productVersion`. A Fábrica precisa do macOS 14 (Sonoma) ou
+  mais novo: o programa que monta os vídeos exige, e o que desenha os carrosséis também pede. Se for mais antigo, diga
+  antes de seguir: "Seu Mac está no macOS X. Para a Fábrica desenhar carrosséis e montar vídeos, ele precisa do macOS 14
+  ou mais novo. Você prefere: (1) Atualizar o macOS antes (eu explico como) (2) Instalar mesmo assim, sabendo que
+  carrosséis e vídeos podem não funcionar". Respeite a resposta. Para atualizar: menu da maçã, **Ajustes do Sistema**,
+  **Geral**, **Atualização de Software**.
 
 ## Passo 2 de 6: Baixar a Fábrica
 
@@ -74,8 +85,9 @@ Rode `node --version` e `git --version`. Eles precisam existir, e o Node precisa
    - **Nome.** Diga: "Que nome você quer dar à pasta da Fábrica? Pode ser o que preferir. Se não souber, sugiro
      **Fabrica-de-Conteudo**." Aceite o nome que ela der.
    - Na opção 1, crie a pasta dentro da pasta pessoal dela (Windows: `C:\Users\<nome>`; Mac e Linux: a pasta pessoal).
-3. **Confira o endereço completo da pasta escolhida** (o lugar mais o nome). Os programas de vídeo da Fábrica não
-   funcionam quando o endereço tem **acento** (á, ã, ç, é...), e é melhor evitar espaço. Isso afeta só os vídeos (Reels):
+3. **No Windows, confira o endereço completo da pasta escolhida** (o lugar mais o nome). No Windows, os programas de
+   vídeo da Fábrica não funcionam quando o endereço tem **acento** (á, ã, ç, é...), e é melhor evitar espaço (no Mac
+   isso não atrapalha; pule este item). Isso afeta só os vídeos (Reels):
    carrosséis, posts e capas funcionam do mesmo jeito. Se o endereço tiver acento ou espaço, **explique antes de seguir,
    em palavras simples**: "O endereço dessa pasta tem acento (ou espaço). Para fotos, carrosséis e posts isso não
    atrapalha. Só os vídeos (Reels) podem não funcionar. Você prefere: (1) Manter assim, não vou fazer vídeos (2) Que eu
@@ -111,25 +123,30 @@ fotos:
 4. Quando ela disser "copiei", rode `node 08-FERRAMENTAS/imagem-ia/guardar-token.js`. Ele lê o que ela copiou, guarda e
    limpa a área de cópia, sem mostrar a chave. Se disser que não parece uma chave, peça que copie de novo.
 
-Os programas de vídeo (ffmpeg, Tesseract, whisper) **não pedem login nem cadastro**; o Windows só pode perguntar "Sim/Não"
-numa janela.
+Os programas de vídeo (ffmpeg, Tesseract, whisper) **não pedem login nem cadastro**; o Windows ou o Mac só podem
+perguntar "Sim/Não" ou "Permitir" numa janela.
 
 ## Passo 4 de 6: Instalar os programas de apoio (inclui os de vídeo, sempre na versão mais nova)
 
 Entre na pasta da Fábrica e rode **`node _fabrica/core/instalar.js`**. Ele faz tudo sozinho e conta cada passo: programas
 de apoio, navegador da Fábrica e as ferramentas de vídeo (ffmpeg, Tesseract, whisper e os modelos de transcrição e da
-máscara da pessoa) **na versão mais nova publicada**. No Windows isso faz parte da instalação: sem eles a linha de Reels
-para no meio do trabalho.
+máscara da pessoa) **na versão mais nova publicada**, no Windows e no Mac. Isso faz parte da instalação: sem eles a
+linha de Reels para no meio do trabalho. Cada versão nova só entra em uso depois de passar num teste rápido no próprio
+computador (o autoteste); se não passar, fica a versão que já funcionava.
 
 **Antes de rodar, leia o programa.** As ferramentas de IA bloqueiam, por segurança, programas vindos da internet que o
 assistente ainda não leu (já aconteceu: o assistente parou aqui e deixou a pessoa sem saber o que fazer). Então leia
-`_fabrica/core/instalar.js`, `_fabrica/core/ferramentas.js` e `_fabrica/core/ambiente.js` e só depois rode. Ao ler,
-confirme que o programa só protege a pasta contra envio acidental (`atualizar.js proteger`), instala as dependências da
-Fábrica (`npm install`), baixa o navegador (`npx playwright install chromium`), baixa as ferramentas de vídeo de seus
-sites oficiais (ffmpeg pelo winget; Tesseract do GitHub da Mirage, conferido pelo checksum; whisper.cpp do GitHub do
-ggml-org; modelos da Hugging Face e do GitHub do RVM) e confere o computador. Conte isso à pessoa em uma frase, sem
-jargão: "Li o programa de instalação: ele prepara a pasta da Fábrica, baixa o que ela usa (inclusive os programas de
-vídeo, dos sites oficiais) e confere o computador. Não mexe em nenhum outro arquivo seu."
+`_fabrica/core/instalar.js`, `_fabrica/core/ferramentas.js`, `_fabrica/core/programas.js`, `_fabrica/core/rede.js`,
+`_fabrica/core/compilar-whisper.js`, `_fabrica/core/autoteste-ferramentas.js` e `_fabrica/core/ambiente.js` e só
+depois rode. Ao ler, confirme que o programa só protege a pasta contra envio acidental (`atualizar.js proteger`),
+instala as dependências da Fábrica (`npm install`), baixa o navegador (`npx playwright install chromium`), baixa as
+ferramentas de vídeo de seus sites oficiais, sempre conferidas (Windows: ffmpeg pelo winget; Mac: ffmpeg assinado do
+ffmpeg.martin-riedl.de, conferido pelo checksum; Tesseract do GitHub da Mirage, conferido pelo checksum; whisper.cpp do
+GitHub do ggml-org, pronto no Windows e montado na própria máquina no Mac, com as ferramentas da Apple e o CMake oficial
+da Kitware; modelos da Hugging Face e do GitHub do RVM), testa cada versão nova antes de usá-la e confere o computador.
+Conte isso à pessoa em uma frase, sem jargão: "Li o programa de instalação: ele prepara a pasta da Fábrica, baixa o que
+ela usa (inclusive os programas de vídeo, dos sites oficiais), testa os programas e confere o computador. Não mexe em
+nenhum outro arquivo seu."
 
 **Se a ferramenta mesmo assim bloquear ou pedir permissão, não devolva a decisão técnica para a pessoa** (nada de
 "escolha entre 3 opções"). Explique e peça só o clique: "Apareceu um aviso de segurança da ferramenta pedindo permissão.
@@ -137,9 +154,11 @@ vídeo, dos sites oficiais) e confere o computador. Não mexe em nenhum outro ar
 bloqueio persistir, use "Se travar". Nunca tente contornar o bloqueio.
 
 Avise antes de rodar: "Agora vou instalar os programas que a Fábrica usa, **inclusive os de vídeo** (uns 800 MB,
-gratuitos). **Demora de 10 a 25 minutos e pode parecer parado, é normal. Não feche nada.** Eu aviso quando terminar."
+gratuitos). **Demora de 10 a 25 minutos (no Mac, uns minutos a mais, porque ele monta a transcrição na própria máquina)
+e pode parecer parado, é normal. Não feche nada.** Eu aviso quando terminar."
 
-Rode em segundo plano, com tempo longo (40 minutos), e relate o andamento em palavras suas, uma frase por etapa que
+Rode em segundo plano, com tempo longo (até 2 horas: com internet lenta, os 800 MB demoram), e relate o andamento em
+palavras suas, uma frase por etapa que
 terminar ("Já instalei os programas. Agora estou baixando o navegador da Fábrica."). Se terminar com `RESULTADO: tudo
 pronto.`, siga. Se aparecer `PROBLEMA`, rode o mesmo comando de novo (o que já está pronto é pulado). Se falhar de novo,
 leia a mensagem, resolva o que ela indicar (por exemplo, faltou internet) e, se não der, use "Se travar".
@@ -165,8 +184,10 @@ ferramenta tiver um comando para isso (por exemplo `code "<pasta>"` no VS Code),
 ## Passo 6 de 6: Despedida
 
 Antes de se despedir (ainda na janela antiga), rode `node _fabrica/core/ambiente.js` e confira que os blocos
-**Obrigatório**, **Para carrossel, posts e capas** e (no Windows) **Para Reels (vídeo)** estão todos "OK". A única exceção
-aceita é o aviso de acento no endereço da pasta, quando a pessoa escolheu isso no Passo 2. Depois diga, em poucas linhas:
+**Obrigatório**, **Para carrossel, posts e capas** e **Para Reels (vídeo)** estão todos "OK" (no Windows e no Mac). As
+únicas exceções aceitas são o aviso de acento no endereço da pasta (no Windows, quando a pessoa escolheu isso no Passo
+2) e o Mac com macOS anterior ao 14, quando a pessoa escolheu instalar mesmo assim no Passo 1. Depois diga, em poucas
+linhas:
 
 > "Tudo pronto! ✅ A Fábrica está instalada. Na janela nova, escreva **/fabrica**. Ela vai perguntar para quem é a Fábrica
 > (para a sua marca ou para os seus clientes) e leva você até o primeiro trabalho. Quando houver melhorias, escreva
@@ -179,7 +200,9 @@ itens 2 a 4 do Passo 3.
 
 **Ferramentas de vídeo desatualizadas.** Para trazer ffmpeg, Tesseract e whisper para a versão mais nova a qualquer
 momento: `node _fabrica/core/ferramentas.js` (`--verificar` só compara, sem instalar). A linha de Reels faz essa
-conferência sozinha no começo de cada vídeo.
+conferência sozinha no começo de cada vídeo. Toda versão nova passa antes pelo autoteste
+(`node _fabrica/core/autoteste-ferramentas.js`, explicado em `08-FERRAMENTAS/autoteste/LEIA-ME.md`); se não passar, a
+versão que já funcionava continua, e a pessoa só vê uma frase simples.
 
 ## Se travar
 
@@ -203,3 +226,7 @@ Os comandos que começam com `/` são do Claude Code. Em outra ferramenta, diga 
 - Se o repositório for privado, cada pessoa precisa de convite no GitHub antes do Passo 2. Se for público, os avisos de
   login do Passo 2 simplesmente não aparecem.
 - A licença está em `LICENSE.md` e `NOTICE.md`.
+- Antes de publicar uma versão da Fábrica, rode o autoteste no Windows e no Mac (`node _fabrica/core/autoteste-ferramentas.js`)
+  e atualize `_fabrica/core/versoes-testadas.json` com as versões que passaram. Essa lista é o que a instalação usa quando
+  a versão mais nova falha no computador da pessoa ou quando o GitHub não responde, e é o que libera um visual novo do
+  Tesseract (uma versão que está na lista pode mudar a aparência dos vídeos).

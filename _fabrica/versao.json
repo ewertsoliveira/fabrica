@@ -1,7 +1,13 @@
 {
-  "versao": "0.8.3",
-  "data": "2026-11-15",
+  "versao": "0.9.0",
+  "data": "2026-11-22",
   "novidades": [
+    "A Fábrica agora instala e funciona inteira no Mac, com chip Apple ou Intel e macOS 14 ou mais novo, inclusive a parte de vídeo. O programa que monta os vídeos vem na versão oficial para Mac, o que trata o áudio e o vídeo vem de uma versão assinada e conferida, e o que transcreve a fala é montado no próprio Mac em poucos minutos, com as ferramentas gratuitas da Apple. A pessoa não digita senha no Terminal: no máximo clica em \"Instalar\" numa janela da Apple. Antes, no Mac, a IA tinha que improvisar.",
+    "Programas de vídeo sempre na versão mais nova, com teste antes de trocar. Quando sai versão nova de um deles, a Fábrica instala à parte e faz um teste rápido no próprio computador: monta um vídeo curto com um modelo de edição, transcreve uma fala curta e compara as imagens com as da versão anterior. Só troca se passar; se não passar, continua a versão que funcionava, e a pessoa recebe uma frase simples. A Fábrica guarda também uma lista das últimas versões já testadas, usada na primeira instalação se a mais nova falhar ou se a internet não responder.",
+    "O programa que transcreve a fala voltou a acompanhar as versões novas: ele estava parado numa versão de agosto, porque o projeto mudou o jeito de numerar as versões.",
+    "Os downloads tentam de novo sozinhos quando a internet falha no meio, e a consulta de versões não depende mais de um serviço do GitHub que limita o número de consultas em internet compartilhada.",
+    "No Windows, a conferência dos programas de vídeo agora só consulta se há versão nova; antes, ela atualizava o ffmpeg sem avisar.",
+    "A peça que recorta a pessoa do fundo (para o texto atrás do corpo) ficou numa versão que funciona em qualquer Mac, inclusive com processador Intel.",
     "Cronograma em calendário, com um cartão por tipo de post: o mês abre em largura total, e cada post tem a cor, o ícone e o nome do seu tipo (Reels, Carrossel, Stories, WhatsApp, Anúncio, Vídeo longo, Post, Artigo), iguais em toda empresa, com a legenda no alto dizendo quantos há no mês. Clique no post e a janela traz tudo dele, com \"Baixar tudo (.zip)\" no alto (antes, era preciso rolar uma lista longa para achar o que baixar). A lista continua em \"Lista\", no celular o calendário vira agenda, e o arquivo do cliente traz o mesmo calendário. Mensagem de WhatsApp e anúncio pago agora entram no cronograma como o que são, sem se passar por Instagram",
     "Escolha visual nunca mais por texto: a imagem da capa, as fotos, as cores ou o estilo aparecem já aplicados à peça, lado a lado com letras, antes de qualquer pergunta (antes, a escolha da imagem da capa podia vir só com a descrição dos quadros)",
     "Trava automática: se a Fábrica tentar perguntar algo de aparência sem mostrar a prévia, a pergunta é barrada e ela monta as opções primeiro",

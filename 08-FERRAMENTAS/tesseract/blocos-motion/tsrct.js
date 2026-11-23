@@ -3,10 +3,10 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { execFileSync } = require('child_process');
+const { caminho, tsrctSync } = require('../../../_fabrica/core/programas'); // acha o tsrct no Windows e no Mac
 
-const T = path.join(process.env.LOCALAPPDATA || '', 'Tesseract', 'bin', 'tsrct.cmd');
-const tsrct = (...a) => execFileSync('cmd.exe', ['/c', T, ...a], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 64 << 20 });
+const T = caminho('tsrct');
+const tsrct = (...a) => tsrctSync(a, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 64 << 20 });
 
 // lê o documento editável de um .tsrct (checkout) e devolve o JSON
 function checkout(proj) {

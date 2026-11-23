@@ -8,6 +8,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
+require('../../_fabrica/core/programas'); // acha o ffmpeg da Fábrica no Mac
 const previas = require('./gerar-previas');
 const navegador = require('../carrossel/navegador');
 

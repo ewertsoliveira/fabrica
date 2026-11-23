@@ -8,6 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execFileSync, spawnSync } = require('child_process');
+require('../../../_fabrica/core/programas'); // acha o ffmpeg da Fábrica no Mac
 
 const integrado = (arq) => {
   const r = spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', arq, '-vn', '-af', 'ebur128', '-f', 'null', '-'], { encoding: 'utf8' });

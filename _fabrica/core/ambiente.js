@@ -6,12 +6,14 @@
 // Três grupos:
 //   obrigatorio  Node 20+, git, npm e as dependências da Fábrica (npm install). Sem isso nada roda.
 //   imagens      navegador para montar carrossel, posts e capas (Chromium do Playwright, Chrome ou Edge).
-//   video        o que o Reels precisa (ffmpeg, ffprobe, Tesseract, whisper). Só no Windows por enquanto.
+//   video        o que o Reels precisa (ffmpeg, ffprobe, Tesseract, whisper), no Windows e no Mac. No Mac também confere o
+//                macOS (o Tesseract exige o 14 ou mais novo) e as ferramentas da Apple (montam a transcrição).
 // Saída: 0 = o obrigatório está completo; 1 = falta algo obrigatório. O que falta de imagens e vídeo é só informado.
 'use strict';
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
+const { caminho, sistema } = require('./programas');
 
 const args = process.argv.slice(2);
 const opc = (n, d = null) => { const i = args.indexOf('--' + n); return i >= 0 ? args[i + 1] : d; };
@@ -48,7 +50,15 @@ function achaNavegador() {
   return achou ? 'navegador do sistema (defina FABRICA_CHROMIUM com este caminho: ' + achou + ')' : null;
 }
 
-function conferir(raiz = RAIZ) {
+/** A peça da máscara carrega de verdade? (a pasta existir não basta: no Mac Intel a versão errada não traz o programa) */
+function carregaOnnx(raiz) {
+  try { require(require.resolve('onnxruntime-node', { paths: [raiz] })); return { ok: true }; } catch (e) { return { ok: false, detalhe: String(e.message).split(/\r?\n/)[0].slice(0, 160) }; }
+}
+
+/** `opc.sistema` e `opc.home` trocam o sistema e a pasta pessoal conferidos (só para teste). */
+function conferir(raiz = RAIZ, opc = {}) {
+  const sis = opc.sistema || sistema();
+  const doSistema = { raiz, plataforma: sis.plataforma };
   const itens = [];
   const add = (grupo, id, nome, ok, detalhe, comoResolver) => itens.push({ grupo, id, nome, ok: !!ok, detalhe: detalhe || '', comoResolver: ok ? '' : comoResolver });
 
@@ -64,16 +74,26 @@ function conferir(raiz = RAIZ) {
   const nav = achaNavegador();
   add('imagens', 'navegador', 'Navegador para montar carrossel e posts', nav, nav || '', 'Rodar: npx playwright install chromium');
 
-  add('video', 'caminho', 'Pasta da Fábrica sem acento no nome (o vídeo precisa)', /^[ -~]*$/.test(raiz), '', 'Mover a Fábrica para uma pasta sem acento, por exemplo C:\\Fabrica-de-Conteudo');
-  const ffmpeg = roda('ffmpeg', ['-version']);
-  add('video', 'ffmpeg', 'ffmpeg', ffmpeg, ffmpeg ? ffmpeg.split(/\r?\n/)[0] : '', 'Rodar: node _fabrica/core/ferramentas.js (no Windows instala o ffmpeg pelo winget)');
-  const ffprobe = roda('ffprobe', ['-version']);
+  // o whisper do Windows não abre arquivo em pasta com acento; no Mac isso não acontece
+  if (sis.plataforma === 'win32') add('video', 'caminho', 'Pasta da Fábrica sem acento no nome (o vídeo precisa)', /^[ -~]*$/.test(raiz), '', 'Mover a Fábrica para uma pasta sem acento, por exemplo C:\\Fabrica-de-Conteudo');
+  if (sis.plataforma === 'darwin') {
+    const versaoMac = sis.macos ? sis.macos.join('.') : 'desconhecida';
+    // o Tesseract exige o macOS 14 e o navegador dos carrosséis (Playwright) também pede o 14
+    add('video', 'macos', 'macOS 14 ou mais novo (os vídeos exigem; os carrosséis também pedem)', !!sis.macos && maiorOuIgual(sis.macos, [14]), 'este Mac: macOS ' + versaoMac,
+      `Este Mac está no macOS ${versaoMac}. Para fazer vídeos e desenhar carrosséis, atualize para o macOS 14 ou mais novo (menu da maçã, Ajustes do Sistema, Geral, Atualização de Software).`);
+    const apple = spawnSync('xcode-select', ['-p'], { encoding: 'utf8', timeout: 15000 }).status === 0;
+    add('video', 'apple', 'Ferramentas da Apple (para montar a transcrição)', apple, '', 'Rodar: xcode-select --install (o Mac abre uma janela; clique em Instalar)');
+  }
+  const ffmpeg = roda(caminho('ffmpeg', doSistema), ['-version']);
+  add('video', 'ffmpeg', 'ffmpeg', ffmpeg, ffmpeg ? ffmpeg.split(/\r?\n/)[0] : '', 'Rodar: node _fabrica/core/ferramentas.js (instala o ffmpeg: no Windows pelo winget, no Mac na pasta da Fábrica)');
+  const ffprobe = roda(caminho('ffprobe', doSistema), ['-version']);
   add('video', 'ffprobe', 'ffprobe (vem com o ffmpeg)', ffprobe, '', 'Vem junto com o ffmpeg');
-  const tsrct = process.env.LOCALAPPDATA && existe(process.env.LOCALAPPDATA, 'Tesseract', 'bin', 'tsrct.cmd');
-  add('video', 'tesseract', 'Tesseract (montagem de vídeo)', tsrct, '', 'Rodar: node _fabrica/core/ferramentas.js (instala o Tesseract na versão mais nova)');
+  const caminhoTsrct = caminho('tsrct', { plataforma: sis.plataforma, ...(opc.home ? { home: opc.home } : {}) });
+  const tsrct = fs.existsSync(caminhoTsrct);
+  add('video', 'tesseract', 'Tesseract (montagem de vídeo)', tsrct, tsrct ? '' : 'não achei em ' + caminhoTsrct, 'Rodar: node _fabrica/core/ferramentas.js (instala o Tesseract na versão mais nova)');
   // os modelos são arquivos grandes: um download que parou no meio deixa o arquivo com o nome certo e pela metade, então
   // vale o tamanho mínimo (o mesmo do ferramentas.js), não só existir
-  const exeWhisper = existe(raiz, '08-FERRAMENTAS', 'whisper-cpp', 'bin', 'Release', 'whisper-cli.exe');
+  const exeWhisper = fs.existsSync(caminho('whisper', doSistema));
   const mWhisper = tamanho(raiz, '08-FERRAMENTAS', 'whisper-cpp', 'modelos', 'ggml-large-v3-turbo-q5_0.bin');
   const whisper = exeWhisper && mWhisper >= 500e6;
   add('video', 'whisper', 'whisper (transcrição da fala)', whisper,
@@ -83,7 +103,8 @@ function conferir(raiz = RAIZ) {
   add('video', 'rvm', 'Modelo da máscara da pessoa (RVM; só para texto atrás do corpo)', mRvm !== null && mRvm >= 10e6,
     mRvm !== null && mRvm < 10e6 ? `incompleto (${(mRvm / 1e6).toFixed(1)} MB de ~15 MB)` : '', 'Rodar: node _fabrica/core/ferramentas.js');
   // a máscara roda o modelo pelo onnxruntime-node (também entre as dependências obrigatórias; aqui, para o vídeo dizer o que falta)
-  add('video', 'onnxruntime', 'onnxruntime-node (roda o modelo da máscara)', existe(raiz, 'node_modules', 'onnxruntime-node'), '', 'Rodar, na pasta da Fábrica: npm install');
+  const onnx = existe(raiz, 'node_modules', 'onnxruntime-node') ? carregaOnnx(raiz) : { ok: false, detalhe: 'não instalado' };
+  add('video', 'onnxruntime', 'onnxruntime-node (roda o modelo da máscara)', onnx.ok, onnx.detalhe, 'Rodar, na pasta da Fábrica: npm install');
   return itens;
 }
 

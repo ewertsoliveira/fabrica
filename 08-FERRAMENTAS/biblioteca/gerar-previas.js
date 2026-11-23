@@ -29,6 +29,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
+require('../../_fabrica/core/programas'); // acha o ffmpeg da Fábrica no Mac
 
 const RAIZ = path.resolve(__dirname, '..', '..');
 const MARCA_EXEMPLO = path.join(RAIZ, '06-MARCA-E-FOTOS', 'marca.exemplo.yaml');

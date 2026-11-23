@@ -5,8 +5,8 @@ const os = require('os');
 const path = require('path');
 const { execFileSync } = require('child_process');
 
-const TSRCT = path.join(process.env.LOCALAPPDATA || '', 'Tesseract', 'bin', 'tsrct.cmd');
-const tsrct = (...a) => execFileSync('cmd.exe', ['/c', TSRCT, ...a], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 64 << 20 });
+const { tsrctSync } = require('../../../_fabrica/core/programas'); // acha o tsrct e o ffmpeg no Windows e no Mac
+const tsrct = (...a) => tsrctSync(a, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 64 << 20 });
 const FONTES = path.join(__dirname, 'fontes');
 const COMP = 'main';
 

@@ -3,6 +3,7 @@
 // Processa numa resolução reduzida (padrão 360px de largura; 12 quadros/s nesta máquina) e devolve a máscara no tamanho original.
 const path = require('path');
 const { spawn } = require('child_process');
+require('../../_fabrica/core/programas'); // acha o ffmpeg da Fábrica no Mac
 const ort = require('onnxruntime-node');
 
 const [, , entrada, saida, limite, larg = '360'] = process.argv;

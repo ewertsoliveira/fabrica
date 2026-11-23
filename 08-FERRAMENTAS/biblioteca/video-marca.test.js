@@ -12,6 +12,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
+require('../../_fabrica/core/programas'); // acha o ffmpeg da Fábrica no Mac
 const vm = require('./video-marca');
 const pm = require('./previas-marca');
 const empresaMod = require('../../_fabrica/core/empresa');

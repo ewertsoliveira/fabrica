@@ -6,6 +6,7 @@
 //   --ate: processa só o bruto até esse segundo (para amostras).
 const fs = require('fs');
 const { execFileSync, spawnSync } = require('child_process');
+require('../../../_fabrica/core/programas'); // acha o ffmpeg da Fábrica no Mac
 const marca = require('../../marca/marca'); // cor de acento do painel e padrões de velocidade e cor
 
 const args = process.argv.slice(2);

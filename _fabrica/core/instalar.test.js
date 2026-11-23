@@ -5,7 +5,7 @@
 const assert = require('assert');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { PASSOS } = require('./instalar.js');
+const { PASSOS, videoNesteSistema, conclusaoFinal, LIMITE_VIDEO_MS } = require('./instalar.js');
 
 let n = 0;
 const caso = (nome, f) => { f(); n++; console.log('ok   ' + nome); };
@@ -28,6 +28,36 @@ caso('as frases dos passos não usam jargão que a pessoa leiga não entende', (
 
 caso('todo passo é obrigatório e tem como rodar', () => {
   for (const p of PASSOS) { assert.strictEqual(typeof p.roda, 'function'); assert.strictEqual(p.obrigatorio, true); }
+});
+
+caso('o passo do vídeo espera o bastante para internet lenta (uns 800 MB)', () => {
+  assert.ok(LIMITE_VIDEO_MS >= 90 * 60 * 1000, 'limite ' + LIMITE_VIDEO_MS);
+});
+
+caso('o passo do vídeo roda no Windows e no Mac, não no Linux', () => {
+  assert.strictEqual(videoNesteSistema({ plataforma: 'win32', macos: null }).roda, true);
+  assert.strictEqual(videoNesteSistema({ plataforma: 'darwin', macos: [14, 6, 0] }).roda, true);
+  const linux = videoNesteSistema({ plataforma: 'linux', macos: null });
+  assert.strictEqual(linux.roda, false);
+  assert.ok(linux.nota);
+  const velho = videoNesteSistema({ plataforma: 'darwin', macos: [13, 6, 0] });
+  assert.strictEqual(velho.roda, false);
+  assert.match(velho.nota, /macOS 14/);
+});
+
+caso('macOS 13: o vídeo vira aviso, e o resto da instalação segue', () => {
+  const itens = [
+    { grupo: 'obrigatorio', id: 'node', nome: 'Node.js', ok: true },
+    { grupo: 'imagens', id: 'navegador', nome: 'Navegador', ok: true },
+    { grupo: 'video', id: 'macos', nome: 'macOS 14 ou mais novo', ok: false },
+    { grupo: 'video', id: 'tesseract', nome: 'Tesseract', ok: false },
+  ];
+  const r = conclusaoFinal(itens, { plataforma: 'darwin', macos: [13, 6, 0] });
+  assert.strictEqual(r.ok, true);
+  assert.match(r.nota, /macOS/);
+  const noMacNovo = conclusaoFinal(itens.map((i) => (i.id === 'macos' ? { ...i, ok: true } : i)), { plataforma: 'darwin', macos: [14, 6, 0] });
+  assert.strictEqual(noMacNovo.ok, false, 'no macOS 14 o vídeo é obrigatório');
+  assert.match(noMacNovo.erro, /Tesseract/);
 });
 
 console.log(`\n${n}/${n} casos passaram.`);

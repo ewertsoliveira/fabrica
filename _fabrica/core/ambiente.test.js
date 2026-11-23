@@ -64,9 +64,11 @@ caso('modelo do whisper ou da máscara pela metade (download interrompido) não 
   const raiz = fs.mkdtempSync(path.join(os.tmpdir(), 'fabrica-amb-'));
   try {
     const w = path.join(raiz, '08-FERRAMENTAS', 'whisper-cpp');
-    fs.mkdirSync(path.join(w, 'bin', 'Release'), { recursive: true });
+    // o programa no endereço deste sistema (Release/whisper-cli.exe no Windows, bin/whisper-cli no Mac)
+    const exe = require('./programas').caminho('whisper', { raiz, env: {} });
+    fs.mkdirSync(path.dirname(exe), { recursive: true });
     fs.mkdirSync(path.join(w, 'modelos'), { recursive: true });
-    fs.writeFileSync(path.join(w, 'bin', 'Release', 'whisper-cli.exe'), 'x');
+    fs.writeFileSync(exe, 'x');
     fs.writeFileSync(path.join(w, 'modelos', 'ggml-large-v3-turbo-q5_0.bin'), Buffer.alloc(1000));
     fs.mkdirSync(path.join(raiz, '08-FERRAMENTAS', 'rvm'), { recursive: true });
     fs.writeFileSync(path.join(raiz, '08-FERRAMENTAS', 'rvm', 'rvm_mobilenetv3_fp32.onnx'), Buffer.alloc(1000));
@@ -74,6 +76,52 @@ caso('modelo do whisper ou da máscara pela metade (download interrompido) não 
     assert.ok(!por.whisper.ok && /incompleto/.test(por.whisper.detalhe), por.whisper.detalhe);
     assert.ok(!por.rvm.ok && /incompleto/.test(por.rvm.detalhe), por.rvm.detalhe);
     assert.ok(!por.onnxruntime.ok && /npm install/.test(por.onnxruntime.comoResolver));
+  } finally { fs.rmSync(raiz, { recursive: true, force: true }); }
+});
+
+const MAC = { plataforma: 'darwin', arq: 'arm64', rosetta: false, macos: [14, 6, 0] };
+
+caso('no Mac, o vídeo procura o tsrct e o whisper nos caminhos do Mac', () => {
+  const raiz = fs.mkdtempSync(path.join(os.tmpdir(), 'fabrica-amb-'));
+  try {
+    // pasta pessoal falsa: o resultado não depende de este computador já ter o Tesseract
+    const por = Object.fromEntries(conferir(raiz, { sistema: MAC, home: raiz }).map((i) => [i.id, i]));
+    assert.ok(!por.tesseract.ok);
+    assert.match(por.tesseract.detalhe, /Application Support/);
+    assert.ok(por.apple, 'no Mac existe o item das ferramentas da Apple');
+    assert.ok(por.macos && por.macos.ok, 'macOS 14.6 roda o vídeo');
+    assert.ok(!por.caminho, 'a regra do acento é só do Windows');
+    assert.match(por.whisper.detalhe, /falta o programa/);
+  } finally { fs.rmSync(raiz, { recursive: true, force: true }); }
+});
+
+caso('macOS 13: o item do macOS vem em palavras simples', () => {
+  const raiz = fs.mkdtempSync(path.join(os.tmpdir(), 'fabrica-amb-'));
+  try {
+    const macos = conferir(raiz, { sistema: { ...MAC, macos: [13, 6, 0] } }).find((i) => i.id === 'macos');
+    assert.strictEqual(macos.ok, false);
+    assert.match(macos.comoResolver, /macOS 14/);
+    assert.doesNotMatch(macos.comoResolver, /node |npm |\.js/, 'sem comando na explicação');
+  } finally { fs.rmSync(raiz, { recursive: true, force: true }); }
+});
+
+caso('no Windows continua a regra do acento e não há itens do Mac', () => {
+  const raiz = fs.mkdtempSync(path.join(os.tmpdir(), 'fabrica-amb-'));
+  try {
+    const ids = conferir(raiz, { sistema: { plataforma: 'win32', arq: 'x64', rosetta: false, macos: null } }).map((i) => i.id);
+    assert.ok(ids.includes('caminho'));
+    assert.ok(!ids.includes('apple') && !ids.includes('macos'));
+  } finally { fs.rmSync(raiz, { recursive: true, force: true }); }
+});
+
+caso('onnxruntime: a pasta existir não basta, a peça precisa carregar', () => {
+  const raiz = fs.mkdtempSync(path.join(os.tmpdir(), 'fabrica-amb-'));
+  try {
+    fs.mkdirSync(path.join(raiz, 'node_modules', 'onnxruntime-node'), { recursive: true });
+    const falsa = conferir(raiz).find((i) => i.id === 'onnxruntime');
+    assert.strictEqual(falsa.ok, false, 'pasta vazia não carrega');
+    const deVerdade = conferir(path.resolve(__dirname, '..', '..')).find((i) => i.id === 'onnxruntime');
+    if (fs.existsSync(path.resolve(__dirname, '..', '..', 'node_modules', 'onnxruntime-node'))) assert.strictEqual(deVerdade.ok, true, deVerdade.detalhe);
   } finally { fs.rmSync(raiz, { recursive: true, force: true }); }
 });
 

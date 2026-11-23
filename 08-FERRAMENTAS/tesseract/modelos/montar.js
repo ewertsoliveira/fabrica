@@ -14,6 +14,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
+require('../../../_fabrica/core/programas'); // acha o ffmpeg da Fábrica no Mac
 const { Projeto, preparaTrecho, hex } = require('./motor');
 const temaMarca = require('./tema-marca');
 const { normalizar } = require('../projetos/normalizar-audio');

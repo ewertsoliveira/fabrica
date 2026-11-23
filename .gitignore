@@ -26,6 +26,8 @@ desktop.ini
 *.mkv
 *.mp3
 *.wav
+# a fala curta do autoteste das ferramentas de vídeo (344 KB, domínio público) faz parte da Fábrica
+!08-FERRAMENTAS/autoteste/fala-jfk.wav
 
 # Imagens e arquivos de design pesados
 *.psd
@@ -41,7 +43,12 @@ desktop.ini
 
 # Ferramentas de vídeo baixadas pela instalação (ferramentas.js): programas e modelos, ~600 MB, nunca vão para o git
 08-FERRAMENTAS/whisper-cpp/
+08-FERRAMENTAS/ffmpeg/
 08-FERRAMENTAS/rvm/*.onnx
+# registro deste computador (versões em uso e recusadas), CMake da montagem do whisper no Mac e quadros do autoteste
+08-FERRAMENTAS/.estado-ferramentas.json
+08-FERRAMENTAS/.cache-ferramentas/
+08-FERRAMENTAS/.autoteste/
 *.onnx
 ggml-*.bin
 

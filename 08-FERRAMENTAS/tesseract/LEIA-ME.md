@@ -18,9 +18,11 @@ Sem `marca.yaml`, os scripts usam `marca.exemplo.yaml` (empresa fictícia) e avi
 
 **Tudo isso é instalado pela própria instalação da Fábrica**, sempre na versão mais nova:
 `node _fabrica/core/ferramentas.js` (o `instalar.js` já chama; `--verificar` só compara o instalado com o mais novo).
-Nenhum desses downloads pede login. Os caminhos esperados (whisper em `08-FERRAMENTAS/whisper-cpp/`, RVM em
-`08-FERRAMENTAS/rvm/`, `tsrct` em `%LOCALAPPDATA%\Tesseract\bin`) estão no topo de `preparar-material.js`. Binários e
-modelos ficam fora do git. As texturas dos modelos (`modelos/texturas/`) também ficam fora do git: o motor as gera
+Nenhum desses downloads pede login. Onde cada programa fica, no Windows e no Mac, só o `_fabrica/core/programas.js` sabe
+(os scripts daqui pedem a ele): `tsrct` em `%LOCALAPPDATA%\Tesseract\bin\tsrct.cmd` no Windows e em
+`~/Library/Application Support/Tesseract/bin/tsrct` no Mac; whisper em `08-FERRAMENTAS/whisper-cpp/` (no Mac ele é
+compilado na própria máquina); ffmpeg do PATH no Windows (winget) e em `08-FERRAMENTAS/ffmpeg/bin/` no Mac; RVM em
+`08-FERRAMENTAS/rvm/`. Binários e modelos ficam fora do git. As texturas dos modelos (`modelos/texturas/`) também ficam fora do git: o motor as gera
 sozinho na primeira vez que um modelo pede uma.
 
 ## Peças desta pasta
