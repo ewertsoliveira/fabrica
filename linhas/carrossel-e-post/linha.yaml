@@ -1,0 +1,128 @@
+# Linha de Produção pronta: Carrossel e post
+#
+# Carrossel (uma sequência de imagens que a pessoa passa para o lado) e post (uma imagem só) de feed, com cara de
+# agência, para quem não entende de design. Serve a qualquer empresa: o texto nasce do pedido da pessoa ou de um post já
+# planejado no calendário, e a aparência vem da identidade visual e do estilo da empresa ativa.
+#
+# Valores da empresa (cores, letras, conta, vocabulário) vêm do marca.yaml da empresa ativa (caminho `marca` em
+# `node _fabrica/core/empresa.js caminhos`); nada aqui os repete. Os `saida:` abaixo são relativos à linha: o runner os
+# traduz para a pasta de saídas da empresa ativa.
+#
+# Regras de execução, para o runner:
+# - Pipeline de carrossel do Núcleo (_fabrica/core/prompts/carrossel-compartilhado.md): nove etapas, nesta ordem, mais
+#   o passo 10 (registrar), que vem depois da entrega.
+# - Carrossel ou post é decidido no pedido (campo `tipo_peca` do pedido.md). O post usa os mesmos passos com
+#   `--formato post` (uma imagem só).
+# - Peça feita a partir de um post planejado (`origem: planejado` no pedido.md): o registro usa o código e a data do post
+#   planejado e atualiza o mesmo cartão do calendário, em vez de criar outro.
+# - Sem estilo escolhido pela empresa, vale o estilo abaixo, sóbrio e que funciona sem foto, nas cores da marca.
+
+linha: carrossel-e-post
+nome: "Carrossel e post"
+idioma: pt-BR
+formato: instagram-feed
+
+carrossel:
+  estilo: revista-dominical
+  cores: marca
+
+checkpoints: [1, 3, 5, 8]
+
+skills: []
+
+dados:
+  - dados/framework-do-dominio.md
+  - dados/criterios-de-qualidade.md
+  - dados/exemplos-de-saida.md
+  - dados/anti-padroes.md
+  - dados/tom-de-voz.md
+
+passos:
+  - passo: 1
+    id: pedido
+    nome: "Pedido: o que fazer, carrossel ou post, identidade e estilo"
+    tipo: checkpoint
+    arquivo: passos/01-pedido.md
+    saida: saida/pedido.md
+
+  - passo: 2
+    id: copy
+    nome: "Texto das imagens e legenda"
+    tipo: estacao
+    estacao: copy-de-feed
+    execucao: subagente
+    formato: instagram-feed
+    modelo: forte
+    arquivo: passos/02-copy.md
+    entrada: saida/pedido.md
+    saida: saida/copy.md
+
+  - passo: 3
+    id: aprovar-copy
+    nome: "Aprovar o texto"
+    tipo: checkpoint
+    arquivo: passos/03-aprovar-copy.md
+    saida: saida/copy-aprovada.md
+
+  - passo: 4
+    id: design
+    nome: "Montar a primeira imagem"
+    tipo: estacao
+    estacao: design-visual
+    execucao: inline
+    arquivo: passos/04-design.md
+    entrada: saida/copy-aprovada.md
+    saida: saida/conteudo.json
+
+  - passo: 5
+    id: aprovar-primeira
+    nome: "Aprovar a primeira imagem"
+    tipo: checkpoint
+    arquivo: passos/05-aprovar-primeira.md
+    saida: saida/primeira-aprovada.md
+
+  - passo: 6
+    id: renderizar
+    nome: "Montar o resto e conferir"
+    tipo: script
+    execucao: inline
+    arquivo: passos/06-renderizar.md
+    entrada: saida/primeira-aprovada.md
+    saida: saida/conferencia.txt
+    ao_reprovar: 4
+
+  - passo: 7
+    id: revisao
+    nome: "Revisão de qualidade"
+    tipo: estacao
+    estacao: revisao-de-qualidade
+    execucao: inline
+    arquivo: passos/07-revisao.md
+    entrada: saida/conferencia.txt
+    saida: saida/revisao.md
+    ao_reprovar: 4
+
+  - passo: 8
+    id: aprovar-preview
+    nome: "Aprovar a prévia"
+    tipo: checkpoint
+    arquivo: passos/08-aprovar-preview.md
+    saida: saida/preview-aprovado.md
+
+  - passo: 9
+    id: entregar
+    nome: "Entregar o aprovado"
+    tipo: script
+    execucao: inline
+    arquivo: passos/09-entregar.md
+    entrada: saida/preview-aprovado.md
+    saida: saida/entrega.md
+
+  - passo: 10
+    id: registrar
+    nome: "Pôr no Laboratório e no calendário"
+    tipo: script
+    execucao: inline
+    arquivo: passos/10-registrar.md
+    entrada: saida/entrega.md
+    saida: saida/registro.md

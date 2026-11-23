@@ -1,0 +1,61 @@
+# Linha de Produção pronta: Planejar o mês
+#
+# Para quem não sabe o que postar: a pessoa diz o que quer que os posts façam pelo negócio e quantos consegue publicar
+# por semana, e a linha propõe os posts do mês, cada um com data, formato (vídeo, carrossel ou post), roteiro e legenda.
+# Depois da aprovação, tudo vai para o calendário, sem arte: cada post vira peça depois, pela receita certa (o carrossel e
+# o post pela `carrossel-e-post`, que começa pelo roteiro registrado; o vídeo a pessoa grava e a Fábrica edita).
+#
+# Valores da empresa (o que vende, para quem, o jeito de falar) vêm do perfil e das decisões da empresa ativa (caminhos
+# `perfil` e `decisoes` em `node _fabrica/core/empresa.js caminhos`); nada aqui os repete. Os `saida:` abaixo são
+# relativos à linha: o runner os traduz para a pasta de saídas da empresa ativa.
+#
+# Regras de execução, para o runner:
+# - O registro é feito pelo `_fabrica/core/plano-do-mes.js registrar`, que confere todos os posts antes de gravar: plano
+#   com problema é recusado sem gravar nada, e um post com código que já existe nunca é regravado.
+
+linha: planejar-o-mes
+nome: "Planejar o mês"
+idioma: pt-BR
+
+checkpoints: [1, 3]
+
+skills: []
+
+dados:
+  - dados/mix-de-conteudo.md
+  - dados/criterios-de-qualidade.md
+
+passos:
+  - passo: 1
+    id: objetivo
+    nome: "O objetivo do mês"
+    tipo: checkpoint
+    arquivo: passos/01-objetivo.md
+    saida: saida/objetivo.md
+
+  - passo: 2
+    id: proposta
+    nome: "A proposta de posts"
+    tipo: estacao
+    estacao: planejamento
+    execucao: inline
+    arquivo: passos/02-proposta.md
+    entrada: saida/objetivo.md
+    saida: saida/plano.json
+
+  - passo: 3
+    id: aprovar
+    nome: "Aprovar o plano"
+    tipo: checkpoint
+    arquivo: passos/03-aprovar.md
+    saida: saida/plano-aprovado.md
+
+  - passo: 4
+    id: registrar
+    nome: "Pôr no calendário"
+    tipo: script
+    execucao: inline
+    arquivo: passos/04-registrar.md
+    entrada: saida/plano-aprovado.md
+    saida: saida/registro.md
+    ao_reprovar: 2

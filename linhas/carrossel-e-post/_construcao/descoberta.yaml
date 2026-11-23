@@ -1,0 +1,29 @@
+codigo: "carrossel-e-post"
+proposito: "Carrossel e post de feed com cara de agência, para quem não entende de design. O texto é escrito pela linha a partir do pedido ou a partir de um post planejado no calendário; a peça sai com a legenda e entra no Laboratório e no calendário."
+dominio: "conteudo"
+
+empresa: "nenhuma (qualquer empresa: tudo dela vem dos caminhos da empresa ativa)"
+
+idioma: "pt-BR"
+
+contexto:
+  publico: "o do perfil da empresa ativa"
+  plataformas: "Instagram (feed)"
+  tom: "o de decisoes.md da empresa ativa; sem decisão, um dos tons padrão, dito na aprovação do texto"
+  fonte: "o pedido da pessoa, ou o roteiro e a legenda de um post planejado no calendário"
+
+ferramentas:
+  - "leitura-de-arquivos (nativa)"
+  - "08-FERRAMENTAS/carrossel/gerar.js (gerador de carrossel e post da Fábrica)"
+  - "_fabrica/core/plano-do-mes.js (posts planejados ainda sem arte)"
+  - "_fabrica/paineis/registrar.js (Laboratório e calendário)"
+
+investigacao:
+  habilitada: false
+
+formatos_destino:
+  - instagram-feed
+
+carrossel:
+  habilitado: true
+  fotos: "as da empresa, quando houver; sem elas, mockups, números e objetos do estilo"

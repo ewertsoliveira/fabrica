@@ -188,6 +188,10 @@ empresa com ele: vira upgrade explícito, empresa a empresa, pelo comando
   motion, modelos de edição (em teste), export em pedaços, conferência; leia o
   `LEIA-ME.md` dele
 - `linhas/reels/` — a Linha de Produção de Reels falado (8 passos, 6 estações)
+- `linhas/carrossel-e-post/` — a receita pronta de carrossel e post de feed, inclusive
+  a partir de um post planejado no calendário (que ganha a arte no mesmo cartão)
+- `linhas/planejar-o-mes/` — a receita pronta do plano do mês: os posts vão para o
+  calendário com data, formato, roteiro e legenda
 - `08-FERRAMENTAS/validador-anti-vazamento/` — confere se algum arquivo
   carrega identidade de empresa; leia o `LEIA-ME.md` dele
 - `NOTICE.md` — origem e atribuição da base deste projeto

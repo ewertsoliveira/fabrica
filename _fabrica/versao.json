@@ -1,7 +1,10 @@
 {
-  "versao": "0.10.0",
+  "versao": "0.11.0",
   "data": "2026-11-23",
   "novidades": [
+    "Carrossel e post prontos para usar, como o Reels: a Fábrica pergunta se é carrossel (uma sequência de imagens que a pessoa passa para o lado) ou post (uma imagem só), escreve o texto, mostra a primeira imagem para você aprovar e entrega tudo no estilo e nas cores da sua marca. Não é mais preciso criar uma linha de produção para isso.",
+    "Planejar o mês: diga o que você quer que os posts façam pelo seu negócio e quantos consegue publicar por semana, e a Fábrica propõe os posts do mês, cada um com data, formato, roteiro e legenda. Depois que você aprova, tudo vai para o calendário.",
+    "Post planejado vira peça: ao pedir um carrossel ou post, a Fábrica oferece os posts do calendário que ainda não têm arte e começa pelo roteiro que já está lá; a arte entra no mesmo cartão do calendário.",
     "A pasta da Fábrica agora mostra só o que é seu: a pasta empresas, o arquivo COMECE AQUI e o atalho do Laboratório. As pastas de funcionamento ficam escondidas no VS Code e no Explorador ou no Finder, sem nada apagado nem mudado de lugar (no Windows, alguns arquivos soltos continuam aparecendo no Explorador). Se a sua Fábrica é antiga, as pastas com a sua marca, as suas fotos e as suas peças continuam à vista. Para ver tudo de novo, escreva na conversa: mostrar as pastas escondidas.",
     "Instalação mais leve: a peça que recorta a pessoa do fundo agora guarda só a versão deste computador (vinha uma para cada sistema), e o programa que monta os vídeos guarda só a versão em uso e a anterior (as antigas se acumulavam: quase 1 GB num computador de teste). Essa arrumação roda sozinha no fim da instalação e na primeira vez que você abre a Fábrica depois de atualizar, e diz quanto espaço liberou.",
     "Download menor: os arquivos que só servem para quem mantém a Fábrica (testes e documentos de projeto) não vêm mais.",

@@ -1,0 +1,61 @@
+linha:
+  codigo: "carrossel-e-post"
+  nome: "Carrossel e post"
+  descricao: "Carrossel ou post de feed, com texto, legenda e imagens no estilo e na identidade da empresa ativa, a partir do pedido ou de um post planejado; registrado no Laboratório e no calendário (no mesmo cartão, quando vem do plano)."
+  formato: "instagram-feed"
+
+estacoes:
+  - id: "copy-de-feed"
+    nome: "Estação de Copy de Feed"
+    execucao: "subagente"
+    resumo_papel: "Escreve o texto de cada imagem (ou da imagem única do post), com forma, visual e legenda; num post planejado, parte do roteiro e da legenda do calendário sem trocar o assunto."
+    papel_do_nucleo: "05-ESTRATEGIA/nucleo-de-conteudo/agentes/copywriter-de-feed.agent.md"
+    skills: []
+  - id: "design-visual"
+    nome: "Estação de Design Visual"
+    execucao: "inline"
+    resumo_papel: "Monta o conteudo.json transcrevendo o texto aprovado, escolhe o layout pela forma e monta a primeira imagem no estilo e nas cores do pedido."
+    papel_do_nucleo: "05-ESTRATEGIA/nucleo-de-conteudo/agentes/designer-visual.agent.md"
+    skills: []
+  - id: "revisao-de-qualidade"
+    nome: "Estação de Revisão de Qualidade"
+    execucao: "inline"
+    resumo_papel: "Julga o que a conferência automática não mede: visual ligado ao texto, leitura na grade, chamada única, regras da empresa e fidelidade ao post planejado."
+    papel_do_nucleo: "05-ESTRATEGIA/nucleo-de-conteudo/agentes/revisor-de-qualidade.agent.md"
+    skills: []
+
+passos:
+  - { passo: 1, id: "pedido", nome: "Pedido: o que fazer, carrossel ou post, identidade e estilo", tipo: "checkpoint", saida: "saida/pedido.md" }
+  - { passo: 2, id: "copy", nome: "Texto das imagens e legenda", tipo: "estacao", estacao: "copy-de-feed", execucao: "subagente", formato: "instagram-feed", entrada: "saida/pedido.md", saida: "saida/copy.md", modelo: "forte" }
+  - { passo: 3, id: "aprovar-copy", nome: "Aprovar o texto", tipo: "checkpoint", saida: "saida/copy-aprovada.md" }
+  - { passo: 4, id: "design", nome: "Montar a primeira imagem", tipo: "estacao", estacao: "design-visual", execucao: "inline", entrada: "saida/copy-aprovada.md", saida: "saida/conteudo.json" }
+  - { passo: 5, id: "aprovar-primeira", nome: "Aprovar a primeira imagem", tipo: "checkpoint", saida: "saida/primeira-aprovada.md" }
+  - { passo: 6, id: "renderizar", nome: "Montar o resto e conferir", tipo: "script", execucao: "inline", entrada: "saida/primeira-aprovada.md", saida: "saida/conferencia.txt", ao_reprovar: 4 }
+  - { passo: 7, id: "revisao", nome: "Revisão de qualidade", tipo: "estacao", estacao: "revisao-de-qualidade", execucao: "inline", entrada: "saida/conferencia.txt", saida: "saida/revisao.md", ao_reprovar: 4 }
+  - { passo: 8, id: "aprovar-preview", nome: "Aprovar a prévia", tipo: "checkpoint", saida: "saida/preview-aprovado.md" }
+  - { passo: 9, id: "entregar", nome: "Entregar o aprovado", tipo: "script", execucao: "inline", entrada: "saida/preview-aprovado.md", saida: "saida/entrega.md" }
+  - { passo: 10, id: "registrar", nome: "Pôr no Laboratório e no calendário", tipo: "script", execucao: "inline", entrada: "saida/entrega.md", saida: "saida/registro.md" }
+
+carrossel:
+  estilo: "revista-dominical"
+  cores: "marca"
+  fotos: "as da empresa, quando houver"
+  visual_por_lamina: true
+
+resumo_da_pesquisa: |
+  A capa decide se a pessoa passa para o lado: promessa concreta e específica, legível na miniatura da grade. Cada
+  imagem traz uma ideia e puxa a próxima, num desenho constante. A legenda repete ou desenvolve o gancho e fecha com uma
+  chamada clara, a mesma da última imagem. Conteúdo que é salvo: lista de conferência, passo a passo, comparação. Post
+  de uma imagem só quando a ideia cabe numa frase.
+
+skills_instaladas: []
+formatos: ["instagram-feed"]
+boas_praticas_consultadas: ["instagram-feed.md"]
+
+decisoes_do_desenho:
+  - "Receita do modelo, para qualquer empresa: nada de empresa, marca ou setor fixo; tudo vem dos caminhos da empresa ativa."
+  - "Uma receita para os dois formatos: carrossel ou post é a primeira decisão do pedido, explicada em palavras simples."
+  - "Estilo padrão sem estilo da empresa: revista-dominical, sóbrio e feito para funcionar sem foto (o editorial pede foto de pessoa na capa)."
+  - "Post planejado no calendário: o pedido o oferece; o texto parte do roteiro e da legenda; o registro atualiza o mesmo cartão."
+  - "Sem investigação de perfis (fica para receita própria) e sem gerador de imagem por IA (I-16)."
+  - "O tom vem de decisoes.md; sem decisão, a copy escolhe um dos tons padrão e o diz na aprovação do texto, sem pergunta a mais."
