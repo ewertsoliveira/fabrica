@@ -41,6 +41,10 @@ function instalar(painel, r, codigo) {
     registrar(c.pecas, '[]\n');
     registrar(path.join(c.pastaLaboratorio, 'COMO-ACESSAR.md'), modelo('COMO-ACESSAR-laboratorio.md'));
     for (const nome of ATALHOS) registrar(path.join(r, nome), atalho(nome), nome.endsWith('.command') ? 0o755 : 0o644);
+    // numa pasta já arrumada, o atalho do outro sistema nasce escondido, sem esperar a próxima atualização
+    if (criados.some((c) => ATALHOS.includes(c))) {
+      try { require('../core/arrumar').reesconder(r); } catch { /* a arrumação nunca atrapalha o registro */ }
+    }
   } else if (painel === 'cronograma') {
     registrar(c.posts, '[]\n');
     registrar(c.config, JSON.stringify({ titulo: '', periodo: '', pessoas: [], aprovadores: [] }, null, 2) + '\n');

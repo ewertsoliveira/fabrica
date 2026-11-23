@@ -29,6 +29,13 @@ está ligada ao repositório-modelo e gravar aqui o alteraria. Explique em uma f
 `node _fabrica/core/atualizar.js proteger` (desliga o envio; a pasta continua recebendo atualizações). Nunca faça o
 onboarding nem crie ou ative empresa numa pasta que ainda está com a trava ativa.
 
+**Arrumação depois de atualizar.** Logo depois da trava, rode `node _fabrica/core/arrumar.js --se-mudou-a-versao --json`.
+Ele só trabalha na primeira abertura depois de cada atualização; nas outras, sai com `fez: false` e você não diz nada.
+Com `fez: true`, diga a `frase` em uma linha, antes de tudo. Os avisos dele não vão para a pessoa. **As pastas técnicas
+desta pasta ficam ocultas de propósito**, para a pessoa ver só o que é dela: os scripts, a busca e a leitura de arquivos
+enxergam tudo; para listar no PowerShell, use `Get-ChildItem -Force`. Nunca conclua que falta arquivo da Fábrica porque
+uma listagem sem `-Force` não o mostrou.
+
 0. **Descobrir a empresa ativa.** Cada empresa tem as próprias pastas (perfil, marca, saídas, memória). A Fábrica sempre
    trabalha pela empresa ativa, e os caminhos dela vêm de um comando, nunca de memória:
    0.1. Rodar `node _fabrica/core/empresa.js caminhos --json`. A saída traz `codigo`, `nome` e os caminhos `perfil`,
@@ -156,6 +163,8 @@ Quando o responsável digitar `/fabrica` ou pedir o menu, usar `AskUserQuestion`
 | `/fabrica organizar-pasta` | Guardar tudo da empresa da pasta antiga numa pasta só dela, com prévia antes (ver "Organizar a pasta") |
 | `/fabrica organizar-pasta desfazer` | Voltar a pasta a ser como era (ver "Organizar a pasta") |
 | `/fabrica organizar-pasta retirar` | Guardar os arquivos de antes na cópia de segurança, só em pedido próprio (ver "Organizar a pasta") |
+| `/fabrica mostrar-pastas` (ou "mostrar as pastas escondidas") | Mostrar de novo tudo o que a arrumação escondeu: `node _fabrica/core/arrumar.js --mostrar-tudo --json`; diga a `frase` |
+| `/fabrica esconder-pastas` (ou "esconder as pastas") | Voltar a esconder as pastas técnicas: `node _fabrica/core/arrumar.js --esconder --json`; diga a `frase` |
 | `/fabrica configuracoes` | Mostrar ou editar `preferencias.md` |
 | `/fabrica continuar` | Atender os pedidos da tela de Estilos, de todas as empresas, um por vez (ver "Continuar: pedidos guardados") |
 | Linguagem natural sobre linhas | Inferir a intenção e rotear |
@@ -286,7 +295,8 @@ segurança. É opcional: quem nunca pedir continua exatamente como hoje. Tudo pa
    se a prévia confirmada levou essa opção). Ele imprime `resumo`, `relatorioPagina` e `relatorioEndereco`. Mostre as
    linhas do `resumo` (o fim curto: quantos arquivos foram copiados e conferidos, que os de antes continuam como cópia
    de segurança, a frase de desfazer), destaque **"Abra uma conversa nova para continuar."**, abra a página do
-   relatório no navegador e diga "Abri o relatório no navegador." Com recusa, mostre a mensagem (ela começa por "Nada
+   relatório no navegador e diga "Abri o relatório no navegador." Logo depois, rode `node _fabrica/core/arrumar.js --json`
+   (a pasta mudou de formato: o que virou técnico passa a ficar escondido), sem mostrar a frase dele. Com recusa, mostre a mensagem (ela começa por "Nada
    mudou: a Fábrica continua usando os lugares de sempre.") e pare.
 8. **Depois de organizar, nesta conversa:** não produza nada nem retome run com os caminhos guardados antes (eles eram
    os de antes). Recomende sempre a conversa nova. **Não ofereça guardar os arquivos de antes** neste pedido: isso é
@@ -308,7 +318,8 @@ segurança. É opcional: quem nunca pedir continua exatamente como hoje. Tudo pa
    **Parar aqui**). Só com **Levar o que é novo de volta**, rode `desfazer --levar-novos --confirmar --json`. Outra
    recusa (por exemplo, `CONFLITO_AO_LEVAR` ou um arquivo aberto em outro programa): mostre a mensagem e pare; nada é
    decidido sozinho.
-5. Feito: mostre as linhas do `resumo` e diga que nada foi apagado. Se veio `relatorioPagina`, abra a página (ela agora
+5. Feito: rode `node _fabrica/core/arrumar.js --json` (as pastas de sempre voltaram a guardar as coisas da empresa e
+   ficam à vista de novo), sem mostrar a frase dele. Depois, mostre as linhas do `resumo` e diga que nada foi apagado. Se veio `relatorioPagina`, abra a página (ela agora
    diz "Desfeita"). Recomende a conversa nova.
 
 **`/fabrica organizar-pasta retirar`** (guardar os arquivos de antes na cópia de segurança; só em pedido próprio da
@@ -460,6 +471,10 @@ EMPRESAS
   /fabrica organizar-pasta    Guardar tudo da empresa numa pasta só dela
   /fabrica organizar-pasta desfazer  Voltar a pasta a ser como era
   /fabrica organizar-pasta retirar   Guardar os arquivos de antes na cópia de segurança
+
+PASTA DA FÁBRICA
+  /fabrica mostrar-pastas     Mostrar as pastas escondidas
+  /fabrica esconder-pastas    Esconder de novo o que é técnico
 
 O CAMINHO NO PAINEL (abra pelo atalho "Abrir Laboratório de Design")
   Começar                     Para quem você cria e o que quer criar

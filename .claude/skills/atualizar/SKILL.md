@@ -32,8 +32,9 @@ criou, as saídas e a memória. A pasta `empresas/`, com todas as empresas criad
    - Nunca use `--forcar` sem a pessoa pedir: ele sobrescreve o que a empresa personalizou (com backup).
    - Se houver arquivos mantidos, diga: "Algumas coisas que você personalizou foram mantidas. A versão nova delas ficou
      guardada para você comparar quando quiser."
-5. **Terminar.** Diga o que mudou, em duas ou três linhas, e **avise: "Feche e abra o Claude Code de novo para os
-   comandos novos aparecerem."** Esse aviso é obrigatório: as skills só carregam quando a sessão abre.
+5. **Terminar.** Rode `node _fabrica/core/arrumar.js --json` (deixa à vista só o que é da pessoa e libera espaço); com
+   `fez: true`, a `frase` dele entra nas linhas do que mudou. Diga o que mudou, em duas ou três linhas, e **avise: "Feche
+   e abra o Claude Code de novo para os comandos novos aparecerem."** Esse aviso é obrigatório: as skills só carregam quando a sessão abre.
 6. **Histórico (opcional).** Se a pasta for um repositório, pergunte se quer guardar a atualização no histórico. Se sim:
    `git add -A` e `git commit -m "Atualização da Fábrica para a versão X"`. **Nunca** rode `git push` nem `git pull`.
 

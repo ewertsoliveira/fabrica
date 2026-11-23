@@ -18,5 +18,6 @@ https://raw.githubusercontent.com/ewertsoliveira/fabrica/main/INSTALAR.md
 Não baixe a Fábrica nem crie nenhuma pasta antes de eu escolher onde guardá-la.
 ```
 
-Depois de instalada, comece por [`CORE.md`](./CORE.md). A origem e a licença estão em [`NOTICE.md`](./NOTICE.md) e
-[`LICENSE.md`](./LICENSE.md).
+Depois de instalada, abra a pasta da Fábrica na ferramenta de IA e escreva **/fabrica**: ela pergunta o que precisa e
+explica cada coisa. Na pasta, o arquivo **COMECE AQUI** resume esse caminho. A origem e a licença estão em
+[`NOTICE.md`](./NOTICE.md) e [`LICENSE.md`](./LICENSE.md).

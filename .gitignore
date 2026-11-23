@@ -116,3 +116,6 @@ empresas/*/cores-sugeridas/
 08-FERRAMENTAS/tesseract/modelos/amostra/palavras-demonstracao.json
 08-FERRAMENTAS/tesseract/modelos/amostra/pedido-demonstracao.json
 08-FERRAMENTAS/tesseract/modelos/amostra/transcricao.json
+
+# Registro da arrumação desta pasta (versão em que rodou e o que ela escondeu)
+_fabrica/_estado-arrumacao.json

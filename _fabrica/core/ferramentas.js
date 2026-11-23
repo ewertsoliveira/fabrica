@@ -520,7 +520,8 @@ function depPadrao(raiz = RAIZ) {
   const at = require('./autoteste-ferramentas');
   const testadas = lerTestadas(raiz);
   return { raiz, autotestar: at.autotestar, lerReferencia: at.lerReferencia, gravarReferencia: at.gravarReferencia,
-    estado: lerEstado(raiz), versaoTestada: (id) => versaoTestada(id, testadas) };
+    estado: lerEstado(raiz), versaoTestada: (id) => versaoTestada(id, testadas),
+    limparTesseract: (prefixo) => require('./arrumar').limparTesseract(prefixo || undefined) };
 }
 const rotuloDe = (atual) => (atual.versao ? atual.versao.join('.') : atual.registrada || 'em uso');
 
@@ -563,6 +564,10 @@ async function atualizarComTeste(f, nova, opc = {}, dep = depPadrao()) {
     catch (e) { cand.descartar(); return { resultado: 'problema', frase: `A versão nova do ${f.nomeSimples} passou no teste, mas não consegui pô-la em uso. Vou tentar de novo na próxima vez.`, detalhe: e.message }; }
     if (f.id === 'tesseract' && (r.quadros || []).length) dep.gravarReferencia(raiz, r.quadros, nova.rotulo);
     est.emUso = nova.rotulo;
+    // com a versão nova do Tesseract em uso, ficam só ela e a anterior (a limpeza nunca atrapalha a troca)
+    if (f.id === 'tesseract' && dep.limparTesseract) {
+      try { dep.limparTesseract(prefixoPedido(opc)); } catch { /* segue: a versão nova já está em uso */ }
+    }
     est.ultimoTeste = { data: agora, ok: true, detalhe };
     return { resultado: 'passou', frase: jaTinha ? FRASES.passou(f.nomeSimples) : FRASES.instalou(f.nomeSimples), detalhe };
   }

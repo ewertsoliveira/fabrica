@@ -104,7 +104,8 @@ function conferir(raiz = RAIZ, opc = {}) {
     mRvm !== null && mRvm < 10e6 ? `incompleto (${(mRvm / 1e6).toFixed(1)} MB de ~15 MB)` : '', 'Rodar: node _fabrica/core/ferramentas.js');
   // a máscara roda o modelo pelo onnxruntime-node (também entre as dependências obrigatórias; aqui, para o vídeo dizer o que falta)
   const onnx = existe(raiz, 'node_modules', 'onnxruntime-node') ? carregaOnnx(raiz) : { ok: false, detalhe: 'não instalado' };
-  add('video', 'onnxruntime', 'onnxruntime-node (roda o modelo da máscara)', onnx.ok, onnx.detalhe, 'Rodar, na pasta da Fábrica: npm install');
+  // a arrumação deixa só a peça deste computador: se ela não carrega, um npm install sozinho não a traz de volta
+  add('video', 'onnxruntime', 'onnxruntime-node (roda o modelo da máscara)', onnx.ok, onnx.detalhe, 'Apagar a pasta node_modules/onnxruntime-node e rodar, na pasta da Fábrica: npm install');
   return itens;
 }
 

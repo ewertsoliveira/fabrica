@@ -143,6 +143,7 @@ Isenções registradas, com o motivo:
 - `08-FERRAMENTAS/tesseract/modelos/fontes/familias.json` (fonte): a lista das letras livres da pasta, por família, para a marca que nasce de um estilo e a lista de letras do painel; os nomes de família são os das letras OFL do modelo, não de empresa.
 - `08-FERRAMENTAS/marca/escrever.test.js` (hex, fonte): as cores `#RRGGBB` são valores inventados das marcas de mentira `aurora` e `boreal` e de estilos de mentira, e as letras são as OFL da pasta `modelos/fontes/`, para provar que a marca gravada leva as cores e letras pedidas e que a marca que nasce de um estilo copia as letras dele com a licença.
 - `08-FERRAMENTAS/tesseract/modelos/todos-na-marca.test.js` (hex, fonte): o mesmo motivo, para os 27 modelos de uma vez: cores `#RRGGBB` inventadas das marcas de mentira `aurora` e `boreal` e letras OFL da própria pasta `modelos/fontes/`, para provar que nenhum modelo falha com a marca, que sem marca nada muda e que o log de contraste só traz os casos conhecidos.
+- `_manutencao/publicar.test.js` (email): e-mails inventados dos casos que provam que o envio ao público só aceita o e-mail protegido do GitHub; a pasta `_manutencao/` só existe no repositório privado.
 
 ## Quando rodar
 

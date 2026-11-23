@@ -1,0 +1,18 @@
+COMECE AQUI
+
+Esta é a sua Fábrica de Conteúdo. Ela faz posts, carrosséis e vídeos para a sua empresa, já com as suas cores e o seu jeito.
+
+COMO COMEÇAR
+1. Abra esta pasta na sua ferramenta de IA (por exemplo, o Claude Code).
+2. Na conversa, escreva /fabrica e aperte Enter.
+3. Responda às perguntas. A Fábrica explica cada coisa antes de perguntar.
+
+O QUE FICA À VISTA NESTA PASTA
+- empresas: tudo o que é seu (marca, fotos, vídeos e as peças prontas). Para a Fábrica usar um vídeo ou uma foto,
+  coloque na pasta "midias" da sua empresa, dentro de "empresas". Ela aparece depois da primeira conversa.
+- Abrir Laboratório de Design: abre a tela com as suas peças, para aprovar e baixar. Aparece depois da primeira peça.
+
+As pastas de funcionamento da Fábrica ficam escondidas, para não atrapalhar. Nada foi apagado, e a IA usa todas elas.
+Se a sua Fábrica é antiga, as pastas com a sua marca, as suas fotos e as suas peças continuam à vista. Alguns arquivos
+soltos da Fábrica também podem aparecer; você não precisa abrir nenhum.
+Para ver tudo de novo, escreva na conversa: mostrar as pastas escondidas.

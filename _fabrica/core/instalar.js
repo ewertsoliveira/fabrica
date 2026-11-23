@@ -91,6 +91,19 @@ const PASSOS = [
     },
   },
   {
+    // Esconde as pastas técnicas e libera espaço (só a peça de recorte deste computador; do Tesseract, a versão em uso e
+    // a anterior). Vem antes da conferência, que testa de novo se a peça de recorte carrega. Nunca derruba a instalação.
+    texto: 'Arrumando a pasta para você ver só o que é seu (e liberando espaço)',
+    obrigatorio: true,
+    roda: () => {
+      const r = nodo(path.join(RAIZ, '_fabrica', 'core', 'arrumar.js'), '--json');
+      let j = null;
+      try { j = JSON.parse(r.stdout); } catch { /* saída ilegível */ }
+      if (!j) return { ok: true, nota: 'não consegui arrumar a pasta agora; a Fábrica funciona do mesmo jeito' };
+      return j.frase ? { ok: true, nota: j.frase } : { ok: true };
+    },
+  },
+  {
     texto: 'Conferindo se está tudo no lugar',
     obrigatorio: true,
     roda: () => {

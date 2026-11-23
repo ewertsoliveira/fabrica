@@ -71,6 +71,15 @@ linhas/                    as Linhas de Produção: uma pasta por linha (estaç�
 09-ARQUIVO/                testes e versões antigas — nada é apagado automaticamente
 ```
 
+**Pastas escondidas.** Na pasta de quem usa, a arrumação (`node _fabrica/core/arrumar.js`, que roda no fim da instalação
+e na primeira abertura depois de cada atualização) esconde as pastas técnicas no VS Code e no Explorador ou no Finder. À
+vista ficam `empresas/`, o `COMECE AQUI.txt` e o atalho do Laboratório deste computador; no formato antigo, também as
+pastas com coisas da empresa. No Windows, só as pastas recebem a marca de oculto, porque um arquivo oculto não pode ser
+regravado pelos programas; por isso, os arquivos soltos da raiz continuam no Explorador. Nada é movido nem apagado:
+scripts, busca e leitura de arquivos enxergam tudo, e no PowerShell a lista completa sai com `Get-ChildItem -Force`.
+`--mostrar-tudo` mostra tudo de novo, e `--esconder` volta a esconder. A mesma arrumação deixa só a peça de recorte deste
+computador e, do Tesseract, a versão em uso e a anterior.
+
 ### Empresas
 
 Quem atende mais de uma empresa dá uma gaveta a cada uma, em `empresas/<codigo>/`
@@ -182,81 +191,3 @@ empresa com ele: vira upgrade explícito, empresa a empresa, pelo comando
 - `08-FERRAMENTAS/validador-anti-vazamento/` — confere se algum arquivo
   carrega identidade de empresa; leia o `LEIA-ME.md` dele
 - `NOTICE.md` — origem e atribuição da base deste projeto
-
-## Estado atual (2026-10-28)
-
-**O caminho do usuário (etapa 8, 2026-11-07).** A pessoa percorre sozinha, no painel, Começar, Sua marca e Estilos: cria a
-primeira empresa (ou o primeiro cliente), diz o que quer criar, grava a marca pelo logo, pelas cores e letras ou a partir
-de um estilo, e escolhe o estilo; o que precisa de IA vira pedido, atendido com `/fabrica continuar`. Testado de ponta a
-ponta só com empresas fictícias em pastas temporárias (`_fabrica/paineis/testes/caminho.test.js`, com o navegador); o
-atendimento de um pedido com recado hostil foi provado com um agente numa cópia de teste. **Ainda não foi seguido por uma
-pessoa real**, e a Fábrica só vai ao usuário final quando o responsável liberar.
-
-**Organizar a pasta (etapa 9, 2026-11-05).** Quem usa a pasta no formato antigo pode, se pedir, levar tudo da empresa
-`principal` para `empresas/principal/` (`/fabrica organizar-pasta`; ver "Empresas" na seção 3), com prévia, cópia
-conferida arquivo por arquivo, relatório e desfazer. Testado de ponta a ponta só com empresas fictícias em pastas
-temporárias (marca, vídeo na marca, painéis, conferência entre empresas e atualização); **nunca rodou numa pasta real**,
-e o fluxo da skill ainda não foi seguido por um agente numa sessão com ela carregada.
-
-**Carrossel de feed.** Entraram as regras de copy, anti-IA, diagramação, imagem,
-mockup, formato, laboratório e export (`regras/02` a `09`), os três papéis do
-Núcleo (copywriter de feed, designer visual e revisor de qualidade), a biblioteca
-de mockups (`08-FERRAMENTAS/mockups/`), os layouts e quatro estilos de catálogo
-(`04-LABORATORIO-DE-DESIGN/`), o gerador, o simulador de Instagram e o conferidor
-(`08-FERRAMENTAS/carrossel/`) e o ensino do Arquiteto
-(`_fabrica/core/prompts/carrossel-compartilhado.md` e o portão
-`_fabrica/core/validar-carrossel.js`). **Teste de fogo (2026-10-28):** uma
-empresa-fantasma com paleta e tipografia opostas às da empresa de origem passou pelo
-fluxo inteiro (descoberta, desenho, construção, as nove etapas da linha, conferidor,
-preview e entrega) e saiu um carrossel de 7 lâminas, sem gerador de imagem por IA.
-Foi uma única sessão seguindo os prompts, sem subagentes: as fases rodaram em
-sequência, e a Construção não foi testada isolada. O teste achou, e as regras e
-ferramentas já corrigem: lâmina só tipográfica passando como "tem elemento visual"
-(DG-09); layout escolhido pela posição, que fazia o texto sumir (C-21); caminhos de
-saída do runner que o gerador não gravava; guia `instagram-feed` contra o Núcleo;
-aprovação da primeira lâmina perdida a cada correção; miniaturas com o branco do canvas.
-Nada disso foi testado com um responsável real escolhendo o estilo.
-
-Antes, em 2026-10-15 (a montagem, os blocos, os modelos e o conferidor de vídeo foram
-testados com a empresa fictícia do exemplo; o preparo e o export em pedaços, não):
-
-- o contrato de marca e o leitor, o validador anti-vazamento e o Scout de Tendências;
-- duas regras do Núcleo (V-01 e G-13);
-- as ferramentas de edição de vídeo: preparar material, montar, mixar som, exportar
-  em pedaços, conferir; sete blocos de motion; doze modelos de edição **em teste**;
-- a Linha de Produção de Reels (definição, passos, estações e dados);
-- a regra D-01 (toda decisão visual é mostrada, não só descrita) e o gerador de
-  prévia `_fabrica/core/visual.js` (paleta, tipografia, quadro de marca), com a trava
-  `_fabrica/core/guarda-visual.js` (gancho em `.claude/settings.json`) que barra pergunta de
-  aparência sem prévia aplicada à peça;
-- o comando `/atualizar` (`_fabrica/core/atualizar.js`): traz as melhorias do modelo
-  por arquivo, sem tocar no que é da empresa, com backup e proteção do que foi
-  personalizado; a lista do que é do modelo está em `_fabrica/propriedade.json`;
-- os 22 guias de boas práticas, como referência abaixo do Núcleo
-  (`_fabrica/core/boas-praticas/`);
-- do motor: os comandos `/fabrica` e `/fabricar` (menu, onboarding, roteamento), o
-  **runner** (`_fabrica/core/runner.pipeline.md`), o **Arquiteto** com os prompts de
-  criação (descoberta, desenho, construção), o **motor de skills** com catálogo
-  próprio (`_fabrica/catalogo-de-skills/`, começa vazio) e dois scripts de apoio:
-  `_fabrica/core/validar-linha.js` e `_fabrica/core/skills.js`; os investigadores
-  de perfil (Instagram, YouTube, X e LinkedIn; **somente leitura**) com o script
-  `_fabrica/core/investigacao.js`. **Só esses três scripts foram executados de
-  verdade**; os comandos, o runner, o Arquiteto, o motor de skills e os
-  investigadores são instruções para o Claude Code. Os prompts do Arquiteto e o
-  runner rodaram uma vez de ponta a ponta (a empresa-fantasma de carrossel, acima),
-  conduzidos por uma única sessão; o motor de skills e os investigadores ainda
-  nunca rodaram numa sessão com a skill carregada.
-
-Ainda não existe na Fábrica:
-
-- do **motor**, nenhuma skill no catálogo (ele começa vazio);
-- as demais regras do Núcleo de Conteúdo, os
-  modelos de peça de imagem e o cronograma;
-- o passo de capa da linha de Reels (depende do Laboratório de Design) e o painel
-  do editor de vídeo.
-
-O que foi executado de verdade nesta cópia: montagem de um Reels sobre vídeo
-sintético, os sete blocos de motion renderizados pelo Tesseract, dois modelos de
-edição e a calibração do conferidor. **Sem execução aqui:** `preparar-material.js`
-(precisa de whisper e do modelo RVM) e `exportar-em-pedacos.js` (precisa de vídeo
-real e minutos de export): passaram só na checagem de sintaxe e de vazamento.

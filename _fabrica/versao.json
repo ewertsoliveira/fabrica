@@ -1,7 +1,11 @@
 {
-  "versao": "0.9.0",
-  "data": "2026-11-22",
+  "versao": "0.10.0",
+  "data": "2026-11-23",
   "novidades": [
+    "A pasta da Fábrica agora mostra só o que é seu: a pasta empresas, o arquivo COMECE AQUI e o atalho do Laboratório. As pastas de funcionamento ficam escondidas no VS Code e no Explorador ou no Finder, sem nada apagado nem mudado de lugar (no Windows, alguns arquivos soltos continuam aparecendo no Explorador). Se a sua Fábrica é antiga, as pastas com a sua marca, as suas fotos e as suas peças continuam à vista. Para ver tudo de novo, escreva na conversa: mostrar as pastas escondidas.",
+    "Instalação mais leve: a peça que recorta a pessoa do fundo agora guarda só a versão deste computador (vinha uma para cada sistema), e o programa que monta os vídeos guarda só a versão em uso e a anterior (as antigas se acumulavam: quase 1 GB num computador de teste). Essa arrumação roda sozinha no fim da instalação e na primeira vez que você abre a Fábrica depois de atualizar, e diz quanto espaço liberou.",
+    "Download menor: os arquivos que só servem para quem mantém a Fábrica (testes e documentos de projeto) não vêm mais.",
+    "O README agora diz o que fazer depois de instalar (abrir a pasta na ferramenta de IA e escrever /fabrica), em vez de mandar ler um arquivo técnico.",
     "A Fábrica agora instala e funciona inteira no Mac, com chip Apple ou Intel e macOS 14 ou mais novo, inclusive a parte de vídeo. O programa que monta os vídeos vem na versão oficial para Mac, o que trata o áudio e o vídeo vem de uma versão assinada e conferida, e o que transcreve a fala é montado no próprio Mac em poucos minutos, com as ferramentas gratuitas da Apple. A pessoa não digita senha no Terminal: no máximo clica em \"Instalar\" numa janela da Apple. Antes, no Mac, a IA tinha que improvisar.",
     "Programas de vídeo sempre na versão mais nova, com teste antes de trocar. Quando sai versão nova de um deles, a Fábrica instala à parte e faz um teste rápido no próprio computador: monta um vídeo curto com um modelo de edição, transcreve uma fala curta e compara as imagens com as da versão anterior. Só troca se passar; se não passar, continua a versão que funcionava, e a pessoa recebe uma frase simples. A Fábrica guarda também uma lista das últimas versões já testadas, usada na primeira instalação se a mais nova falhar ou se a internet não responder.",
     "O programa que transcreve a fala voltou a acompanhar as versões novas: ele estava parado numa versão de agosto, porque o projeto mudou o jeito de numerar as versões.",

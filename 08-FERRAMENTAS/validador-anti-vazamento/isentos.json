@@ -576,5 +576,8 @@
   ],
   "_fabrica/paineis/tipos-de-post.js": [
     "hex"
+  ],
+  "_manutencao/publicar.test.js": [
+    "email"
   ]
 }

@@ -137,16 +137,18 @@ computador (o autoteste); se não passar, fica a versão que já funcionava.
 **Antes de rodar, leia o programa.** As ferramentas de IA bloqueiam, por segurança, programas vindos da internet que o
 assistente ainda não leu (já aconteceu: o assistente parou aqui e deixou a pessoa sem saber o que fazer). Então leia
 `_fabrica/core/instalar.js`, `_fabrica/core/ferramentas.js`, `_fabrica/core/programas.js`, `_fabrica/core/rede.js`,
-`_fabrica/core/compilar-whisper.js`, `_fabrica/core/autoteste-ferramentas.js` e `_fabrica/core/ambiente.js` e só
-depois rode. Ao ler, confirme que o programa só protege a pasta contra envio acidental (`atualizar.js proteger`),
+`_fabrica/core/compilar-whisper.js`, `_fabrica/core/autoteste-ferramentas.js`, `_fabrica/core/ambiente.js` e
+`_fabrica/core/arrumar.js` e só depois rode. Ao ler, confirme que o programa só protege a pasta contra envio acidental (`atualizar.js proteger`),
 instala as dependências da Fábrica (`npm install`), baixa o navegador (`npx playwright install chromium`), baixa as
 ferramentas de vídeo de seus sites oficiais, sempre conferidas (Windows: ffmpeg pelo winget; Mac: ffmpeg assinado do
 ffmpeg.martin-riedl.de, conferido pelo checksum; Tesseract do GitHub da Mirage, conferido pelo checksum; whisper.cpp do
 GitHub do ggml-org, pronto no Windows e montado na própria máquina no Mac, com as ferramentas da Apple e o CMake oficial
-da Kitware; modelos da Hugging Face e do GitHub do RVM), testa cada versão nova antes de usá-la e confere o computador.
+da Kitware; modelos da Hugging Face e do GitHub do RVM), testa cada versão nova antes de usá-la, confere o computador e
+arruma a pasta (esconde as pastas técnicas e apaga as partes da peça de recorte feitas para outros sistemas e as versões
+antigas do programa que monta os vídeos, ficando a em uso e a anterior).
 Conte isso à pessoa em uma frase, sem jargão: "Li o programa de instalação: ele prepara a pasta da Fábrica, baixa o que
-ela usa (inclusive os programas de vídeo, dos sites oficiais), testa os programas e confere o computador. Não mexe em
-nenhum outro arquivo seu."
+ela usa (inclusive os programas de vídeo, dos sites oficiais), testa os programas, confere o computador e deixa à vista
+só o que é seu. Não mexe em nenhum outro arquivo seu."
 
 **Se a ferramenta mesmo assim bloquear ou pedir permissão, não devolva a decisão técnica para a pessoa** (nada de
 "escolha entre 3 opções"). Explique e peça só o clique: "Apareceu um aviso de segurança da ferramenta pedindo permissão.
@@ -190,7 +192,8 @@ Antes de se despedir (ainda na janela antiga), rode `node _fabrica/core/ambiente
 linhas:
 
 > "Tudo pronto! ✅ A Fábrica está instalada. Na janela nova, escreva **/fabrica**. Ela vai perguntar para quem é a Fábrica
-> (para a sua marca ou para os seus clientes) e leva você até o primeiro trabalho. Quando houver melhorias, escreva
+> (para a sua marca ou para os seus clientes) e leva você até o primeiro trabalho. Na pasta, o arquivo **COMECE AQUI**
+> lembra esse caminho. Quando houver melhorias, escreva
 > **/atualizar**. Nada do que for seu (marca, decisões, trabalhos) é apagado."
 
 ## Depois da instalação
@@ -219,14 +222,3 @@ Preencha o passo e a mensagem para ela, se souber.
 Os comandos que começam com `/` são do Claude Code. Em outra ferramenta, diga à pessoa que ela pode pedir em frases
 ("crie um carrossel", "atualize a Fábrica"). Quando isso acontecer, leia `CORE.md` e a skill correspondente em
 `.claude/skills/<nome>/SKILL.md` e siga. Funciona, mas a experiência pensada é a do Claude Code.
-
-## Para quem mantém a Fábrica
-
-- O modelo é o repositório. Não entregue a pasta de uma instalação (ela leva marca, decisões e trabalhos de alguém).
-- Se o repositório for privado, cada pessoa precisa de convite no GitHub antes do Passo 2. Se for público, os avisos de
-  login do Passo 2 simplesmente não aparecem.
-- A licença está em `LICENSE.md` e `NOTICE.md`.
-- Antes de publicar uma versão da Fábrica, rode o autoteste no Windows e no Mac (`node _fabrica/core/autoteste-ferramentas.js`)
-  e atualize `_fabrica/core/versoes-testadas.json` com as versões que passaram. Essa lista é o que a instalação usa quando
-  a versão mais nova falha no computador da pessoa ou quando o GitHub não responde, e é o que libera um visual novo do
-  Tesseract (uma versão que está na lista pode mudar a aparência dos vídeos).

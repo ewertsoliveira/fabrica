@@ -71,7 +71,7 @@ página de revisão (`revisao.js`, com o selo "Só neste computador") e, só se 
 `--reusar 08-FERRAMENTAS/tesseract/modelos/amostra/saida`. Os arquivos de trabalho (`transcricao.json`,
 `palavras-demonstracao.json` e `pedido-demonstracao.json`) ficam fora do repositório.
 
-O roteiro para gravar o vídeo de demonstração está em `roteiro-video-demonstracao.md`, e o pedido de exemplo em
+O roteiro para gravar o vídeo de demonstração fica só na cópia de quem mantém a Fábrica; o pedido de exemplo está em
 `08-FERRAMENTAS/tesseract/modelos/amostra/pedido-demonstracao.exemplo.json`.
 
 ### Peso
